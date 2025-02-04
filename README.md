@@ -4,7 +4,7 @@
 [![GitHub Version](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Release)](https://github.com/KerimDemirkaynak/assdraw/releases)
 [![Website](https://img.shields.io/badge/Website-kerimdemirkaynak.github.io/assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
 
-[**English**](en/README.md) | [**Türkçe**](README.tr.md)
+[**English**](README.md) | [**Türkçe**](README.tr.md)
 
 **ASSDraw** is a tool designed to create and edit vector shapes for use in **ASS (Advanced SubStation Alpha)** subtitle files. It is built with C++ and utilizes the AGG (Anti-Grain Geometry) library to handle graphical drawing operations. The tool provides an intuitive interface to generate precise and complex shapes which can then be exported to the ASS subtitle format.
 
