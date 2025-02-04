@@ -1,80 +1,45 @@
 # ASSDraw
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg?color=97CA01&logoColor=blue&style=for-the-badge)](https://opensource.org/license/mit/)
+[![License](https://img.shields.io/badge/License-bsd_3_clause-bsd.svg?color=97CA01&logoColor=blue&style=for-the-badge)](https://opensource.org/license/bsd-3-clause/)
 [![GitHub Version](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Release)](https://github.com/KerimDemirkaynak/assdraw/releases)
 [![Website](https://img.shields.io/badge/Website-kerimdemirkaynak.github.io/assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
 
 [**English**](README.md) | [**Türkçe**](README.tr.md)
 
-**ASSDraw** is a tool designed to create and edit vector shapes for use in **ASS (Advanced SubStation Alpha)** subtitle files. It is built with C++ and utilizes the AGG (Anti-Grain Geometry) library to handle graphical drawing operations. The tool provides an intuitive interface to generate precise and complex shapes which can then be exported to the ASS subtitle format.
+ASSDraw3 is a tool for designing shapes to be used in ASS subtitle file.
 
-## Features
-- **Vector Drawing**: Create shapes like rectangles, circles, and lines, which are often used in ASS subtitle styling.
-- **ASS Export**: Direct export of the created shapes into the ASS subtitle format, for use with subtitle editing software.
-- **Customizable Interface**: Integrated with wxWidgets, allowing for flexible user interface adjustments.
-- **Cross-Platform**: Designed to be compatible with various platforms, ensuring versatility.
+## Building ASSDraw3
 
-## Installation
+### Windows
 
-1. Clone the repository to your local machine:
-    ```bash
-    git clone https://github.com/KerimDemirkaynak/ASSDraw.git
-    ```
+Prerequisites:
 
-2. Ensure you have all necessary dependencies:
-    - AGG (Anti-Grain Geometry): A high-quality graphics library used for rendering vector graphics.
-    - wxWidgets: A C++ library used for building graphical user interfaces.
+1. M$ Visual C++ 2010 or above (Express edition is good enough).
+2. wxWidgets (3.0 or above). Build it using nmake. See [this](http://wiki.wxwidgets.org/Compiling_Using_MSVC_On_The_Commandline) for help or look at the documentation.
+3. AGG (2.4.* or 2.5.* is good enough). Build using VSC++. A project file is supplied, see ./tools/agg25.vcxproj in this repo.
 
-3. To build the project, you’ll need a C++ compiler (like GCC) and a build system (like Make or CMake). Follow the standard build instructions for your platform:
-    ```bash
-    make
-    ```
+Building:
 
-## Usage
+1. Open VC++ project file.
+2. Add appropriate include and library directories.
+3. ??? ~~You're a windows user, you can figure out this step yourself~~
+4. Profit.
 
-Once the project is compiled:
+### Linux
 
-1. Run the **ASSDraw** executable.
-2. Use the graphical interface to design your shapes and adjust their properties.
-3. Export the shapes into an ASS subtitle file that can be used for styling subtitles.
+Prerequisites:
 
-## Dependencies
-- **wxWidgets** (v3.0 or later)
-- **AGG Library** (v2.5)
-- C++11 or later
+1. AGG: `sudo apt-get install libagg-dev`
+2. wxWidgets: `git clone https://github.com/wxWidgets/wxWidgets.git; ./configure; make; sudo make install`
 
-## Building From Source
+Building:
 
-### Windows:
-- Download and install **wxWidgets** and **AGG**.
-- Set the appropriate environment variables for your compiler.
-- Run the build command, e.g., `make` or use your IDE's build tools.
+The usual --> `./autogen.sh; ./configure; make`
 
-### Linux/macOS:
-- Install the necessary packages via your package manager.
-    ```bash
-    sudo apt-get install libwxgtk3.0-dev libagg-dev
-    ```
-- Run the build command.
+### OSX
 
-## Configuration
-
-The project uses a **Default Profile** which configures paths for libraries and output files. You can customize the settings by modifying the `Default Profile` configuration or creating a new one.
-
-```plaintext
-[Profile1]
-Include Paths: /path/to/libs
-Output Paths: /path/to/output
-```
+ASSDraw3  was not tested on OSX yet. It *should* work on OSX, give it a go and contact me if it works or not so that I can update this readme.
 
 ## License
 
-ASSDraw is licensed under the **MIT License**. See [LICENSE](LICENSE) for more information.
-
-## Contributing
-
-If you want to contribute, feel free to fork the repository, make changes, and submit a pull request. Please ensure you follow the guidelines for coding style and include tests where applicable.
-
-## Acknowledgments
-- **AGG** Library for providing the rendering capabilities.
-- **wxWidgets** for cross-platform GUI support.
+All source files in this repository are licensed under a 3-clause BSD license. See [LICENSE](LICENSE) for more information.
