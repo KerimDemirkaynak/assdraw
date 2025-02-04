@@ -1,7 +1,7 @@
 # ASSDraw
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?color=97CA01&logoColor=blue&style=for-the-badge)](https://opensource.org/license/mit/)
-[![GitHub Version](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Release)](https://github.com/KerimDemirkaynak/kerimdemirkaynak.github.io/releases)
+[![GitHub Version](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Release)](https://github.com/KerimDemirkaynak/assdraw/releases)
 [![Website](https://img.shields.io/badge/Website-kerimdemirkaynak.github.io/assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
 
 [**English**](en/README.md) | [**Türkçe**](README.tr.md)
