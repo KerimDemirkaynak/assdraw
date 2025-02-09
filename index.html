@@ -33,6 +33,19 @@
     <!-- Bootstrap CSS (isteğe bağlı) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+      :root {
+          --focus-shadow-color: rgba(0, 123, 255, 0.5); /* Açık tema varsayılan */
+       }
+
+        body[data-theme="dark"] {
+           --focus-shadow-color: rgba(255, 255, 255, 0.5); /* Koyu tema */
+       }
+
+        .navbar-toggler:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem var(--focus-shadow-color);
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -94,6 +107,15 @@
         .navbar-brand span {
             margin-left: 10px;
             font-weight: bold;
+        }
+
+        /* Menü açılıp kapanınca ikon değiştir */
+        .navbar-toggler-icon.open {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23000' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+        }
+
+        body[data-theme="dark"] .navbar-toggler-icon.open {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23fff' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
         }
     </style>
 </head>
@@ -235,6 +257,7 @@
     const body = document.body;
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarTogglerIcon = document.getElementById('navbarTogglerIcon');
+
     // Sayfa yüklendiğinde localStorage'dan temayı kontrol et
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
@@ -261,14 +284,9 @@
         }
     });
 
-
     // Menü açılıp kapanınca ikon değiştir
     navbarToggler.addEventListener('click', () => {
-        if (navbarToggler.getAttribute('aria-expanded') === 'false') {
-            navbarTogglerIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
-        } else {
-            navbarTogglerIcon.innerHTML = '<span class="navbar-toggler-icon"></span>';
-        }
+        navbarTogglerIcon.classList.toggle('open');
     });
 
     const savedLang= localStorage.getItem('lang')
@@ -279,7 +297,6 @@
         changeLanguage(defaultLang);
     }
     console.log("JavaScript kodu çalıştı.");
-
 
     // Telif hakkı yılını otomatik güncelle
     document.getElementById('copyrightYear').textContent = new Date().getFullYear();
