@@ -29,15 +29,24 @@ jobs:
         echo "Inno Setup Kuruluyor..."
         choco install innosetup
         
-        echo "vcpkg.json varsa siliniyor (Klasik mod icin)..."
+        echo "vcpkg.json varsa siliniyor..."
         if exist vcpkg.json del vcpkg.json
 
-        echo "Kutuphaneler kuruluyor..."
+        echo "wxWidgets vcpkg ile kuruluyor..."
         cd /D C:\vcpkg
         git pull
         call bootstrap-vcpkg.bat
-        REM DUZELTME: 'agg' yerine 'unofficial-agg' kullanildi.
-        vcpkg install wxwidgets unofficial-agg --triplet x64-windows
+        REM Sadece wxwidgets kuruyoruz, AGG'yi manuel indirecegiz.
+        vcpkg install wxwidgets --triplet x64-windows
+
+    - name: Download and Extract AGG
+      shell: powershell
+      run: |
+        echo "AGG 2.5 indiriliyor..."
+        Invoke-WebRequest -Uri "https://sourceforge.net/projects/agg/files/agg/2.5/agg-2.5.zip/download" -OutFile "agg.zip" -UserAgent "NativeHost"
+        echo "Zipten cikariliyor..."
+        Expand-Archive agg.zip -DestinationPath . -Force
+        # Klasor adi 'agg-2.5' olacak
 
     - name: Configure Meson
       shell: cmd
