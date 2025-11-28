@@ -44,9 +44,9 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           choco install innosetup
-          # wxWidgets ve AGG'yi vcpkg ile kurmak Meson için de en kolayıdır
-          # Ancak Aegisub manuel kurulum yapıyor. Biz vcpkg kullanalım:
-          vcpkg install wxwidgets agg --triplet x64-windows
+          # DÜZELTME: vcpkg.json olduğu için paket isimlerini sildik.
+          # Sadece install komutu yeterlidir, paketleri json'dan okur.
+          vcpkg install --triplet x64-windows
 
       # ----------------------------------------------------------------
       # LINUX HAZIRLIKLARI
@@ -55,15 +55,16 @@ jobs:
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libagg-dev libwxgtk3.0-gtk3-dev
+          # DÜZELTME: libwxgtk3.0 yerine libwxgtk3.2-dev kullanıldı (Ubuntu 24.04 uyumu)
+          sudo apt-get install -y build-essential pkg-config libagg-dev libwxgtk3.2-dev
 
       # ----------------------------------------------------------------
       # DERLEME VE PAKETLEME
       # ----------------------------------------------------------------
       - name: Configure Meson
-        # Windows'ta vcpkg toolchain dosyasını göstermemiz gerekebilir
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
+            # Windows'ta vcpkg ile kurulan kütüphaneleri CMake prefix path ile gösteriyoruz
             meson setup build --buildtype=${{ matrix.config.buildtype }} --backend=ninja -Dcmake_prefix_path="C:/vcpkg/installed/x64-windows"
           else
             meson setup build --buildtype=${{ matrix.config.buildtype }}
@@ -79,8 +80,6 @@ jobs:
       - name: Generate Windows Installer
         if: matrix.config.os == 'windows-latest'
         run: |
-          # build klasöründeki exe'yi Inno Setup scriptine uygun yere kopyala veya scripti güncelle
-          # Basitlik için doğrudan ISCC çağırıyoruz, scriptin build/ASSDraw3.exe'yi bulması lazım.
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 
       # ----------------------------------------------------------------
