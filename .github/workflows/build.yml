@@ -1,4 +1,4 @@
-name: Build ASSDraw3 (Classic)
+name: Build Windows Only
 
 on:
   push:
@@ -7,96 +7,64 @@ on:
     branches: [ master, main ]
 
 jobs:
-  build:
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - name: Windows MSVC Release
-            os: windows-latest
-            buildtype: release
-          - name: Ubuntu Release
-            os: ubuntu-latest
-            buildtype: release
+  build-windows:
+    runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
 
-      - name: Setup Meson & Ninja
-        run: pip install meson ninja
+    - name: Setup Meson & Ninja
+      run: pip install meson ninja
 
-      # ----------------------------------------------------------------
-      # WINDOWS ADIMLARI (vcpkg.json OLMADAN)
-      # ----------------------------------------------------------------
-      - name: Setup MSVC (Windows)
-        if: matrix.config.os == 'windows-latest'
-        uses: ilammy/msvc-dev-cmd@v1
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Dependencies (Windows)
-        if: matrix.config.os == 'windows-latest'
-        shell: cmd
-        run: |
-          choco install innosetup
-          REM vcpkg'yi güncelle ve kütüphaneleri manuel kur
-          cd C:\vcpkg
-          git pull
-          .\bootstrap-vcpkg.bat
-          .\vcpkg install wxwidgets agg --triplet x64-windows
+    - name: Install Dependencies (Windows)
+      shell: cmd
+      run: |
+        echo "Inno Setup Kuruluyor..."
+        choco install innosetup
+        
+        echo "vcpkg.json varsa siliniyor (Klasik mod icin)..."
+        if exist vcpkg.json del vcpkg.json
 
-      # ----------------------------------------------------------------
-      # LINUX ADIMLARI
-      # ----------------------------------------------------------------
-      - name: Install Dependencies (Linux)
-        if: startsWith(matrix.config.os, 'ubuntu')
-        run: |
-          sudo apt-get update
-          # wxWidgets 3.2 ve AGG kuruyoruz
-          sudo apt-get install -y build-essential pkg-config libagg-dev libwxgtk3.2-dev
+        echo "Kutuphaneler kuruluyor..."
+        REM ONEMLI DUZELTME: cd yerine cd /D kullanildi.
+        cd /D C:\vcpkg
+        git pull
+        call bootstrap-vcpkg.bat
+        vcpkg install wxwidgets agg --triplet x64-windows
 
-      # ----------------------------------------------------------------
-      # DERLEME VE PAKETLEME
-      # ----------------------------------------------------------------
-      - name: Configure Meson
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            # Windows'ta vcpkg yolunu manuel gösteriyoruz
-            meson setup build --buildtype=${{ matrix.config.buildtype }} --backend=ninja -Dcmake_prefix_path="C:/vcpkg/installed/x64-windows"
-          else
-            meson setup build --buildtype=${{ matrix.config.buildtype }}
-          fi
-        shell: bash
+    - name: Configure Meson
+      shell: cmd
+      run: |
+        REM vcpkg kütüphanelerini Meson'a tanitiyoruz
+        meson setup build --buildtype=release --backend=ninja -Dcmake_prefix_path=C:/vcpkg/installed/x64-windows
 
-      - name: Build
-        run: meson compile -C build
+    - name: Build
+      run: meson compile -C build
 
-      # ----------------------------------------------------------------
-      # WINDOWS INSTALLER
-      # ----------------------------------------------------------------
-      - name: Generate Windows Installer
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+    - name: Prepare for Installer
+      shell: cmd
+      run: |
+        REM Installer.iss dosyasi build/Release klasorune bakiyor olabilir.
+        REM Meson ciktisini oraya kopyalayalim garanti olsun.
+        if not exist build\Release mkdir build\Release
+        copy build\ASSDraw3.exe build\Release\ASSDraw3.exe
 
-      # ----------------------------------------------------------------
-      # DOSYALARI YÜKLE (ARTIFACTS)
-      # ----------------------------------------------------------------
-      - name: Upload Installer (Windows)
-        if: matrix.config.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ASSDraw3-Setup-Windows
-          path: Output/ASSDraw3_Setup.exe
+    - name: Generate Installer
+      shell: cmd
+      run: |
+        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 
-      - name: Upload Binary (Linux)
-        if: startsWith(matrix.config.os, 'ubuntu')
-        uses: actions/upload-artifact@v4
-        with:
-          name: ASSDraw3-Linux-Binary
-          path: build/ASSDraw3
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw3-Windows
+        path: |
+          build/ASSDraw3.exe
+          Output/ASSDraw3_Setup.exe
