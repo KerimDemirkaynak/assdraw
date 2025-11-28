@@ -36,22 +36,32 @@ jobs:
         cd /D C:\vcpkg
         git pull
         call bootstrap-vcpkg.bat
-        REM Sadece wxwidgets kuruyoruz, AGG'yi manuel indirecegiz.
+        REM Sadece wxwidgets kuruyoruz.
         vcpkg install wxwidgets --triplet x64-windows
 
     - name: Download and Extract AGG
-      shell: powershell
+      shell: cmd
       run: |
         echo "AGG 2.5 indiriliyor..."
-        Invoke-WebRequest -Uri "https://sourceforge.net/projects/agg/files/agg/2.5/agg-2.5.zip/download" -OutFile "agg.zip" -UserAgent "NativeHost"
+        REM SourceForge direk linki ve curl kullaniyoruz
+        curl -L -o agg.zip "https://downloads.sourceforge.net/project/agg/agg/2.5/agg-2.5.zip"
+        
         echo "Zipten cikariliyor..."
-        Expand-Archive agg.zip -DestinationPath . -Force
-        # Klasor adi 'agg-2.5' olacak
+        powershell -Command "Expand-Archive agg.zip -DestinationPath . -Force"
+        
+        REM Klasorun dogru ciktigini kontrol et
+        if exist agg-2.5 (
+           echo "AGG-2.5 klasoru bulundu."
+        ) else (
+           echo "HATA: agg-2.5 klasoru bulunamadi!"
+           dir
+           exit 1
+        )
 
     - name: Configure Meson
       shell: cmd
       run: |
-        REM vcpkg kutuphanelerini Meson'a tanitiyoruz
+        REM vcpkg (wxwidgets) ve yerel AGG ile Meson'u yapılandır
         meson setup build --buildtype=release --backend=ninja -Dcmake_prefix_path=C:/vcpkg/installed/x64-windows
 
     - name: Build
