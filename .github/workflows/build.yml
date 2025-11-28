@@ -33,16 +33,16 @@ jobs:
         if exist vcpkg.json del vcpkg.json
 
         echo "Kutuphaneler kuruluyor..."
-        REM ONEMLI DUZELTME: cd yerine cd /D kullanildi.
         cd /D C:\vcpkg
         git pull
         call bootstrap-vcpkg.bat
-        vcpkg install wxwidgets agg --triplet x64-windows
+        REM DUZELTME: 'agg' yerine 'unofficial-agg' kullanildi.
+        vcpkg install wxwidgets unofficial-agg --triplet x64-windows
 
     - name: Configure Meson
       shell: cmd
       run: |
-        REM vcpkg kütüphanelerini Meson'a tanitiyoruz
+        REM vcpkg kutuphanelerini Meson'a tanitiyoruz
         meson setup build --buildtype=release --backend=ninja -Dcmake_prefix_path=C:/vcpkg/installed/x64-windows
 
     - name: Build
@@ -51,8 +51,6 @@ jobs:
     - name: Prepare for Installer
       shell: cmd
       run: |
-        REM Installer.iss dosyasi build/Release klasorune bakiyor olabilir.
-        REM Meson ciktisini oraya kopyalayalim garanti olsun.
         if not exist build\Release mkdir build\Release
         copy build\ASSDraw3.exe build\Release\ASSDraw3.exe
 
