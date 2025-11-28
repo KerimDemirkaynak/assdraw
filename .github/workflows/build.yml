@@ -1,4 +1,4 @@
-name: Build ASSDraw3 (Meson)
+name: Build ASSDraw3 (Classic)
 
 on:
   push:
@@ -29,12 +29,11 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Setup Meson
-        run: |
-          pip install meson ninja
+      - name: Setup Meson & Ninja
+        run: pip install meson ninja
 
       # ----------------------------------------------------------------
-      # WINDOWS HAZIRLIKLARI
+      # WINDOWS ADIMLARI (vcpkg.json OLMADAN)
       # ----------------------------------------------------------------
       - name: Setup MSVC (Windows)
         if: matrix.config.os == 'windows-latest'
@@ -42,19 +41,23 @@ jobs:
 
       - name: Install Dependencies (Windows)
         if: matrix.config.os == 'windows-latest'
+        shell: cmd
         run: |
           choco install innosetup
-          # DÜZELTME 1: Paket isimleri silindi. vcpkg.json'dan otomatik okunacak.
-          vcpkg install --triplet x64-windows
+          REM vcpkg'yi güncelle ve kütüphaneleri manuel kur
+          cd C:\vcpkg
+          git pull
+          .\bootstrap-vcpkg.bat
+          .\vcpkg install wxwidgets agg --triplet x64-windows
 
       # ----------------------------------------------------------------
-      # LINUX HAZIRLIKLARI
+      # LINUX ADIMLARI
       # ----------------------------------------------------------------
       - name: Install Dependencies (Linux)
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
           sudo apt-get update
-          # DÜZELTME 2: libwxgtk3.0 yerine libwxgtk3.2-dev yazıldı.
+          # wxWidgets 3.2 ve AGG kuruyoruz
           sudo apt-get install -y build-essential pkg-config libagg-dev libwxgtk3.2-dev
 
       # ----------------------------------------------------------------
@@ -63,7 +66,7 @@ jobs:
       - name: Configure Meson
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            # Windows'ta vcpkg kütüphanelerini CMake prefix path ile gösteriyoruz
+            # Windows'ta vcpkg yolunu manuel gösteriyoruz
             meson setup build --buildtype=${{ matrix.config.buildtype }} --backend=ninja -Dcmake_prefix_path="C:/vcpkg/installed/x64-windows"
           else
             meson setup build --buildtype=${{ matrix.config.buildtype }}
@@ -74,7 +77,7 @@ jobs:
         run: meson compile -C build
 
       # ----------------------------------------------------------------
-      # WINDOWS INSTALLER (INNO SETUP)
+      # WINDOWS INSTALLER
       # ----------------------------------------------------------------
       - name: Generate Windows Installer
         if: matrix.config.os == 'windows-latest'
@@ -82,7 +85,7 @@ jobs:
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 
       # ----------------------------------------------------------------
-      # ARTIFACT UPLOAD (DOSYALARI YÜKLEME)
+      # DOSYALARI YÜKLE (ARTIFACTS)
       # ----------------------------------------------------------------
       - name: Upload Installer (Windows)
         if: matrix.config.os == 'windows-latest'
