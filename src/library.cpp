@@ -4,14 +4,14 @@
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
-*     * Redistributions of source code must retain the above copyright
-*       notice, this list of conditions and the following disclaimer.
-*     * Redistributions in binary form must reproduce the above copyright
-*       notice, this list of conditions and the following disclaimer in the
-*       documentation and/or other materials provided with the distribution.
-*     * Neither the name of the ASSDraw3 Team nor the
-*       names of its contributors may be used to endorse or promote products
-*       derived from this software without specific prior written permission.
+* * Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
+* * Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in the
+* documentation and/or other materials provided with the distribution.
+* * Neither the name of the ASSDraw3 Team nor the
+* names of its contributors may be used to endorse or promote products
+* derived from this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY AI-CHAN ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -43,7 +43,8 @@ ASSDrawShapePreview::ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary 
 {
 	shapelib = _shapelib;
 	if (ParseASS(initialcmds) > 0)
-		SetFitToViewPointOnNextPaint(5, 5);
+        // [DPI FIX] Kenar boşluklarını ölçekle
+		SetFitToViewPointOnNextPaint(FromDIP(5), FromDIP(5));
 	cb = new wxCheckBox(this, wxID_ANY, _T(""));
 }
 
@@ -56,7 +57,8 @@ void ASSDrawShapePreview::OnSize(wxSizeEvent& event)
 		SetSize(siz.x, siz.x);
 	else
 		SetSize(siz.y, siz.y);
-	SetFitToViewPointOnNextPaint(10, 10);
+    // [DPI FIX] Kenar boşluklarını ölçekle
+	SetFitToViewPointOnNextPaint(FromDIP(10), FromDIP(10));
 }
 
 BEGIN_EVENT_TABLE(ASSDrawShapeLibrary, wxScrolledWindow)
@@ -75,7 +77,8 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 	layout = VERTICAL;
 
 	wxToolBar *tbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_HORIZONTAL | wxNO_BORDER | wxTB_FLAT | wxTB_NODIVIDER);
-	tbar->SetMargins(0, 3);
+    // [DPI FIX] Toolbar marjinini ölçekle
+	tbar->SetMargins(0, FromDIP(3));
 	tbar->AddTool(TOOL_SAVE, _T("Save canvas"), wxBITMAP(add));
 	tbar->AddSeparator();
 	tbar->AddTool(TOOL_CHECK, _T("Select all"), wxBITMAP(check));
@@ -87,11 +90,17 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 	sizer = new wxFlexGridSizer(0, 1, 0, 0);
 	((wxFlexGridSizer*) sizer)->AddGrowableCol(0);
 	libarea->SetSizer(sizer);
-	libarea->SetScrollbars(20, 20, 50, 50);
+    
+    // [DPI FIX] Kaydırma birimini (scroll unit) DPI'a göre ayarla.
+    // 20px 4K ekranda çok yavaş kaydırmaya neden olur, bu yüzden FromDIP(20) yapıyoruz.
+    int scrollUnit = FromDIP(20);
+	libarea->SetScrollbars(scrollUnit, scrollUnit, 50, 50);
+
 	libsizer = new wxFlexGridSizer(2, 1, 0, 0);
 	libsizer->AddGrowableCol(0);
 	libsizer->AddGrowableRow(1);
-	libsizer->Add(tbar, 0, wxBOTTOM, 2);
+    // [DPI FIX] Sizer boşluğunu ölçekle
+	libsizer->Add(tbar, 0, wxBOTTOM, FromDIP(2));
 	libsizer->Add(libarea,1,wxEXPAND);
 	tbar->Realize();
 	libsizer->Layout();
@@ -115,10 +124,13 @@ ASSDrawShapePreview* ASSDrawShapeLibrary::AddShapePreview(wxString cmds, bool ad
 	prev->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(ASSDrawShapeLibrary::OnMouseLeftDClick), NULL, this);
 	prev->Connect(wxEVT_RIGHT_UP, wxMouseEventHandler(ASSDrawShapeLibrary::OnMouseRightClick), NULL, this);
 	ASSDrawFrame::wxColourToAggRGBA(m_frame->colors.library_shape, prev->rgba_shape);
+    
+    // [DPI FIX] Sizer'a eklerken kullanılan kenar boşluğunu (5) ölçekle
+    int border = FromDIP(5);
 	if (addtotop)
-		sizer->Insert(0, prev, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 5);
+		sizer->Insert(0, prev, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, border);
 	else
-		sizer->Add(prev, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 5);
+		sizer->Add(prev, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, border);
 	UpdatePreviewDisplays();
 	return prev;
 }
@@ -126,15 +138,20 @@ ASSDrawShapePreview* ASSDrawShapeLibrary::AddShapePreview(wxString cmds, bool ad
 void ASSDrawShapeLibrary::UpdatePreviewDisplays()
 {
 	wxSize siz = GetClientSize();
-	int dim = siz.x - 15;
+    // [DPI FIX] Sabit 15 pikseli ölçekle (Kaydırma çubuğu payı)
+	int dim = siz.x - FromDIP(15);
+    // [DPI FIX] Sabit 20 pikseli ölçekle (İtem min size için marjin)
+    int margin = FromDIP(20);
+
 	libarea->Show(false);
 	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
 		shprvw->SetSize(dim, dim);
-		sizer->SetItemMinSize(shprvw, dim - 20, dim - 20);
-		shprvw->SetFitToViewPointOnNextPaint(10, 10);
+		sizer->SetItemMinSize(shprvw, dim - margin, dim - margin);
+        // [DPI FIX] FitToViewPoint marjinlerini ölçekle
+		shprvw->SetFitToViewPointOnNextPaint(FromDIP(10), FromDIP(10));
 		shprvw->Refresh();
 		node = node->GetNext();
 	}
