@@ -1,0 +1,8 @@
+{
+  "name": "assdraw3",
+  "version-string": "3.0.0",
+  "dependencies": [
+    "wxwidgets",
+    "agg"
+  ]
+}
