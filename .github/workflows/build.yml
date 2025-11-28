@@ -1,4 +1,4 @@
-name: ASSDraw3 Build (Meson)
+name: Build ASSDraw3 (Meson)
 
 on:
   push:
@@ -44,8 +44,7 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           choco install innosetup
-          # DÜZELTME: vcpkg.json olduğu için paket isimlerini sildik.
-          # Sadece install komutu yeterlidir, paketleri json'dan okur.
+          # DÜZELTME 1: Paket isimleri silindi. vcpkg.json'dan otomatik okunacak.
           vcpkg install --triplet x64-windows
 
       # ----------------------------------------------------------------
@@ -55,7 +54,7 @@ jobs:
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
           sudo apt-get update
-          # DÜZELTME: libwxgtk3.0 yerine libwxgtk3.2-dev kullanıldı (Ubuntu 24.04 uyumu)
+          # DÜZELTME 2: libwxgtk3.0 yerine libwxgtk3.2-dev yazıldı.
           sudo apt-get install -y build-essential pkg-config libagg-dev libwxgtk3.2-dev
 
       # ----------------------------------------------------------------
@@ -64,7 +63,7 @@ jobs:
       - name: Configure Meson
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            # Windows'ta vcpkg ile kurulan kütüphaneleri CMake prefix path ile gösteriyoruz
+            # Windows'ta vcpkg kütüphanelerini CMake prefix path ile gösteriyoruz
             meson setup build --buildtype=${{ matrix.config.buildtype }} --backend=ninja -Dcmake_prefix_path="C:/vcpkg/installed/x64-windows"
           else
             meson setup build --buildtype=${{ matrix.config.buildtype }}
@@ -83,7 +82,7 @@ jobs:
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 
       # ----------------------------------------------------------------
-      # ARTIFACT UPLOAD
+      # ARTIFACT UPLOAD (DOSYALARI YÜKLEME)
       # ----------------------------------------------------------------
       - name: Upload Installer (Windows)
         if: matrix.config.os == 'windows-latest'
