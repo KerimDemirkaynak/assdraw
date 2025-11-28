@@ -1292,7 +1292,7 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 		rasterizer.reset();
 	    interpolator_type interpolator(bgimg.img_mtx);
 	    PixelFormat::AGGType ipixfmt(bgimg.ibuf);
-		span_gen_type spangen(ipixfmt, agg::rgba_pre(0, 0, 0), interpolator);
+		span_gen_type spangen(ipixfmt, agg::rgba_pre(0, 0, 0, 0), interpolator);
 		agg::conv_transform< agg::path_storage > bg_border(bgimg.bg_path, bgimg.path_mtx);
 		agg::conv_clip_polygon< agg::conv_transform< agg::path_storage > > bg_clip(bg_border);
 		bg_clip.clip_box(0, 0, ww, hh);
