@@ -1,4 +1,4 @@
-name: Build ASSDraw3 Multi-Platform
+name: ASSDraw3 Build (Meson)
 
 on:
   push:
@@ -7,78 +7,95 @@ on:
     branches: [ master, main ]
 
 jobs:
-  # ------------------------------------------------------------------
-  # WINDOWS BUILD (Inno Setup Dahil)
-  # ------------------------------------------------------------------
-  build-windows:
-    runs-on: windows-latest
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
     
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup vcpkg (Windows)
-      uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgJsonGlob: 'vcpkg.json'
-
-    - name: Setup CMake
-      uses: lukka/get-cmake@latest
-    
-    - name: Configure CMake
-      run: |
-        cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
-
-    - name: Build
-      run: |
-        cmake --build build --config Release
-
-    - name: Build Installer (Inno Setup)
-      uses: Minionguyjosh/innosetup-action@v1.6.0
-      with:
-        path: installer.iss
-
-    - name: Upload Windows Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ASSDraw3-Windows
-        path: |
-          build/Release/ASSDraw3.exe
-          Output/ASSDraw3_Setup.exe
-
-  # ------------------------------------------------------------------
-  # LINUX BUILD (Ubuntu)
-  # ------------------------------------------------------------------
-  build-linux:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: Windows MSVC Release
+            os: windows-latest
+            buildtype: release
+          - name: Ubuntu Release
+            os: ubuntu-latest
+            buildtype: release
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # Linux'ta vcpkg'nin wxWidgets'i derleyebilmesi için sistem bağımlılıkları gereklidir
-    - name: Install System Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential pkg-config libgtk-3-dev libsecret-1-dev libgcrypt20-dev libsystemd-dev freeglut3-dev libnotify-dev libsdl2-dev
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-    - name: Setup vcpkg (Linux)
-      uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgJsonGlob: 'vcpkg.json'
+      - name: Setup Meson
+        run: |
+          pip install meson ninja
 
-    - name: Setup CMake
-      uses: lukka/get-cmake@latest
+      # ----------------------------------------------------------------
+      # WINDOWS HAZIRLIKLARI
+      # ----------------------------------------------------------------
+      - name: Setup MSVC (Windows)
+        if: matrix.config.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Configure CMake
-      run: |
-        cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+      - name: Install Dependencies (Windows)
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          choco install innosetup
+          # wxWidgets ve AGG'yi vcpkg ile kurmak Meson için de en kolayıdır
+          # Ancak Aegisub manuel kurulum yapıyor. Biz vcpkg kullanalım:
+          vcpkg install wxwidgets agg --triplet x64-windows
 
-    - name: Build
-      run: |
-        cmake --build build --config Release
+      # ----------------------------------------------------------------
+      # LINUX HAZIRLIKLARI
+      # ----------------------------------------------------------------
+      - name: Install Dependencies (Linux)
+        if: startsWith(matrix.config.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libagg-dev libwxgtk3.0-gtk3-dev
 
-    # Linux çıktısı (uzantısız binary dosyası)
-    - name: Upload Linux Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ASSDraw3-Linux
-        path: build/ASSDraw3
+      # ----------------------------------------------------------------
+      # DERLEME VE PAKETLEME
+      # ----------------------------------------------------------------
+      - name: Configure Meson
+        # Windows'ta vcpkg toolchain dosyasını göstermemiz gerekebilir
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            meson setup build --buildtype=${{ matrix.config.buildtype }} --backend=ninja -Dcmake_prefix_path="C:/vcpkg/installed/x64-windows"
+          else
+            meson setup build --buildtype=${{ matrix.config.buildtype }}
+          fi
+        shell: bash
+
+      - name: Build
+        run: meson compile -C build
+
+      # ----------------------------------------------------------------
+      # WINDOWS INSTALLER (INNO SETUP)
+      # ----------------------------------------------------------------
+      - name: Generate Windows Installer
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          # build klasöründeki exe'yi Inno Setup scriptine uygun yere kopyala veya scripti güncelle
+          # Basitlik için doğrudan ISCC çağırıyoruz, scriptin build/ASSDraw3.exe'yi bulması lazım.
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      # ----------------------------------------------------------------
+      # ARTIFACT UPLOAD
+      # ----------------------------------------------------------------
+      - name: Upload Installer (Windows)
+        if: matrix.config.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASSDraw3-Setup-Windows
+          path: Output/ASSDraw3_Setup.exe
+
+      - name: Upload Binary (Linux)
+        if: startsWith(matrix.config.os, 'ubuntu')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASSDraw3-Linux-Binary
+          path: build/ASSDraw3
