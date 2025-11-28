@@ -2,14 +2,32 @@ project('ASSDraw3', 'cpp',
   version : '3.0.0',
   default_options : ['warning_level=1', 'cpp_std=c++14'])
 
-# wxWidgets bağımlılığı (vcpkg'den gelir)
-wx_dep = dependency('wxwidgets', modules : ['core', 'base', 'net', 'propgrid'], required : true)
+# -------------------------------------------------------------
+# 1. BAĞIMLILIKLAR (wxWidgets)
+# -------------------------------------------------------------
 
-# AGG Manuel Kurulum (Proje kök dizinindeki agg-2.5 klasöründen)
-# AGG'nin header dosyalarını dahil et
+# Windows'ta vcpkg kullandıgımız icin 'cmake' yöntemini zorluyoruz.
+# Linux'ta ise standart 'config-tool' (wx-config) kullanilabilir.
+if host_machine.system() == 'windows'
+    wx_dep = dependency('wxwidgets', 
+        modules : ['core', 'base', 'net', 'propgrid'], 
+        method : 'cmake', 
+        required : true)
+else
+    wx_dep = dependency('wxwidgets', 
+        modules : ['core', 'base', 'net', 'propgrid'], 
+        required : true)
+endif
+
+# -------------------------------------------------------------
+# 2. AGG KÜTÜPHANESİ (Manuel Kaynak Koddan)
+# -------------------------------------------------------------
+# vcpkg'de agg olmadigi icin, build.yml ile indirdigimiz 
+# yerel 'agg-2.5' klasorunu kullaniyoruz.
+
 agg_inc = include_directories('agg-2.5/include')
 
-# AGG'nin gerekli kaynak kodlarını listele
+# Derlenmesi gereken AGG dosyalari
 agg_src = files(
   'agg-2.5/src/agg_arc.cpp',
   'agg-2.5/src/agg_arrowhead.cpp',
@@ -34,7 +52,9 @@ agg_src = files(
   'agg-2.5/src/agg_vpgen_segmentator.cpp'
 )
 
-# Projenin kendi kaynak dosyaları
+# -------------------------------------------------------------
+# 3. PROJE KAYNAK DOSYALARI
+# -------------------------------------------------------------
 sources = [
   'src/assdraw.cpp',
   'src/assdraw_settings.cpp',
@@ -50,15 +70,19 @@ sources = [
   'src/wxAGG/AGGWindow.cpp',
 ]
 
-# Windows Kaynak Dosyası (.rc)
+# Windows için ikon ve manifest dosyasi (.rc)
 if host_machine.system() == 'windows'
   windows = import('windows')
   sources += windows.compile_resources('src/assdraw.rc')
 endif
 
-# Uygulamayı oluştur (AGG kaynaklarını ve include yollarını ekleyerek)
+# -------------------------------------------------------------
+# 4. ÇIKTI (Executable)
+# -------------------------------------------------------------
 executable('ASSDraw3',
   sources + agg_src,
   include_directories : [agg_inc],
   dependencies : [wx_dep],
-  install : true)
+  install : true,
+  win_subsystem : 'windows') 
+  # win_subsystem: konsol penceresi acilmasini engeller
