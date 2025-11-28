@@ -32,36 +32,43 @@ jobs:
         echo "vcpkg.json varsa siliniyor..."
         if exist vcpkg.json del vcpkg.json
 
-        echo "wxWidgets vcpkg ile kuruluyor..."
+        echo "wxWidgets vcpkg ile kuruluyor (Cache kullanilabilir)..."
         cd /D C:\vcpkg
         git pull
         call bootstrap-vcpkg.bat
-        REM Sadece wxwidgets kuruyoruz.
         vcpkg install wxwidgets --triplet x64-windows
 
-    - name: Download and Extract AGG
+    # DÜZELTME: SourceForge yerine GitHub Mirror kullanıyoruz.
+    - name: Download and Extract AGG (GitHub Mirror)
       shell: cmd
       run: |
-        echo "AGG 2.5 indiriliyor..."
-        REM SourceForge direk linki ve curl kullaniyoruz
-        curl -L -o agg.zip "https://downloads.sourceforge.net/project/agg/agg/2.5/agg-2.5.zip"
+        echo "AGG 2.5 GitHub'dan indiriliyor..."
+        curl -L -o agg.zip https://github.com/blackball/agg-2.5/archive/master.zip
         
         echo "Zipten cikariliyor..."
         powershell -Command "Expand-Archive agg.zip -DestinationPath . -Force"
         
-        REM Klasorun dogru ciktigini kontrol et
+        echo "Klasor adi duzeltiliyor..."
+        REM GitHub zipi 'agg-2.5-master' olarak cikarir, bunu 'agg-2.5' yapalim
+        if exist agg-2.5-master (
+            move agg-2.5-master agg-2.5
+        ) else (
+            echo "HATA: Zip icerigi beklendigi gibi degil!"
+            dir
+            exit 1
+        )
+
+        REM Kontrol
         if exist agg-2.5 (
-           echo "AGG-2.5 klasoru bulundu."
+           echo "AGG-2.5 klasoru basariyla hazirlandi."
         ) else (
            echo "HATA: agg-2.5 klasoru bulunamadi!"
-           dir
            exit 1
         )
 
     - name: Configure Meson
       shell: cmd
       run: |
-        REM vcpkg (wxwidgets) ve yerel AGG ile Meson'u yapılandır
         meson setup build --buildtype=release --backend=ninja -Dcmake_prefix_path=C:/vcpkg/installed/x64-windows
 
     - name: Build
