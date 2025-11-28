@@ -105,7 +105,7 @@ bool ASSDrawApp::OnInit()
 {
 	SetAppName(TITLE);
     // create the main application window
-    ASSDrawFrame * assdrawframe = new ASSDrawFrame( this, TITLE, wxDefaultPosition, wxSize(640, 480) );
+    ASSDrawFrame * assdrawframe = new ASSDrawFrame( this, TITLE, wxDefaultPosition, wxDefaultSize );
 	SetTopWindow(assdrawframe);
     return TRUE;
 }
