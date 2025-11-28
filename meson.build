@@ -5,7 +5,7 @@ project('ASSDraw3', 'cpp',
 # wxWidgets bağımlılığı (vcpkg'den gelir)
 wx_dep = dependency('wxwidgets', modules : ['core', 'base', 'net', 'propgrid'], required : true)
 
-# AGG Manuel Kurulum (agg-2.5 klasöründen)
+# AGG Manuel Kurulum (Proje kök dizinindeki agg-2.5 klasöründen)
 # AGG'nin header dosyalarını dahil et
 agg_inc = include_directories('agg-2.5/include')
 
@@ -48,7 +48,6 @@ sources = [
   'src/library.cpp',
   'src/settings.cpp',
   'src/wxAGG/AGGWindow.cpp',
-  # Gerekirse diğer dosyaları buraya ekleyin
 ]
 
 # Windows Kaynak Dosyası (.rc)
