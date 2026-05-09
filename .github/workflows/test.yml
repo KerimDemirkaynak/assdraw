@@ -24,29 +24,34 @@ jobs:
           libtool \
           pkg-config \
           libagg-dev \
-          libwxgtk3.0-gtk3-dev \
-          dos2unix
+          libwxgtk3.0-gtk3-dev
 
-    - name: Kaynak Kod Hatalarını Otomatik Yamala (Auto-Patch)
+    - name: Kaynak Kod Hatalarını Otomatik Yamala (Python)
       run: |
-        # Satır sonu karakteri (CRLF -> LF) uyuşmazlıklarını çözer
-        dos2unix src/assdraw.cpp src/canvas.cpp
-        
-        # 1. HATA ÇÖZÜMÜ: assdraw.cpp içindeki wxWidgets 3.0 uyumsuz FromDIP fonksiyonunu kaldırır
-        sed -i 's/FromDIP(wxSize(640, 480))/wxSize(640, 480)/g' src/assdraw.cpp
-        
-        # 2. HATA ÇÖZÜMÜ: canvas.cpp içindeki eksik süslü parantezi otomatik ekler
-        sed -i 's/if (pointedAt_point->type == MP && pointedAt_point->cmd_next)/if (pointedAt_point->type == MP \&\& pointedAt_point->cmd_next) {/g' src/canvas.cpp
+        python3 -c "
+        # 1. assdraw.cpp yaması (wxWidgets sürüm hatası)
+        with open('src/assdraw.cpp', 'r', encoding='utf-8', errors='ignore') as f:
+            data = f.read()
+        data = data.replace('FromDIP(wxSize(640, 480))', 'wxSize(640, 480)')
+        with open('src/assdraw.cpp', 'w', encoding='utf-8') as f:
+            f.write(data)
+            
+        # 2. canvas.cpp yaması (Geliştiricinin unuttuğu eksik parantez)
+        with open('src/canvas.cpp', 'r', encoding='utf-8', errors='ignore') as f:
+            data = f.read()
+        target = 'if (pointedAt_point->type == MP && pointedAt_point->cmd_next)'
+        data = data.replace(target, target + ' {')
+        with open('src/canvas.cpp', 'w', encoding='utf-8') as f:
+            f.write(data)
+        "
 
     - name: Autotools'u Hazırla
       run: |
-        # autogen.sh yerine modern ve güvenilir yapılandırmayı kullan
         mkdir -p m4
         autoreconf -vfi -I m4
 
     - name: Configure (C++98 ve Hata Yoksayma Zorlaması)
       run: |
-        # Modern GCC'nin eski kodda patlamasını engellemek için eski standartları zorluyoruz
         ./configure \
           CXXFLAGS="-std=gnu++98 -Wno-narrowing -Wno-deprecated-declarations -g -O2" \
           CFLAGS="-g -O2"
