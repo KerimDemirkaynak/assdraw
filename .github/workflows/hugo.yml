@@ -5,12 +5,12 @@ on: [push, pull_request]
 jobs:
   build-linux-legacy:
     runs-on: ubuntu-latest
-    # İŞTE SİHİRLİ KISIM: 2018 yılından kalma eski bir Ubuntu konteyneri kullanıyoruz
+    # 2018 yılından kalma eski bir Ubuntu konteyneri kullanıyoruz
     container: ubuntu:18.04 
 
     steps:
     - name: Repo'yu Klonla
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # <-- BURASI v4 OLARAK GÜNCELLENDİ
 
     - name: Bağımlılıkları Kur
       run: |
@@ -24,7 +24,7 @@ jobs:
         make -j$(nproc)
 
     - name: Dosyayı Çıkar
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # <-- BURASI v4 OLARAK GÜNCELLENDİ
       with:
         name: assdraw-linux
         path: src/assdraw
