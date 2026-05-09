@@ -1,0 +1,55 @@
+name: ASSDraw3 Build (Legacy C++ Support)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04 # 20.04 yavaş yavaş kalkıyor, 22.04'te eski standartları zorlayacağız
+
+    steps:
+    - name: Repo'yu Klonla
+      uses: actions/checkout@v4
+
+    - name: Gerekli Bağımlılıkları Kur
+      run: |
+        sudo apt-get update
+        # autotools, pkg-config, agg 2.5 ve wxWidgets 3.x paketlerini kuruyoruz
+        sudo apt-get install -y \
+          build-essential \
+          autoconf \
+          automake \
+          libtool \
+          pkg-config \
+          libagg-dev \
+          libwxgtk3.0-gtk3-dev
+
+    - name: Autotools'u Hazırla (autogen.sh yerine)
+      run: |
+        # Eski ve sorunlu autogen.sh'yi atlayıp doğrudan modern autoreconf kullanıyoruz
+        # m4 klasöründeki wxwin.m4 makrolarını da dahil etmesi için -I m4 ekliyoruz
+        mkdir -p m4
+        autoreconf -vfi -I m4
+
+    - name: Configure (C++98 Zorlaması ile)
+      run: |
+        # EN KRİTİK ADIM: Modern GCC'nin eski kodda hata vermesini engellemek için
+        # -std=gnu++98 ile eski C++ standardını zorluyoruz.
+        # -Wno-error ve bazı uyarı kapatıcılar ekleyerek derlemenin durmasını önlüyoruz.
+        ./configure \
+          CXXFLAGS="-std=gnu++98 -Wno-narrowing -Wno-deprecated-declarations -g -O2" \
+          CFLAGS="-g -O2"
+
+    - name: Build (Derleme)
+      run: |
+        # Makefile.am dosyalarından başarıyla Makefile üretildiyse derleme başlar
+        make -j$(nproc)
+
+    - name: Artifact Olarak Yükle (İsteğe Bağlı)
+      uses: actions/upload-artifact@v4
+      with:
+        name: assdraw-linux-executable
+        path: src/assdraw
