@@ -1,0 +1,30 @@
+name: ASSDraw3 Legacy Build
+
+on: [push, pull_request]
+
+jobs:
+  build-linux-legacy:
+    runs-on: ubuntu-latest
+    # İŞTE SİHİRLİ KISIM: 2018 yılından kalma eski bir Ubuntu konteyneri kullanıyoruz
+    container: ubuntu:18.04 
+
+    steps:
+    - name: Repo'yu Klonla
+      uses: actions/checkout@v3
+
+    - name: Bağımlılıkları Kur
+      run: |
+        apt-get update
+        apt-get install -y build-essential autoconf automake libtool pkg-config libagg-dev libwxgtk3.0-dev
+
+    - name: Derle
+      run: |
+        autoreconf -vfi -I m4
+        ./configure CXXFLAGS="-g -O2" CFLAGS="-g -O2"
+        make -j$(nproc)
+
+    - name: Dosyayı Çıkar
+      uses: actions/upload-artifact@v3
+      with:
+        name: assdraw-linux
+        path: src/assdraw
