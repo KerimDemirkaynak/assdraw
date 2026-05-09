@@ -1,0 +1,56 @@
+name: ASSDraw3 CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    name: Ubuntu Release
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gerekli Bağımlılıkları Kur
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential autoconf automake libtool pkg-config libagg-dev libwxgtk3.0-gtk3-dev
+
+      - name: Eski Kodları Hızla Yamala (Sıfır Hata Payı)
+        run: |
+          python3 -c "
+          # 1. assdraw.cpp yaması (FromDIP sürüm uyumsuzluğunu çözer)
+          with open('src/assdraw.cpp', 'r', encoding='latin-1') as f:
+              data = f.read().replace('FromDIP(wxSize(640, 480))', 'wxSize(640, 480)')
+          with open('src/assdraw.cpp', 'w', encoding='latin-1') as f:
+              f.write(data)
+
+          # 2. canvas.cpp yaması (Boşluk/Satır sorunlarına takılmadan direkt eksik parantezi ekler)
+          with open('src/canvas.cpp', 'r', encoding='latin-1') as f:
+              lines = f.readlines()
+          for i in range(len(lines)):
+              if 'if (pointedAt_point->type == MP && pointedAt_point->cmd_next)' in lines[i]:
+                  lines[i] = lines[i].replace(')', ') {')
+          with open('src/canvas.cpp', 'w', encoding='latin-1') as f:
+              f.writelines(lines)
+          "
+
+      - name: Configure (Yapılandırma)
+        run: |
+          mkdir -p m4
+          autoreconf -vfi -I m4
+          ./configure CXXFLAGS="-std=gnu++98 -Wno-narrowing -Wno-deprecated-declarations -g -O2" CFLAGS="-g -O2"
+
+      - name: Build (Derlemeyi Başlat)
+        run: make -j$(nproc)
+
+      - name: Çalıştırılabilir Dosyayı Çıkar (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: assdraw-linux
+          path: src/assdraw
+          if-no-files-found: error
