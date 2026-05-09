@@ -1,4 +1,4 @@
-name: ASSDraw3 Build (Legacy C++ Support)
+name: ASSDraw3 Perfect Build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-22.04 # 20.04 yavaş yavaş kalkıyor, 22.04'te eski standartları zorlayacağız
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Repo'yu Klonla
@@ -17,7 +17,6 @@ jobs:
     - name: Gerekli Bağımlılıkları Kur
       run: |
         sudo apt-get update
-        # autotools, pkg-config, agg 2.5 ve wxWidgets 3.x paketlerini kuruyoruz
         sudo apt-get install -y \
           build-essential \
           autoconf \
@@ -25,30 +24,38 @@ jobs:
           libtool \
           pkg-config \
           libagg-dev \
-          libwxgtk3.0-gtk3-dev
+          libwxgtk3.0-gtk3-dev \
+          dos2unix
 
-    - name: Autotools'u Hazırla (autogen.sh yerine)
+    - name: Kaynak Kod Hatalarını Otomatik Yamala (Auto-Patch)
       run: |
-        # Eski ve sorunlu autogen.sh'yi atlayıp doğrudan modern autoreconf kullanıyoruz
-        # m4 klasöründeki wxwin.m4 makrolarını da dahil etmesi için -I m4 ekliyoruz
+        # Satır sonu karakteri (CRLF -> LF) uyuşmazlıklarını çözer
+        dos2unix src/assdraw.cpp src/canvas.cpp
+        
+        # 1. HATA ÇÖZÜMÜ: assdraw.cpp içindeki wxWidgets 3.0 uyumsuz FromDIP fonksiyonunu kaldırır
+        sed -i 's/FromDIP(wxSize(640, 480))/wxSize(640, 480)/g' src/assdraw.cpp
+        
+        # 2. HATA ÇÖZÜMÜ: canvas.cpp içindeki eksik süslü parantezi otomatik ekler
+        sed -i 's/if (pointedAt_point->type == MP && pointedAt_point->cmd_next)/if (pointedAt_point->type == MP \&\& pointedAt_point->cmd_next) {/g' src/canvas.cpp
+
+    - name: Autotools'u Hazırla
+      run: |
+        # autogen.sh yerine modern ve güvenilir yapılandırmayı kullan
         mkdir -p m4
         autoreconf -vfi -I m4
 
-    - name: Configure (C++98 Zorlaması ile)
+    - name: Configure (C++98 ve Hata Yoksayma Zorlaması)
       run: |
-        # EN KRİTİK ADIM: Modern GCC'nin eski kodda hata vermesini engellemek için
-        # -std=gnu++98 ile eski C++ standardını zorluyoruz.
-        # -Wno-error ve bazı uyarı kapatıcılar ekleyerek derlemenin durmasını önlüyoruz.
+        # Modern GCC'nin eski kodda patlamasını engellemek için eski standartları zorluyoruz
         ./configure \
           CXXFLAGS="-std=gnu++98 -Wno-narrowing -Wno-deprecated-declarations -g -O2" \
           CFLAGS="-g -O2"
 
-    - name: Build (Derleme)
+    - name: Derlemeyi Başlat (Make)
       run: |
-        # Makefile.am dosyalarından başarıyla Makefile üretildiyse derleme başlar
         make -j$(nproc)
 
-    - name: Artifact Olarak Yükle (İsteğe Bağlı)
+    - name: Derlenen Çalıştırılabilir Dosyayı Yükle (Artifact)
       uses: actions/upload-artifact@v4
       with:
         name: assdraw-linux-executable
