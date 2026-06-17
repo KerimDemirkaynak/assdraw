@@ -78,7 +78,7 @@ jobs:
     - name: Install System Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgtk-3-dev libopengl-dev libglx-dev libegl-dev pkg-config ninja-build
+        sudo apt-get install -y libgtk-3-dev libopengl-dev libglx-dev libegl-dev pkg-config ninja-build build-essential autoconf autoconf-archive automake libtool gperf
 
     - name: Cache vcpkg archives
       uses: actions/cache@v4
