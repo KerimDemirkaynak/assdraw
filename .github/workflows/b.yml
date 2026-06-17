@@ -13,28 +13,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Kodu GitHub sanal makinesine çeker
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. Gerekli derleyici ve kütüphaneleri (wxWidgets ve AGG) kurar
     - name: Install Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential autoconf automake libwxgtk3.2-dev libagg-dev pkg-config
 
-    # 3. Koddaki hataları 'sed' ile otomatik olarak yamalar (Düzenler)
     - name: Patch Source Code (Auto Fix)
       run: |
-        echo "C++ Hataları yamalanıyor..."
+        echo "C++ Hataları güvenli bir şekilde yamalanıyor..."
         
-        # Hata 1: AGG kütüphanesi 3 parametreli rgba_pre fonksiyonunu 4 parametreliye çevirir (1.0 alfa ekler)
+        # 1. Hata: AGG kütüphanesi sürüm farkı yaması (sed burada güvenli)
         sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0.0, 0.0, 0.0, 1.0)/g' src/canvas.cpp
         
-        # Hata 2: 1870. satırdaki 'else' kelimesinin hemen bir üst satırına eksik olan '}' parantezini ekler
-        sed -i '1870i \t\t\t\t\t}' src/canvas.cpp
+        # 2. Hata: Eksik parantez yaması (sed yerine Python kullanarak satırları %100 garantili değiştiriyoruz)
+        python3 -c '
+        with open("src/canvas.cpp", "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
 
-    # 4. Kodu yapılandırır ve derler
+        replacement = [
+            "                        }",
+            "                        else",
+            "                        {",
+            "                                warpto = pointedAt_point->cmd_main->m_point;",
+            "                        }",
+            "                        if (warpto == NULL)",
+            "                        {",
+            "                                wxPoint point = warpto->ToWxPoint();",
+            "                                warpto = NULL;",
+            "                        }",
+            "                        break;",
+            "                default:",
+            "                        break;",
+            "        }"
+        ]
+
+        # 1870. satırdan 1892. satıra kadar olan kısmı temiz yapıyla değiştir
+        lines[1869:1892] = replacement
+
+        with open("src/canvas.cpp", "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+        '
+
     - name: Build ASSDraw
       run: |
         chmod +x autogen.sh
@@ -42,7 +64,6 @@ jobs:
         ./configure CXXFLAGS="-std=c++11"
         make
 
-    # 5. Derlenen dosyayı indirmen için GitHub'a yükler
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
