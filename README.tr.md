@@ -4,9 +4,19 @@
 [![GitHub Sürümü](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Sürüm)](https://github.com/KerimDemirkaynak/assdraw/releases)
 [![Web Sitesi](https://img.shields.io/badge/Website-kerimdemirkaynak.github.io/assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
 
+**ASSDraw3**, ASS (Advanced SubStation Alpha) altyazı dosyalarında kullanılmak üzere vektör şekiller tasarlamaya yarayan bir araçtır.
+
 [**English**](README.md) | [**Türkçe**](README.tr.md)
 
-**ASSDraw3**, ASS (Advanced SubStation Alpha) altyazı dosyalarında kullanılmak üzere vektör şekiller tasarlamaya yarayan bir araçtır.
+---
+
+## Otomatik Derlemeler (CI/CD)
+
+Bu depo, otomatik derleme ve paketleme işlemleri için **GitHub Actions** kullanmaktadır.
+
+* **Tetikleyiciler**: Derlemeler, `master` veya `main` dallarına yapılan push ve pull request (çekme isteği) işlemlerinde otomatik olarak çalışır. Ayrıca Actions sekmesinden manuel olarak da tetikleyebilirsiniz.
+* **Süreç**: İş akışı repoyu klonlar (AGG alt modülü için otomatik bir yedekleme adımı içerir), `vcpkg` önbelleklerini geri yükler, PowerShell derleme betiğini kullanarak uygulamayı derler ve Inno Setup ile çalıştırılabilir bir kurulum dosyası (installer) oluşturur.
+* **Çıktılar (Artifacts)**: Derlenen Windows kurulum dosyası (`ASSDraw3_Setup.exe`), doğrudan Actions çalışma sayfasından kolayca indirebileceğiniz bir artifact olarak yüklenir.
 
 ---
 
@@ -72,6 +82,15 @@ CMake yalnızca `vendor/agg` submodule’ündeki sabitlenmiş sürümü kullanı
 - Commit: `c4f36b4432142f22c0bf82c6fbdb41567a236be2`
 
 Sadece `CMakeLists.txt` dosyasında belirtilen kaynak dosyalar derlenmektedir.
+
+---
+
+## Katkıda Bulunanlar
+
+Bu projenin hayata geçmesine yardımcı olan katkıda bulunanlara özel teşekkürler:
+
+| [<img src="https://avatars.githubusercontent.com/u/408944?v=4" width="80" style="border-radius:50%;"/><br><sub><b>Thomas Goyne</b></sub>](https://github.com/tgoyne) | [<img src="https://avatars.githubusercontent.com/u/59959583?v=4" width="80" style="border-radius:50%;"/><br><sub><b>MIRIMIRIM</b></sub>](https://github.com/MIRIMIRIM) | [<img src="https://avatars.githubusercontent.com/u/6241180?v=4" width="80" style="border-radius:50%;"/><br><sub><b>biki-desu</b></sub>](https://github.com/biki-desu) |
+| :---: | :---: | :---: |
 
 ---
 
