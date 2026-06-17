@@ -1,0 +1,41 @@
+name: Build ASSDraw
+
+# Bu action, koda her push yapıldığında veya manuel olarak tetiklendiğinde çalışır.
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch: # Actions sekmesinden manuel tetikleme butonu ekler
+
+jobs:
+  build-linux:
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Kodu GitHub sanal makinesine çeker
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Gerekli derleyici ve kütüphaneleri (wxWidgets) kurar
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential autoconf automake libwxgtk3.2-dev
+
+    # 3. Kodu yapılandırır ve derler
+    - name: Build ASSDraw
+      run: |
+        chmod +x autogen.sh
+        ./autogen.sh
+        # Modern derleyicilerde eski kodun hata vermemesi için C++11 standardını zorluyoruz
+        ./configure CXXFLAGS="-std=c++11"
+        make
+
+    # 4. Derlenen dosyayı indirmen için GitHub'a yükler (Artifact)
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw-Linux
+        path: src/assdraw  # Derleme sonrası oluşan çalıştırılabilir dosyanın yolu
