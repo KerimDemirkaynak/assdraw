@@ -10,7 +10,7 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
-set(ASSDRAW_AGG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/agg/agg-src")
+set(ASSDRAW_AGG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/agg")
 if(NOT EXISTS "${ASSDRAW_AGG_ROOT}/include/agg_basics.h")
     message(
         FATAL_ERROR
