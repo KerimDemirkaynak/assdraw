@@ -23,76 +23,77 @@ jobs:
             libagg-dev libwxgtk3.2-dev libgtk-3-dev \
             libgl1-mesa-dev libglu1-mesa-dev
 
-      - name: Apply patches for modern build
+      - name: Patch configure.in for modern wxWidgets
         run: |
-          echo "=== Patching configure.in ==="
+          # AC_PROG_LIBTOOL is deprecated, use LT_INIT
           sed -i 's/AC_PROG_LIBTOOL/LT_INIT/' configure.in
+          
+          # Remove unsupported wx libraries (stc, propgrid)
           sed -i 's/\[std,gl,stc,aui, propgrid\]/[std,gl,aui]/' configure.in
+          
+          # Update minimum wxWidgets version requirement
           sed -i 's/AM_PATH_WXCONFIG(2.8.1/AM_PATH_WXCONFIG(3.0.0/' configure.in
 
-          echo "=== Patching canvas.cpp - AGG rgba_pre fix ==="
-          sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0, 0, 0, 1.0)/' src/canvas.cpp
+      - name: Fix AGG rgba_pre function signature
+        run: |
+          # AGG's rgba_pre now requires 4 parameters instead of 3
+          sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0, 0, 0, 1.0)/g' src/canvas.cpp
 
-          echo "=== Patching canvas.cpp - WXK_TAB bug fix ==="
-          # Eski hatalı bloğu silip doğru haliyle değiştiriyoruz
-          cat > /tmp/tab_fix.patch << 'EOF'
---- src/canvas.cpp
-+++ src/canvas.cpp
-@@ -1861,23 +1861,27 @@
-                 }
-                 else
-                 {
--                    Point *warpto = NULL;
--                    if (pointedAt_point->type == MP && pointedAt_point->cmd_next)
--                        if (pointedAt_point->cmd_next->controlpoints.size() > 0)
--                            warpto = pointedAt_point->cmd_next->controlpoints.front();
--                        else
--                            warpto = pointedAt_point->cmd_next->m_point;
--                    }
--                    else
-+                    Point *warpto = NULL;
-+                    if (pointedAt_point->type == MP && pointedAt_point->cmd_next)
-                     {
--                        PointList::iterator it = pointedAt_point->cmd_main->controlpoints.begin();
--                        while (*it != pointedAt_point) it++;
--                        it++;
--                        if (it == pointedAt_point->cmd_main->controlpoints.end())
--                            warpto = pointedAt_point->cmd_main->m_point;
--                        else
--                            warpto = *it;
-+                        if (pointedAt_point->cmd_next->controlpoints.size() > 0)
-+                            warpto = pointedAt_point->cmd_next->controlpoints.front();
-+                        else
-+                            warpto = pointedAt_point->cmd_next->m_point;
-                     }
-+                    else
-+                    {
-+                        PointList::iterator it = pointedAt_point->cmd_main->controlpoints.begin();
-+                        while (*it != pointedAt_point) it++;
-+                        it++;
-+                        if (it == pointedAt_point->cmd_main->controlpoints.end())
-+                            warpto = pointedAt_point->cmd_main->m_point;
-+                        else
-+                            warpto = *it;
-+                    }
-                     if (warpto == NULL)
-                         warpto = cmds.front()->m_point;
-                     wxPoint point = warpto->ToWxPoint();
-                     WarpPointer(point.x, point.y);
-                 }
-             }
-EOF
-          patch -p0 < /tmp/tab_fix.patch
+      - name: Fix WXK_TAB keyboard event handler braces
+        run: |
+          # The issue is mismatched braces in the else block around line 1870
+          # We need to add a closing brace before the else that follows the inner if-else block
+          python3 << 'PYTHON_FIX'
+import re
 
-      - name: Build
+with open('src/canvas.cpp', 'r') as f:
+    content = f.read()
+
+# Find and fix the WXK_TAB case block with proper brace nesting
+# The pattern: if (pointedAt_point->type == MP && pointedAt_point->cmd_next) 
+#              then immediate if-else without braces around outer if
+# needs fixing to have braces around the condition block
+
+pattern = r'''if \(pointedAt_point->type == MP && pointedAt_point->cmd_next\)
+\s+if \(pointedAt_point->cmd_next->controlpoints\.size\(\) > 0\)'''
+
+if re.search(pattern, content):
+    # Add opening brace after the first if
+    content = re.sub(
+        r'(if \(pointedAt_point->type == MP && pointedAt_point->cmd_next\))\n(\s+if \(pointedAt_point->cmd_next->controlpoints)',
+        r'\1\n                    {\n\2',
+        content
+    )
+    
+    # Find the closing brace that needs to be fixed
+    # After "warpto = pointedAt_point->cmd_next->m_point;" add closing brace
+    content = re.sub(
+        r'(warpto = pointedAt_point->cmd_next->m_point;)\n(\s+}\n\s+else\n\s+{)',
+        r'\1\n                    }\n                    else\n                    {',
+        content
+    )
+
+with open('src/canvas.cpp', 'w') as f:
+    f.write(content)
+
+print("Fixed WXK_TAB event handler braces")
+PYTHON_FIX
+
+      - name: Generate build configuration
         run: |
           chmod +x autogen.sh
           ./autogen.sh
-          
+
+      - name: Configure build
+        run: |
           ./configure \
-            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result -O2 -fpermissive" \
-            --disable-debug
-          
+            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result -Wno-error=class-memaccess -fpermissive -O2" \
+            CFLAGS="-Wno-error=class-memaccess -O2" \
+            --disable-debug \
+            --enable-shared=no
+
+      - name: Build ASSDraw
+        run: |
           make -j$(nproc)
 
       - name: Upload Linux Binary
