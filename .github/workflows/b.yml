@@ -23,74 +23,66 @@ jobs:
             libagg-dev libwxgtk3.2-dev libgtk-3-dev \
             libgl1-mesa-dev libglu1-mesa-dev
 
-      - name: Auto Patch for Modern Systems
+      - name: Apply patches for modern build
         run: |
           echo "=== Patching configure.in ==="
           sed -i 's/AC_PROG_LIBTOOL/LT_INIT/' configure.in
           sed -i 's/\[std,gl,stc,aui, propgrid\]/[std,gl,aui]/' configure.in
           sed -i 's/AM_PATH_WXCONFIG(2.8.1/AM_PATH_WXCONFIG(3.0.0/' configure.in
-          
-          echo "=== Patching canvas.cpp (AGG rgba_pre + TAB key bug) ==="
-          # AGG rgba_pre hatası
+
+          echo "=== Patching canvas.cpp - AGG rgba_pre fix ==="
           sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0, 0, 0, 1.0)/' src/canvas.cpp
-          
-          # TAB tuşu parantez ve scope hatası düzeltmesi
-          sed -i '/case WXK_TAB:/,/break;/c\ 
-case WXK_TAB:\
-    if (mousedownAt_point == NULL && !IsTransformMode() && cmds.size() > 0)\
-    {\
-        if (pointedAt_point == NULL)\
-        {\
-            Point *nearest = NULL;\
-            double dist = 1e9;\
-            for (DrawCmdList::iterator it = cmds.begin(); it != cmds.end(); ++it)\
-            {\
-                PointList::iterator it2 = (*it)->controlpoints.begin();\
-                while (it2 != (*it)->controlpoints.end())\
-                {\
-                    double distance = Distance((*it2)->ToWxPoint(), wxGetMousePosition() - m_frame->GetPosition() - wxPoint(m_frame->sizes.originx, m_frame->sizes.originy));\
-                    if (distance < dist)\
-                    {\
-                        nearest = (*it2);\
-                        dist = distance;\
-                    }\
-                    it2++;\
-                }\
-                it++;\
-            }\
-            if (nearest != NULL)\
-            {\
-                wxPoint point = nearest->ToWxPoint();\
-                WarpPointer(point.x, point.y);\
-            }\
-        }\
-        else\
-        {\
-            Point *warpto = NULL;\
-            if (pointedAt_point->type == MP && pointedAt_point->cmd_next)\
-            {\
-                if (pointedAt_point->cmd_next->controlpoints.size() > 0)\
-                    warpto = pointedAt_point->cmd_next->controlpoints.front();\
-                else\
-                    warpto = pointedAt_point->cmd_next->m_point;\
-            }\
-            else\
-            {\
-                PointList::iterator it = pointedAt_point->cmd_main->controlpoints.begin();\
-                while (*it != pointedAt_point) it++;\
-                it++;\
-                if (it == pointedAt_point->cmd_main->controlpoints.end())\
-                    warpto = pointedAt_point->cmd_main->m_point;\
-                else\
-                    warpto = *it;\
-            }\
-            if (warpto == NULL)\
-                warpto = cmds.front()->m_point;\
-            wxPoint point = warpto->ToWxPoint();\
-            WarpPointer(point.x, point.y);\
-        }\
-    }\
-    break;' src/canvas.cpp
+
+          echo "=== Patching canvas.cpp - WXK_TAB bug fix ==="
+          # Eski hatalı bloğu silip doğru haliyle değiştiriyoruz
+          cat > /tmp/tab_fix.patch << 'EOF'
+--- src/canvas.cpp
++++ src/canvas.cpp
+@@ -1861,23 +1861,27 @@
+                 }
+                 else
+                 {
+-                    Point *warpto = NULL;
+-                    if (pointedAt_point->type == MP && pointedAt_point->cmd_next)
+-                        if (pointedAt_point->cmd_next->controlpoints.size() > 0)
+-                            warpto = pointedAt_point->cmd_next->controlpoints.front();
+-                        else
+-                            warpto = pointedAt_point->cmd_next->m_point;
+-                    }
+-                    else
++                    Point *warpto = NULL;
++                    if (pointedAt_point->type == MP && pointedAt_point->cmd_next)
+                     {
+-                        PointList::iterator it = pointedAt_point->cmd_main->controlpoints.begin();
+-                        while (*it != pointedAt_point) it++;
+-                        it++;
+-                        if (it == pointedAt_point->cmd_main->controlpoints.end())
+-                            warpto = pointedAt_point->cmd_main->m_point;
+-                        else
+-                            warpto = *it;
++                        if (pointedAt_point->cmd_next->controlpoints.size() > 0)
++                            warpto = pointedAt_point->cmd_next->controlpoints.front();
++                        else
++                            warpto = pointedAt_point->cmd_next->m_point;
+                     }
++                    else
++                    {
++                        PointList::iterator it = pointedAt_point->cmd_main->controlpoints.begin();
++                        while (*it != pointedAt_point) it++;
++                        it++;
++                        if (it == pointedAt_point->cmd_main->controlpoints.end())
++                            warpto = pointedAt_point->cmd_main->m_point;
++                        else
++                            warpto = *it;
++                    }
+                     if (warpto == NULL)
+                         warpto = cmds.front()->m_point;
+                     wxPoint point = warpto->ToWxPoint();
+                     WarpPointer(point.x, point.y);
+                 }
+             }
+EOF
+          patch -p0 < /tmp/tab_fix.patch
 
       - name: Build
         run: |
@@ -98,7 +90,7 @@ case WXK_TAB:\
           ./autogen.sh
           
           ./configure \
-            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result -O2" \
+            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result -O2 -fpermissive" \
             --disable-debug
           
           make -j$(nproc)
