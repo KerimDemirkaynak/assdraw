@@ -14,7 +14,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: recursive
+        fetch-depth: 0
+
+    - name: Force Initialize Submodules
+      run: git submodule update --init --recursive
+      shell: pwsh
+
+    - name: Cache vcpkg archives
+      uses: actions/cache@v4
+      with:
+        path: ~\AppData\Local\vcpkg\archives
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
 
     - name: Set VCPKG_ROOT
       run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
