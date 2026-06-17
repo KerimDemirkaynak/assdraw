@@ -19,7 +19,6 @@ jobs:
 
     - name: Ensure AGG Submodule Exists (Fallback Clone)
       run: |
-        # Eger alt modul git tarafindan indirilmediyse, manuel klonlama yapilir
         if (-not (Test-Path "vendor/agg/agg-src/include/agg_basics.h")) {
             Write-Host "Alt modul eksik! Git submodules atlanarak manuel klonlaniyor..."
             if (Test-Path "vendor/agg") { Remove-Item -Recurse -Force "vendor/agg" }
@@ -50,4 +49,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: assdraw3-release
-        path: build-dir\Release\assdraw3.exe
+        path: |
+          build-dir\Release\assdraw3.exe
+          build-dir\Release\*.dll
