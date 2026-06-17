@@ -6,40 +6,76 @@
 
 [**English**](README.md) | [**Türkçe**](README.tr.md)
 
-ASSDraw3, ASS altyazı dosyalarında kullanılacak şekiller tasarlamak için bir araçtır.
+**ASSDraw3**, ASS (Advanced SubStation Alpha) altyazı dosyalarında kullanılmak üzere vektör şekiller tasarlamaya yarayan bir araçtır.
+
+---
 
 ## ASSDraw3'ü Derleme
 
-### Windows
+ASSDraw3 artık Windows üzerinde **CMake + vcpkg** sistemiyle derlenmektedir. Eski `autotools`, Visual C++ 2008 `.vcproj` ve Dev-C++ makefile yapıları terk edilmiştir.
 
-Gereksinimler:
+### Bağımlılıklar
+- `wxWidgets` kütüphanesi 2.8.x sürümünden **3.3.1** sürümüne (vcpkg üzerinden) yükseltildi.
+- `wxWidgets` dinamik olarak (DLL) derlenip bağlanırken, diğer üçüncü taraf kütüphaneler statik olarak kalmaktadır.
+- `AGG` kütüphanesi eski 2.5 sürümünden **2.6** sabitlenmiş sürümüne yükseltilmiş ve `vendor/agg` git submodule’ü olarak eklenmiştir.
 
-1. M$ Visual C++ 2010 veya üzeri (Express sürümü yeterlidir).
-2. wxWidgets (3.0 veya üzeri). `nmake` kullanarak derleyin. Yardım için [buraya](http://wiki.wxwidgets.org/Compiling_Using_MSVC_On_The_Commandline) veya dökümantasyona bakabilirsiniz.
-3. AGG (2.4.* veya 2.5.* yeterlidir). VSC++ kullanarak derleyin. Bir proje dosyası sağlanmıştır, bu repodaki `./tools/agg25.vcxproj` dosyasına bakabilirsiniz.
+vcpkg manifest dosyası, Aegisub wangqr fork’unun kullandığı baseline ile aynı tutulmuştur.
 
-Derleme:
+### Gereksinimler
+- Visual Studio 2022 veya daha yeni MSVC derleme araçları
+- `vcpkg` klonu (önerilen konum: `F:\vcpkg`)
+  - Alternatif olarak `VCPKG_ROOT` ortam değişkenini kendi vcpkg klasörünüze göre ayarlayabilirsiniz.
+- Git submodule’lerin güncellenmesi
 
-1. VC++ proje dosyasını açın.
-2. Uygun include ve kütüphane dizinlerini ekleyin.
-3. ??? ~~Windows kullanıcısısınız, bu adımı kendiniz çözebilirsiniz~~
-4. Kar elde edin.
+```powershell
+git submodule update --init --recursive vendor/agg
+```
 
-### Linux
+### Derleme
 
-Gereksinimler:
+#### 1. PowerShell Betiği (Önerilen)
 
-1. AGG: `sudo apt-get install libagg-dev`
-2. wxWidgets: `git clone https://github.com/wxWidgets/wxWidgets.git; ./configure; make; sudo make install`
+```powershell
+$env:VCPKG_ROOT = 'F:\vcpkg'
+.\build\build-win-vcpkg.ps1 -Fresh
+```
 
-Derleme:
+**Kullanışlı komutlar:**
 
-Standart işlem --> `./autogen.sh; ./configure; make`
+```powershell
+# Debug x64
+.\build\build-win-vcpkg.ps1 -Triplet x64-windows -Configuration Debug -BuildDir build-debug-x64 -Fresh
 
-### OSX
+# Debug x86
+.\build\build-win-vcpkg.ps1 -Triplet x86-windows -Configuration Debug -Fresh
+```
 
-ASSDraw3 henüz OSX üzerinde test edilmedi. OSX üzerinde *çalışması gerekiyor*, deneyin ve çalışıp çalışmadığını bana bildirin, böylece README'yi güncelleyebilirim.
+#### 2. CMake Presets ile Derleme
+
+```powershell
+$env:VCPKG_ROOT = 'F:\vcpkg'
+
+cmake --preset release-x64
+cmake --build --preset release-x64 --config Release
+```
+
+**Kullanılabilir preset’ler:**
+- `release-x64` (önerilen)
+- `debug-x64`
+- `debug-x86`
+
+### AGG Submodule
+
+CMake yalnızca `vendor/agg` submodule’ündeki sabitlenmiş sürümü kullanır:
+
+- Depo: https://github.com/ghaerr/agg-2.6.git
+- Commit: `c4f36b4432142f22c0bf82c6fbdb41567a236be2`
+
+Sadece `CMakeLists.txt` dosyasında belirtilen kaynak dosyalar derlenmektedir.
+
+---
 
 ## Lisans
 
-Bu depodaki tüm kaynak dosyalar 3 maddeli BSD lisansı altındadır. Daha fazla bilgi için [LICENSE](LICENSE) dosyasına bakabilirsiniz.
+Bu depodaki tüm kaynak dosyalar **3 maddeli BSD lisansı** ile lisanslanmıştır.  
+Daha fazla bilgi için [LICENSE](LICENSE) dosyasına bakınız.
