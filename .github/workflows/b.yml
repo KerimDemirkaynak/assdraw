@@ -9,96 +9,42 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-24.04
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    # 1. Kodu GitHub sanal makinesine çeker
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential autoconf automake libtool pkg-config \
-            libagg-dev libwxgtk3.2-dev libgtk-3-dev \
-            libgl1-mesa-dev libglu1-mesa-dev
+    # 2. Gerekli derleyici ve kütüphaneleri (wxWidgets ve AGG) kurar
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential autoconf automake libwxgtk3.2-dev libagg-dev pkg-config
 
-      - name: Patch configure.in for modern wxWidgets
-        run: |
-          # AC_PROG_LIBTOOL is deprecated, use LT_INIT
-          sed -i 's/AC_PROG_LIBTOOL/LT_INIT/' configure.in
-          
-          # Remove unsupported wx libraries (stc, propgrid)
-          sed -i 's/\[std,gl,stc,aui, propgrid\]/[std,gl,aui]/' configure.in
-          
-          # Update minimum wxWidgets version requirement
-          sed -i 's/AM_PATH_WXCONFIG(2.8.1/AM_PATH_WXCONFIG(3.0.0/' configure.in
+    # 3. Koddaki hataları 'sed' ile otomatik olarak yamalar (Düzenler)
+    - name: Patch Source Code (Auto Fix)
+      run: |
+        echo "C++ Hataları yamalanıyor..."
+        
+        # Hata 1: AGG kütüphanesi 3 parametreli rgba_pre fonksiyonunu 4 parametreliye çevirir (1.0 alfa ekler)
+        sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0.0, 0.0, 0.0, 1.0)/g' src/canvas.cpp
+        
+        # Hata 2: 1870. satırdaki 'else' kelimesinin hemen bir üst satırına eksik olan '}' parantezini ekler
+        sed -i '1870i \t\t\t\t\t}' src/canvas.cpp
 
-      - name: Fix AGG rgba_pre function signature
-        run: |
-          # AGG's rgba_pre now requires 4 parameters instead of 3
-          sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0, 0, 0, 1.0)/g' src/canvas.cpp
+    # 4. Kodu yapılandırır ve derler
+    - name: Build ASSDraw
+      run: |
+        chmod +x autogen.sh
+        ./autogen.sh
+        ./configure CXXFLAGS="-std=c++11"
+        make
 
-      - name: Fix WXK_TAB keyboard event handler braces
-        run: |
-          # The issue is mismatched braces in the else block around line 1870
-          # We need to add a closing brace before the else that follows the inner if-else block
-          python3 << 'PYTHON_FIX'
-import re
-
-with open('src/canvas.cpp', 'r') as f:
-    content = f.read()
-
-# Find and fix the WXK_TAB case block with proper brace nesting
-# The pattern: if (pointedAt_point->type == MP && pointedAt_point->cmd_next) 
-#              then immediate if-else without braces around outer if
-# needs fixing to have braces around the condition block
-
-pattern = r'''if \(pointedAt_point->type == MP && pointedAt_point->cmd_next\)
-\s+if \(pointedAt_point->cmd_next->controlpoints\.size\(\) > 0\)'''
-
-if re.search(pattern, content):
-    # Add opening brace after the first if
-    content = re.sub(
-        r'(if \(pointedAt_point->type == MP && pointedAt_point->cmd_next\))\n(\s+if \(pointedAt_point->cmd_next->controlpoints)',
-        r'\1\n                    {\n\2',
-        content
-    )
-    
-    # Find the closing brace that needs to be fixed
-    # After "warpto = pointedAt_point->cmd_next->m_point;" add closing brace
-    content = re.sub(
-        r'(warpto = pointedAt_point->cmd_next->m_point;)\n(\s+}\n\s+else\n\s+{)',
-        r'\1\n                    }\n                    else\n                    {',
-        content
-    )
-
-with open('src/canvas.cpp', 'w') as f:
-    f.write(content)
-
-print("Fixed WXK_TAB event handler braces")
-PYTHON_FIX
-
-      - name: Generate build configuration
-        run: |
-          chmod +x autogen.sh
-          ./autogen.sh
-
-      - name: Configure build
-        run: |
-          ./configure \
-            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result -Wno-error=class-memaccess -fpermissive -O2" \
-            CFLAGS="-Wno-error=class-memaccess -O2" \
-            --disable-debug \
-            --enable-shared=no
-
-      - name: Build ASSDraw
-        run: |
-          make -j$(nproc)
-
-      - name: Upload Linux Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: ASSDraw-Linux
-          path: src/assdraw
-          if-no-files-found: error
+    # 5. Derlenen dosyayı indirmen için GitHub'a yükler
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw-Linux
+        path: src/assdraw
