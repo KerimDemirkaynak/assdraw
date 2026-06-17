@@ -1,0 +1,73 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-msvc-base",
+      "hidden": true,
+      "generator": "Visual Studio 18 2026",
+      "binaryDir": "${sourceDir}/build-${presetName}",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake"
+      }
+    },
+    {
+      "name": "release-x64",
+      "displayName": "Release x64 (MSVC + vcpkg)",
+      "inherits": "windows-msvc-base",
+      "architecture": "x64",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-release"
+      }
+    },
+    {
+      "name": "debug-x64",
+      "displayName": "Debug x64 (MSVC + vcpkg)",
+      "inherits": "windows-msvc-base",
+      "architecture": "x64",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
+      }
+    },
+    {
+      "name": "debug-x86",
+      "displayName": "Debug x86 (MSVC + vcpkg)",
+      "inherits": "windows-msvc-base",
+      "architecture": "Win32",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x86-windows"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "release-x64",
+      "configurePreset": "release-x64",
+      "configuration": "Release",
+      "targets": [
+        "assdraw"
+      ]
+    },
+    {
+      "name": "debug-x64",
+      "configurePreset": "debug-x64",
+      "configuration": "Debug",
+      "targets": [
+        "assdraw"
+      ]
+    },
+    {
+      "name": "debug-x86",
+      "configurePreset": "debug-x86",
+      "configuration": "Debug",
+      "targets": [
+        "assdraw"
+      ]
+    }
+  ]
+}

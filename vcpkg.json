@@ -1,0 +1,11 @@
+{
+  "name": "assdraw",
+  "version-string": "3.0.0",
+  "builtin-baseline": "58950f88544e4637524dbd6a01d0317cf4cb77fc",
+  "dependencies": [
+    {
+      "name": "wxwidgets",
+      "default-features": false
+    }
+  ]
+}
