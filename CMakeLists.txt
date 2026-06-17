@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-if(WIN32)
-    project(assdraw VERSION 3.0.0 LANGUAGES CXX RC)
-else()
-    project(assdraw VERSION 3.0.0 LANGUAGES CXX)
-endif()
+project(assdraw VERSION 3.0.0 LANGUAGES CXX RC)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
