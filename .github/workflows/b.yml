@@ -14,28 +14,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Kodu GitHub sanal makinesine çeker
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      # 1. Kodu GitHub sanal makinesine çeker
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-# 2. Gerekli derleyici ve kütüphaneleri (wxWidgets ve AGG) kurar
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential autoconf automake libwxgtk3.2-dev libagg-dev pkg-config
+      # 2. Gerekli derleyici ve kütüphaneleri kurar
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            autoconf \
+            automake \
+            libtool \
+            libwxgtk3.2-dev \
+            libagg-dev \
+            pkg-config
 
-    # 3. Kodu yapılandırır ve derler
-    - name: Build ASSDraw
-      run: |
-        chmod +x autogen.sh
-        ./autogen.sh
-        # Modern derleyicilerde eski kodun hata vermemesi için C++11 standardını zorluyoruz
-        ./configure CXXFLAGS="-std=c++11"
-        make
+      # 3. configure.in'deki eski sözdizimini geçici olarak yamalar
+      - name: Patch configure.in
+        run: |
+          # AC_PROG_LIBTOOL → LT_INIT (modern libtool için)
+          sed -i 's/AC_PROG_LIBTOOL/LT_INIT/' configure.in
+          # wxWidgets modül listesinden propgrid'i çıkar (3.2'de ayrı configure gerekmez)
+          sed -i 's/\[std,gl,stc,aui, propgrid\]/[std,gl,aui]/' configure.in
+          # wxWidgets minimum versiyonu 3.0 olarak güncelle
+          sed -i 's/AM_PATH_WXCONFIG(2.8.1/AM_PATH_WXCONFIG(3.0.0/' configure.in
 
-    # 4. Derlenen dosyayı indirmen için GitHub'a yükler (Artifact)
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ASSDraw-Linux
-        path: src/assdraw  # Derleme sonrası oluşan çalıştırılabilir dosyanın yolu
+      # 4. Kodu yapılandırır ve derler
+      - name: Build ASSDraw
+        run: |
+          chmod +x autogen.sh
+          ./autogen.sh
+          ./configure CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result"
+          make -j$(nproc)
+
+      # 5. Derlenen dosyayı indirmen için GitHub'a yükler (Artifact)
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASSDraw-Linux
+          path: src/assdraw
