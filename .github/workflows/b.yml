@@ -23,7 +23,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential autoconf automake libwxgtk3.2-dev libagg-dev pkg-config
 
-    # 3. Koddaki hataları 'sed' ile otomatik olarak yamalar (Düzenler)
+# 3. Koddaki hataları 'sed' ile otomatik olarak yamalar (Düzenler)
     - name: Patch Source Code (Auto Fix)
       run: |
         echo "C++ Hataları yamalanıyor..."
@@ -31,8 +31,8 @@ jobs:
         # Hata 1: AGG kütüphanesi 3 parametreli rgba_pre fonksiyonunu 4 parametreliye çevirir (1.0 alfa ekler)
         sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0.0, 0.0, 0.0, 1.0)/g' src/canvas.cpp
         
-        # Hata 2: 1870. satırdaki 'else' kelimesinin hemen bir üst satırına eksik olan '}' parantezini ekler
-        sed -i '1870i \t\t\t\t\t}' src/canvas.cpp
+        # Hata 2: 1870. satırın başına (else kelimesinin öncesine) sadece süslü parantezi ve yeni satırı ekler
+        sed -i '1870s/^/}\n/' src/canvas.cpp
 
     # 4. Kodu yapılandırır ve derler
     - name: Build ASSDraw
