@@ -4,42 +4,78 @@
 [![GitHub Version](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Release)](https://github.com/KerimDemirkaynak/assdraw/releases)
 [![Website](https://img.shields.io/badge/Website-kerimdemirkaynak.github.io/assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
 
+**ASSDraw3** is a tool for designing vector shapes to be used in ASS (Advanced SubStation Alpha) subtitle files.
+
 [**English**](README.md) | [**Türkçe**](README.tr.md)
 
-ASSDraw3 is a tool for designing shapes to be used in ASS subtitle file.
+---
 
 ## Building ASSDraw3
 
-### Windows
+ASSDraw3 now builds with **CMake + vcpkg** on Windows. The old `autotools`, Visual C++ 2008 `.vcproj`, and Dev-C++ makefile systems have been deprecated.
 
-Prerequisites:
+### Dependency Baseline
+- `wxWidgets` upgraded from 2.8.x to **3.3.1** via vcpkg.
+- `wxWidgets` is built and linked dynamically; other third-party dependencies remain static.
+- `AGG` upgraded from the old 2.5 version to a pinned **2.6** snapshot stored in the `vendor/agg` submodule.
 
-1. M$ Visual C++ 2010 or above (Express edition is good enough).
-2. wxWidgets (3.0 or above). Build it using nmake. See [this](http://wiki.wxwidgets.org/Compiling_Using_MSVC_On_The_Commandline) for help or look at the documentation.
-3. AGG (2.4.* or 2.5.* is good enough). Build using VSC++. A project file is supplied, see ./tools/agg25.vcxproj in this repo.
+The vcpkg manifest is pinned to the same baseline used by the Aegisub wangqr fork.
 
-Building:
+### Requirements
+- Visual Studio 2022 or newer (MSVC build tools)
+- `vcpkg` checkout (recommended location: `F:\vcpkg`)
+  - Or set the `VCPKG_ROOT` environment variable to your vcpkg path
+- Git submodules initialized
 
-1. Open VC++ project file.
-2. Add appropriate include and library directories.
-3. ??? ~~You're a windows user, you can figure out this step yourself~~
-4. Profit.
+```powershell
+git submodule update --init --recursive vendor/agg
+```
 
-### Linux
+### Build
 
-Prerequisites:
+#### 1. PowerShell Helper Script (Recommended)
 
-1. AGG: `sudo apt-get install libagg-dev`
-2. wxWidgets: `git clone https://github.com/wxWidgets/wxWidgets.git; ./configure; make; sudo make install`
+```powershell
+$env:VCPKG_ROOT = 'F:\vcpkg'
+.\build\build-win-vcpkg.ps1 -Fresh
+```
 
-Building:
+**Useful variations:**
 
-The usual --> `./autogen.sh; ./configure; make`
+```powershell
+# Debug x64
+.\build\build-win-vcpkg.ps1 -Triplet x64-windows -Configuration Debug -BuildDir build-debug-x64 -Fresh
 
-### OSX
+# Debug x86
+.\build\build-win-vcpkg.ps1 -Triplet x86-windows -Configuration Debug -Fresh
+```
 
-ASSDraw3  was not tested on OSX yet. It *should* work on OSX, give it a go and contact me if it works or not so that I can update this readme.
+#### 2. CMake Presets
+
+```powershell
+$env:VCPKG_ROOT = 'F:\vcpkg'
+
+cmake --preset release-x64
+cmake --build --preset release-x64 --config Release
+```
+
+**Available presets:**
+- `release-x64` (recommended)
+- `debug-x64`
+- `debug-x86`
+
+### AGG Submodule
+
+CMake only uses the pinned `vendor/agg` submodule:
+
+- Repository: https://github.com/ghaerr/agg-2.6.git
+- Commit: `c4f36b4432142f22c0bf82c6fbdb41567a236be2`
+
+Only the source files listed in `CMakeLists.txt` are compiled into the project.
+
+---
 
 ## License
 
-All source files in this repository are licensed under a 3-clause BSD license. See [LICENSE](LICENSE) for more information.
+All source files in this repository are licensed under a **3-clause BSD license**.  
+See [LICENSE](LICENSE) for more information.
