@@ -1859,9 +1859,11 @@ void ASSDrawCanvas::CustomOnKeyDown(wxKeyEvent &event)
 					}
 				}
 				else
+				else
 				{
 					Point *warpto = NULL;
 					if (pointedAt_point->type == MP && pointedAt_point->cmd_next)
+					{
 						if (pointedAt_point->cmd_next->controlpoints.size() > 0)
 							warpto = pointedAt_point->cmd_next->controlpoints.front();
 						else
@@ -1887,6 +1889,8 @@ void ASSDrawCanvas::CustomOnKeyDown(wxKeyEvent &event)
 		default:
 	        event.Skip();
 		}
+	}
+}
 	}
 }
 
