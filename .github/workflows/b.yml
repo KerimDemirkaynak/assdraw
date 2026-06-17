@@ -23,39 +23,18 @@ jobs:
 
     - name: Patch Source Code (Auto Fix)
       run: |
-        echo "C++ Hataları güvenli bir şekilde yamalanıyor..."
+        echo "Applying precise C++ fixes..."
         
-        # 1. Hata: AGG kütüphanesi sürüm farkı yaması (sed burada güvenli)
+        # Fix 1: AGG alpha parameter
         sed -i 's/agg::rgba_pre(0, 0, 0)/agg::rgba_pre(0.0, 0.0, 0.0, 1.0)/g' src/canvas.cpp
         
-        # 2. Hata: Eksik parantez yaması (sed yerine Python kullanarak satırları %100 garantili değiştiriyoruz)
-        python3 -c '
-        with open("src/canvas.cpp", "r", encoding="utf-8") as f:
-            lines = f.read().splitlines()
-
-        replacement = [
-            "                        }",
-            "                        else",
-            "                        {",
-            "                                warpto = pointedAt_point->cmd_main->m_point;",
-            "                        }",
-            "                        if (warpto == NULL)",
-            "                        {",
-            "                                wxPoint point = warpto->ToWxPoint();",
-            "                                warpto = NULL;",
-            "                        }",
-            "                        break;",
-            "                default:",
-            "                        break;",
-            "        }"
-        ]
-
-        # 1870. satırdan 1892. satıra kadar olan kısmı temiz yapıyla değiştir
-        lines[1869:1892] = replacement
-
-        with open("src/canvas.cpp", "w", encoding="utf-8") as f:
-            f.write("\n".join(lines) + "\n")
-        '
+        # Fix 2: Define 'warpto' at the start of the case block (around line 1827)
+        # We find the case WXK_TAB and insert the declaration right after it.
+        sed -i '/case WXK_TAB:/a \t\t\t\t\tASSDrawPoint *warpto = NULL;' src/canvas.cpp
+        
+        # Fix 3: Insert the missing closing bracket before the 'else' on line 1870
+        # Since we added a line above, the 'else' is now on line 1871.
+        sed -i '/else/i \t\t\t\t\t}' src/canvas.cpp
 
     - name: Build ASSDraw
       run: |
