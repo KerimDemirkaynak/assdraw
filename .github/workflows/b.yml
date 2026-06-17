@@ -1,25 +1,22 @@
 name: Build ASSDraw
 
-# Bu action, koda her push yapıldığında veya manuel olarak tetiklendiğinde çalışır.
 on:
   push:
     branches: [ "master", "main" ]
   pull_request:
     branches: [ "master", "main" ]
-  workflow_dispatch: # Actions sekmesinden manuel tetikleme butonu ekler
+  workflow_dispatch:
 
 jobs:
   build-linux:
-    name: Build on Ubuntu
-    runs-on: ubuntu-latest
+    name: Linux (Ubuntu Latest)
+    runs-on: ubuntu-24.04   # Daha yeni, wxWidgets 3.2 desteği iyi
 
     steps:
-      # 1. Kodu GitHub sanal makinesine çeker
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Gerekli derleyici ve kütüphaneleri kurar
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -27,31 +24,79 @@ jobs:
             autoconf \
             automake \
             libtool \
-            libwxgtk3.2-dev \
+            pkg-config \
             libagg-dev \
-            pkg-config
+            libwxgtk3.2-dev \
+            libgtk-3-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev
 
-      # 3. configure.in'deki eski sözdizimini geçici olarak yamalar
-      - name: Patch configure.in
+      - name: Patch configure.in for modern systems
         run: |
-          # AC_PROG_LIBTOOL → LT_INIT (modern libtool için)
+          # AC_PROG_LIBTOOL → LT_INIT
           sed -i 's/AC_PROG_LIBTOOL/LT_INIT/' configure.in
-          # wxWidgets modül listesinden propgrid'i çıkar (3.2'de ayrı configure gerekmez)
+          
+          # wxWidgets modülleri (propgrid eskidi)
           sed -i 's/\[std,gl,stc,aui, propgrid\]/[std,gl,aui]/' configure.in
-          # wxWidgets minimum versiyonu 3.0 olarak güncelle
+          
+          # Minimum wx versiyonu
           sed -i 's/AM_PATH_WXCONFIG(2.8.1/AM_PATH_WXCONFIG(3.0.0/' configure.in
 
-      # 4. Kodu yapılandırır ve derler
-      - name: Build ASSDraw
+      - name: Autogen + Configure + Build
         run: |
           chmod +x autogen.sh
           ./autogen.sh
-          ./configure CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result"
+          
+          ./configure \
+            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations -Wno-unused-result -O2" \
+            --disable-debug
+          
           make -j$(nproc)
 
-      # 5. Derlenen dosyayı indirmen için GitHub'a yükler (Artifact)
-      - name: Upload Artifact
+      - name: Upload Linux Binary
         uses: actions/upload-artifact@v4
         with:
           name: ASSDraw-Linux
           path: src/assdraw
+          if-no-files-found: error
+
+  build-windows-msys2:
+    name: Windows (MSYS2 MinGW)
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-wxWidgets
+            mingw-w64-x86_64-libagg
+            mingw-w64-x86_64-autotools
+
+      - name: Build on MSYS2
+        run: |
+          chmod +x autogen.sh
+          ./autogen.sh
+          
+          ./configure \
+            CXXFLAGS="-std=c++14 -Wno-deprecated-declarations" \
+            --disable-debug
+          
+          make -j2
+
+      - name: Upload Windows Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASSDraw-Windows
+          path: src/assdraw.exe
