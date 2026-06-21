@@ -140,3 +140,25 @@ set_target_properties(
 )
 
 install(TARGETS assdraw RUNTIME DESTINATION .)
+
+# --- i18n (gettext) CMake Entegrasyonu ---
+find_program(MSGFMT_EXECUTABLE msgfmt)
+set(ASSDRAW_LINGUAS tr;en)
+if(MSGFMT_EXECUTABLE)
+    set(MO_FILES "")
+    foreach(LANG ${ASSDRAW_LINGUAS})
+        set(PO_FILE "${CMAKE_SOURCE_DIR}/po/${LANG}.po")
+        set(MO_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/locale/${LANG}/LC_MESSAGES")
+        set(MO_FILE "${MO_DIR}/assdraw.mo")
+        add_custom_command(
+            OUTPUT ${MO_FILE}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_DIR}
+            COMMAND ${MSGFMT_EXECUTABLE} -o ${MO_FILE} ${PO_FILE}
+            DEPENDS ${PO_FILE}
+        )
+        list(APPEND MO_FILES ${MO_FILE})
+    endforeach()
+    add_custom_target(translations ALL DEPENDS ${MO_FILES})
+else()
+    message(WARNING "msgfmt bulunamadı, .po dosyaları derlenmeyecek.")
+endif()
