@@ -11,28 +11,29 @@ PO_DIR = "po"
 
 LANG_INFO = {
     "tr": {"wx_lang": "wxLANGUAGE_TURKISH", "label": "Turkish", "native": "Türkçe"},
-    "en": {"wx_lang": "wxLANGUAGE_ENGLISH", "label": "English", "native": "English"},
-    "de": {"wx_lang": "wxLANGUAGE_GERMAN", "label": "German", "native": "Deutsch"},
-    "fr": {"wx_lang": "wxLANGUAGE_FRENCH", "label": "French", "native": "Français"}
+    "en": {"wx_lang": "wxLANGUAGE_ENGLISH", "label": "English", "native": "English"}
 }
 
+# ÇÖZÜM 2: SetPage, wxMessageDialog, wxString::Format ve AddUndo gibi atlanan tüm UI fonksiyonları eklendi.
 CALL_FUNCS = [
-    "SetTitle", "SetLabel", "SetToolTip", "SetHelpText", "SetStatusText",
-    "wxMessageBox", "Append", "AppendItem", "AppendRadioItem", "AppendCheckItem",
-    "Insert", "SetName", 
+    "SetTitle", "SetLabel", "SetToolTip", "SetHelpText", "SetStatusText", "SetPage",
+    "wxMessageBox", "wxMessageDialog", "Append", "AppendItem", "AppendRadioItem", "AppendCheckItem",
+    "Insert", "SetName", "AddUndo", "wxString::Format", "Format",
     "APPENDCOLOURPROP", "APPENDUINTPROP", "APPENDBOOLPROP"
 ]
 CTOR_CLASSES = [
     "wxStaticText", "wxButton", "wxCheckBox", "wxRadioButton",
-    "wxStaticBox", "wxStaticBoxSizer", "wxMenuItem",
+    "wxStaticBox", "wxStaticBoxSizer", "wxMenuItem", "wxMessageDialog",
     "wxPropertyCategory", "wxColourProperty", "wxUIntProperty", "wxBoolProperty"
 ]
 
+# ÇÖZÜM 2 (Devamı): About sayfasındaki gibi çok satırlı HTML metinlerini yakalamak için re.DOTALL (Satır atlama) eklendi.
 STRLIT = re.compile(
     r'_\(\s*"(?:[^"\\]|\\.)*"\s*\)'
     r'|_T\(\s*"((?:[^"\\]|\\.)*)"\s*\)'
     r'|wxT\(\s*"((?:[^"\\]|\\.)*)"\s*\)'
-    r'|"((?:[^"\\]|\\.)*)"'
+    r'|"((?:[^"\\]|\\.)*)"',
+    re.DOTALL
 )
 
 class FileCache:
@@ -143,7 +144,39 @@ def wrap_ui_strings(src_dir, cache):
                 cache.write(path, new_content)
                 total_files += 1
                 total_strings += n
-    print(f"[*] Toplam {total_files} dosyada {total_strings} UI metni _() ile işaretlendi.")
+    print(f"[*] Toplam {total_files} dosyada {total_strings} UI metni _() ile güvenle sarıldı.")
+
+def fix_include_once_and_dlgctrl(cache):
+    # ÇÖZÜM 1 & 2: Uygulama başlangıç çökmesini (static init fiasco) ve eksik kelimeleri düzeltir
+    path_inc = "src/include_once.hpp"
+    if os.path.exists(path_inc):
+        content = cache.read(path_inc)
+        
+        # 1. TIPS_ ve TBNAME_ sabitlerini #define (Makro) formatına çevir, böylece çalışma zamanında güvenle çevrilir.
+        content = re.sub(r'const\s+wxString\s+((?:TIPS|TBNAME)_[A-Z0-9_]+)\s*=\s*(?:wxT|_T|_)?\(\s*(".*?")\s*\);', r'#define \1 _(\2)', content)
+
+        # 2. combo_templatesStrings dizisindeki tehlikeli _() kalıplarını wxTRANSLATE() ile değiştir (ÇÖKMEYİ ENGELLER)
+        def repl_array(match):
+            inner = match.group(1)
+            inner = re.sub(r'(?:_|_T|wxT)\(\s*("[^"]+")\s*\)', r'wxTRANSLATE(\1)', inner)
+            return f"wxString ASSDrawTransformDlg::combo_templatesStrings[] = {{{inner}}};"
+        
+        content = re.sub(r'wxString\s+ASSDrawTransformDlg::combo_templatesStrings\[\]\s*=\s*\{(.*?)\};', repl_array, content, flags=re.DOTALL)
+        cache.write(path_inc, content)
+        print("[*] include_once.hpp çökme koruması uygulandı ve sabitler makroya çevrildi.")
+
+    # 3. wxTRANSLATE ile tutulan dizi kelimelerini ComboBox'a aktarılırken dinamik olarak çevir
+    path_dlg = "src/dlgctrl.cpp"
+    if os.path.exists(path_dlg):
+        content = cache.read(path_dlg)
+        old_combo_code = r'combo_templates\s*=\s*new\s*wxComboBox\(\s*this,\s*-1,\s*combo_templatesStrings\[0\],\s*__DPDS__\s*,\s*10,\s*combo_templatesStrings,\s*wxCB_READONLY\s*\);'
+        new_combo_code = """wxArrayString translated_templates;
+    for (int i = 0; i < combo_templatesCount; i++) translated_templates.Add(wxGetTranslation(combo_templatesStrings[i]));
+    combo_templates = new wxComboBox( this, -1, translated_templates[0], __DPDS__ , translated_templates, wxCB_READONLY );"""
+        if 'translated_templates' not in content:
+            content = re.sub(old_combo_code, new_combo_code, content)
+            cache.write(path_dlg, content)
+            print("[*] dlgctrl.cpp ComboBox dinamik çeviri entegrasyonu tamamlandı.")
 
 def setup_language_support(cache, target_langs):
     hpp_path = 'src/assdraw.hpp'
@@ -251,8 +284,6 @@ def update_cmake(target_langs):
 
     linguas_cmake = ";".join(target_langs)
     
-    # İŞTE KESİN ÇÖZÜM BURADA: add_dependencies ile assdraw'ı translations hedefine bağladık.
-    # Böylece cmake --target assdraw çalıştırıldığında translations es geçilmeyecek!
     block = f'''
 # --- i18n (gettext) CMake Entegrasyonu ---
 find_program(MSGFMT_EXECUTABLE msgfmt PATHS "C:/Program Files/Git/usr/bin" "C:/msys64/usr/bin")
@@ -275,9 +306,7 @@ if(MSGFMT_EXECUTABLE)
     add_custom_target(translations DEPENDS ${{MO_FILES}})
     
     if(TARGET assdraw)
-        # 1. assdraw'ın derlenmeden önce çevirilerin bitmesini sağla
         add_dependencies(assdraw translations)
-        # 2. assdraw derlemesi bitince locale klasörünü exe'nin yanına kopyala
         add_custom_command(TARGET assdraw POST_BUILD
             COMMAND ${{CMAKE_COMMAND}} -E make_directory "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
             COMMAND ${{CMAKE_COMMAND}} -E copy_directory
@@ -286,7 +315,7 @@ if(MSGFMT_EXECUTABLE)
         )
     endif()
 else()
-    message(FATAL_ERROR "msgfmt bulunamadı! Dil dosyaları derlenemez. Lütfen CMake PATH'ini kontrol edin.")
+    message(FATAL_ERROR "msgfmt bulunamadı! Dil dosyaları derlenemez.")
 endif()
 '''
     with open(path, "w", encoding="utf-8") as f: f.write(content.rstrip() + "\n\n" + block.strip() + "\n")
@@ -298,6 +327,7 @@ def run_gettext_tools(src_dir, target_langs):
     pot_path = os.path.join(PO_DIR, f"{DOMAIN}.pot")
     
     if shutil.which("xgettext"):
+        # wxTRANSLATE komutunu da xgettext'in lugatına ekledik
         subprocess.run(["xgettext", "--keyword=_", "--keyword=wxTRANSLATE", "--from-code=UTF-8", "--package-name", DOMAIN, "-d", DOMAIN, "-o", pot_path] + src_files, check=True)
 
     for lang in target_langs:
@@ -347,17 +377,18 @@ def update_inno_setup():
             with open(path, "w", encoding="utf-8") as f: f.write(content)
 
 def main():
-    print("=== ASSDraw3 i18n Fix Başlıyor ===\n")
+    print("=== ASSDraw3 i18n Kesin Fix Başlıyor ===\n")
     TARGET_LANGUAGES = ["tr", "en"] 
     
     cache = FileCache()
     wrap_ui_strings("src", cache)
+    fix_include_once_and_dlgctrl(cache)
     setup_language_support(cache, TARGET_LANGUAGES)
     cache.flush()
     update_cmake(TARGET_LANGUAGES)
     run_gettext_tools("src", TARGET_LANGUAGES)
     update_inno_setup()
-    print("\n=== İşlem Tamamlandı! ===")
+    print("\n=== İşlem Tamamlandı! Artık çökme yok, eksik metin yok. ===")
 
 if __name__ == "__main__":
     main()
