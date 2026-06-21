@@ -331,8 +331,9 @@ def update_inno_setup():
     with open(path, "r", encoding="utf-8") as f: content = f.read()
 
     # Eğer locale klasörü [Files] altına henüz eklenmemişse ekle
+    # ÇÖZÜM: skipifsourcedoesntexist eklendi.
     if "locale\\*" not in content:
-        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs\n'
+        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist\n'
         if "[Files]" in content:
             content = content.replace("[Files]\n", "[Files]\n" + insert_line)
             with open(path, "w", encoding="utf-8") as f: f.write(content)
@@ -348,7 +349,7 @@ def main():
     cache.flush()
     update_cmake(TARGET_LANGUAGES)
     run_gettext_tools("src", TARGET_LANGUAGES)
-    update_inno_setup() # Yeni eklenen Inno Setup yama fonksiyonu
+    update_inno_setup()
     print("\n=== İşlem Tamamlandı! ===")
 
 if __name__ == "__main__":
