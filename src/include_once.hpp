@@ -36,46 +36,46 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // tooltips
-const wxString TIPS_CLEAR = wxT("Clear the canvas and create a new drawing");
-const wxString TIPS_EDITSRC = wxT("Edit the source");
-const wxString TIPS_PREVIEW = wxT("Draw the shapes without enlarged points and control points");
-const wxString TIPS_TRANSFORM = wxT("Transform the drawing using matrix transformation");
-const wxString TIPS_LIBRARY = wxT("Shapes library");
-const wxString TIPS_HELP = wxT("Help! Help!");
-const wxString TIPS_PASTE = wxT("Depending on what's in the clipboard, import as drawing commands or background");
-const wxString TIPS_UNDO = wxT("Undo last action");
-const wxString TIPS_REDO = wxT("Redo last undo");
-const wxString TIPS_ARR = wxT("Drag mode");
-const wxString TIPS_M = wxT("Draw M mode (Close current shape and move the virtual pen to a new point)");
-const wxString TIPS_N = wxT("Draw N mode (Same as M but doesn't close the shape)");
-const wxString TIPS_L = wxT("Draw L mode (Straight line)");
-const wxString TIPS_B = wxT("Draw B mode (Cubic Bezier curve)");
-const wxString TIPS_S = wxT("Draw S mode (Spline)");
-const wxString TIPS_P = wxT("Draw P mode (Extends a spline with another point)");
-const wxString TIPS_C = wxT("Draw C mode (Close the last spline)");
-const wxString TIPS_DEL = wxT("Delete mode");
-const wxString TIPS_NUTB = wxT("Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together");
-const wxString TIPS_SCALEROTATE = wxT("Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate");
-const wxString TIPS_DWG = wxT("Right-dragging pans drawing, mousewheel zooms in/out drawing");
-const wxString TIPS_BGIMG = wxT("Right-dragging pans background, mousewheel zooms in/out background");
-const wxString TIPS_BOTH = wxT("Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background");
+#define TIPS_CLEAR _("Clear the canvas and create a new drawing")
+#define TIPS_EDITSRC _("Edit the source")
+#define TIPS_PREVIEW _("Draw the shapes without enlarged points and control points")
+#define TIPS_TRANSFORM _("Transform the drawing using matrix transformation")
+#define TIPS_LIBRARY _("Shapes library")
+#define TIPS_HELP _("Help! Help!")
+#define TIPS_PASTE _("Depending on what's in the clipboard, import as drawing commands or background")
+#define TIPS_UNDO _("Undo last action")
+#define TIPS_REDO _("Redo last undo")
+#define TIPS_ARR _("Drag mode")
+#define TIPS_M _("Draw M mode (Close current shape and move the virtual pen to a new point)")
+#define TIPS_N _("Draw N mode (Same as M but doesn't close the shape)")
+#define TIPS_L _("Draw L mode (Straight line)")
+#define TIPS_B _("Draw B mode (Cubic Bezier curve)")
+#define TIPS_S _("Draw S mode (Spline)")
+#define TIPS_P _("Draw P mode (Extends a spline with another point)")
+#define TIPS_C _("Draw C mode (Close the last spline)")
+#define TIPS_DEL _("Delete mode")
+#define TIPS_NUTB _("Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together")
+#define TIPS_SCALEROTATE _("Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate")
+#define TIPS_DWG _("Right-dragging pans drawing, mousewheel zooms in/out drawing")
+#define TIPS_BGIMG _("Right-dragging pans background, mousewheel zooms in/out background")
+#define TIPS_BOTH _("Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background")
 
-const wxString TBNAME_DRAW = wxT("Canvas");
-const wxString TBNAME_MODE = wxT("Drawing mode");
-const wxString TBNAME_BGIMG = wxT("Background");
-const wxString TBNAME_ZOOM = wxT("Zoom");
+#define TBNAME_DRAW _("Canvas")
+#define TBNAME_MODE _("Drawing mode")
+#define TBNAME_BGIMG _("Background")
+#define TBNAME_ZOOM _("Zoom")
 
 wxString ASSDrawTransformDlg::combo_templatesStrings[] = {
-	_("<Select>"),
-	_("Move 5 units down"),
-	_("Move 5 units right"),
-	_("Rotate 90\370 clockwise at (1, 2)"),
-	_("Rotate 90\370 counterclockwise at (-1, 2)"),
-	_("Rotate 180\370 at (0, 0)"),
-	_("Flip horizontally at X = 4"),
-	_("Flip vertically at Y = 3"),
-	_("Scale up horizontally by a factor of 2"),
-	_("Scale up vertically by a factor of 3")
+	wxTRANSLATE("<Select>"),
+	wxTRANSLATE("Move 5 units down"),
+	wxTRANSLATE("Move 5 units right"),
+	wxTRANSLATE("Rotate 90\370 clockwise at (1, 2)"),
+	wxTRANSLATE("Rotate 90\370 counterclockwise at (-1, 2)"),
+	wxTRANSLATE("Rotate 180\370 at (0, 0)"),
+	wxTRANSLATE("Flip horizontally at X = 4"),
+	wxTRANSLATE("Flip vertically at Y = 3"),
+	wxTRANSLATE("Scale up horizontally by a factor of 2"),
+	wxTRANSLATE("Scale up vertically by a factor of 3")
 };
 
 int ASSDrawTransformDlg::combo_templatesCount = 10;
