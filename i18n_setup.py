@@ -10,6 +10,8 @@ DOMAIN = "assdraw"
 PO_DIR = "po"
 
 # Hedef diller ve wxWidgets karşılıkları
+# KOD İÇİNDE SADECE "label" (İngilizce/ASCII) KULLANILACAK, 
+# ÇEVİRİ .po DOSYASINDAN "native" (Türkçe vb.) OLARAK ÇEKİLECEK.
 LANG_INFO = {
     "tr": {"wx_lang": "wxLANGUAGE_TURKISH", "label": "Turkish", "native": "Türkçe"},
     "en": {"wx_lang": "wxLANGUAGE_ENGLISH", "label": "English", "native": "English"},
@@ -17,7 +19,6 @@ LANG_INFO = {
     "fr": {"wx_lang": "wxLANGUAGE_FRENCH", "label": "French", "native": "Français"}
 }
 
-# HATA 4 ÇÖZÜMÜ: settings.cpp içindeki özel makro ve sınıflar eklendi.
 CALL_FUNCS = [
     "SetTitle", "SetLabel", "SetToolTip", "SetHelpText", "SetStatusText",
     "wxMessageBox", "Append", "AppendItem", "AppendRadioItem", "AppendCheckItem",
@@ -145,7 +146,7 @@ def wrap_ui_strings(src_dir, cache):
                 cache.write(path, new_content)
                 total_files += 1
                 total_strings += n
-    print(f"[*] Toplam {total_files} dosyada {total_strings} UI metni _() ile işaretlendi (settings.cpp dahil).")
+    print(f"[*] Toplam {total_files} dosyada {total_strings} UI metni _() ile işaretlendi.")
 
 def setup_language_support(cache, target_langs):
     hpp_path = 'src/assdraw.hpp'
@@ -154,10 +155,11 @@ def setup_language_support(cache, target_langs):
     hpp_content = cache.read(hpp_path)
     cpp_content = cache.read(cpp_path)
 
-    # Önceki hatalı veya eksik kod bloklarını temizle (betiğin tekrar çalıştırılabilir olması için)
-    cpp_content = re.sub(r'wxMenu\*\s*langMenu\s*=\s*new\s*wxMenu;.*?_("Language"\)\);', '', cpp_content, flags=re.DOTALL)
-    cpp_content = re.sub(r'void\s+ASSDrawFrame::OnChangeLanguage\(wxCommandEvent&\s*event\)\s*\{.*?\}', '', cpp_content, flags=re.DOTALL)
-    cpp_content = re.sub(r'EVT_MENU_RANGE\(6000,\s*6100,\s*ASSDrawFrame::OnChangeLanguage\)', '', cpp_content)
+    # RE-RUN GÜVENLİĞİ VE REGEX ÇÖKME HATASI ÇÖZÜMÜ
+    # \ ve ( ) karakterleri regex engine'in çökmemesi için düzgünce kaçırıldı (escaped)
+    cpp_content = re.sub(r'\s*wxMenu\*\s*langMenu\s*=\s*new\s*wxMenu;.*?Append\(langMenu,\s*_\("Language"\)\);', '', cpp_content, flags=re.DOTALL)
+    cpp_content = re.sub(r'\s*void\s+ASSDrawFrame::OnChangeLanguage\(wxCommandEvent&\s*event\)\s*\{.*?\}', '', cpp_content, flags=re.DOTALL)
+    cpp_content = re.sub(r'\s*EVT_MENU_RANGE\(6000,\s*6100,\s*ASSDrawFrame::OnChangeLanguage\)', '', cpp_content)
 
     if '<wx/intl.h>' not in hpp_content:
         hpp_content = '#include <wx/intl.h>\n#include <wx/stdpaths.h>\n' + hpp_content
@@ -170,12 +172,12 @@ def setup_language_support(cache, target_langs):
         
     cache.write(hpp_path, hpp_content)
 
-    # HATA 2 ve 3 ÇÖZÜMÜ: Dinamik exe path algılaması ve Varsayılan Türkçe
+    # İSTEK 1: VARSAYILAN OLARAK SİSTEM DİLİ KULLANILACAK (wxLANGUAGE_DEFAULT)
     if 'm_locale.Init' not in cpp_content:
         locale_code = """
     wxString configfile = wxFileName(wxStandardPaths::Get().GetUserDataDir(), _T("ASSDraw3.cfg")).GetFullPath();
     wxFileConfig cfg(wxEmptyString, wxEmptyString, configfile);
-    long langId = cfg.ReadLong(_T("Language"), wxLANGUAGE_TURKISH); 
+    long langId = cfg.ReadLong(_T("Language"), wxLANGUAGE_DEFAULT); 
     
     m_locale.Init(langId, wxLOCALE_DONT_LOAD_DEFAULT);
     
@@ -193,7 +195,7 @@ def setup_language_support(cache, target_langs):
     if 'ASSDrawFrame::OnChangeLanguage' not in cpp_content and 'BEGIN_EVENT_TABLE(ASSDrawFrame' in cpp_content:
         cpp_content = re.sub(r'(BEGIN_EVENT_TABLE\(ASSDrawFrame,\s*wxFrame\))', r'\1\n    EVT_MENU_RANGE(6000, 6100, ASSDrawFrame::OnChangeLanguage)', cpp_content, count=1)
 
-    # HATA 1 ve 5 ÇÖZÜMÜ: Dinamik dil menüsü oluşturma (İngilizce keyler ile)
+    # İSTEK 2: KOD İÇİNE UTF-8 BOZAN KARAKTER YAZMIYORUZ.
     match = re.search(r'SetMenuBar\(\s*([a-zA-Z0-9_]+)\s*\);', cpp_content)
     if match and 'langMenu->AppendRadioItem' not in cpp_content:
         menubar_var = match.group(1)
@@ -202,7 +204,7 @@ def setup_language_support(cache, target_langs):
         checks_cpp = ""
         for idx, lang in enumerate(target_langs):
             menu_id = 6001 + idx
-            label = LANG_INFO[lang]['label']
+            label = LANG_INFO[lang]['label'] # Örn: "Turkish", "French" (Sadece ASCII)
             wx_lang = LANG_INFO[lang]['wx_lang']
             
             menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, _("{label}"));\n'
@@ -213,7 +215,7 @@ def setup_language_support(cache, target_langs):
     langMenu->AppendRadioItem(6000, _("System Default"));
 {menu_items_cpp}
     long currentLang;
-    config->Read(_T("Language"), &currentLang, wxLANGUAGE_TURKISH);
+    config->Read(_T("Language"), &currentLang, wxLANGUAGE_DEFAULT);
 {checks_cpp} langMenu->Check(6000, true);
     
     {menubar_var}->Append(langMenu, _("Language"));
@@ -253,12 +255,10 @@ def update_cmake(target_langs):
     with open(path, "r", encoding="utf-8") as f: content = f.read()
     
     if "MSGFMT_EXECUTABLE" in content:
-        # Eski hatalı CMake komutunu silip temizleyelim
         content = re.sub(r'# --- i18n \(gettext\) CMake Entegrasyonu ---.*?endif\(\)\n', '', content, flags=re.DOTALL)
 
     linguas_cmake = ";".join(target_langs)
     
-    # HATA 2 ÇÖZÜMÜ: POST_BUILD ile locale klasörünü exe'nin yanına kopyalama
     block = f'''
 # --- i18n (gettext) CMake Entegrasyonu ---
 find_program(MSGFMT_EXECUTABLE msgfmt)
@@ -279,7 +279,6 @@ if(MSGFMT_EXECUTABLE)
     endforeach()
     add_custom_target(translations ALL DEPENDS ${{MO_FILES}})
     
-    # Derleme tamamlandıktan sonra dosyaları .exe'nin çıkış dizinine kopyala
     add_custom_command(TARGET assdraw POST_BUILD
         COMMAND ${{CMAKE_COMMAND}} -E copy_directory
         "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
@@ -290,7 +289,6 @@ else()
 endif()
 '''
     with open(path, "w", encoding="utf-8") as f: f.write(content + "\n" + block)
-    print("[*] CMakeLists.txt exe dizinine kopyalama (POST_BUILD) adımıyla güncellendi.")
 
 def run_gettext_tools(src_dir, target_langs):
     os.makedirs(PO_DIR, exist_ok=True)
@@ -303,9 +301,11 @@ def run_gettext_tools(src_dir, target_langs):
 
     for lang in target_langs:
         po_path = os.path.join(PO_DIR, f"{lang}.po")
+        
+        # Eğer dosya yoksa, zorunlu çevirilerle birlikte (C++ kodunda yazan İngilizce kelimelerin native karşılıkları) şablonu oluştur
         if not os.path.exists(po_path):
             with open(po_path, 'w', encoding='utf-8') as f:
-                f.write(f'''msgid ""
+                content = f'''msgid ""
 msgstr ""
 "Project-Id-Version: Assdraw3\\n"
 "Language: {lang}\\n"
@@ -316,18 +316,25 @@ msgstr ""
 msgid "System Default"
 msgstr "Sistem Varsayılanı"
 
-msgid "Turkish"
-msgstr "Türkçe"
-''')
+msgid "Language"
+msgstr "Dil"
+
+msgid "Restart Required"
+msgstr "Yeniden Başlatma Gerekli"
+
+msgid "Please restart Assdraw for language changes to take effect."
+msgstr "Dil ayarlarının etkinleşmesi için lütfen Assdraw'ı yeniden başlatın."
+
+msgid "{LANG_INFO[lang]['label']}"
+msgstr "{LANG_INFO[lang]['native']}"
+'''
+                f.write(content)
 
         if shutil.which("msgmerge") and os.path.exists(pot_path):
             subprocess.run(["msgmerge", "--update", "--backup=off", po_path, pot_path], check=True)
 
 def main():
     print("=== ASSDraw3 i18n Fix Başlıyor ===\n")
-    
-    # BURAYA İSTEDİĞİN DİLLERİ EKLEYEBİLİRSİN. 
-    # Betik C++ menülerini buraya göre otomatik yazar.
     TARGET_LANGUAGES = ["tr", "en"] 
     
     cache = FileCache()
