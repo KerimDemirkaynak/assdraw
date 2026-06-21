@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -53,6 +54,7 @@
 IMPLEMENT_APP(ASSDrawApp)
 
 BEGIN_EVENT_TABLE(ASSDrawFrame, wxFrame)
+    EVT_MENU_RANGE(6000, 6100, ASSDrawFrame::OnChangeLanguage)
     EVT_TOOL(TB_CLEAR, ASSDrawFrame::OnSelect_Clear)
     EVT_TOOL(TB_PREVIEW, ASSDrawFrame::OnSelect_Preview)
     EVT_TOOL(TB_TRANSFORM, ASSDrawFrame::OnSelect_Transform)
@@ -87,6 +89,21 @@ END_EVENT_TABLE()
 // 'Main program' equivalent: the program execution _T("starts") here
 bool ASSDrawApp::OnInit()
 {
+    wxString configfile = wxFileName(wxStandardPaths::Get().GetUserDataDir(), _T("ASSDraw3.cfg")).GetFullPath();
+    wxFileConfig cfg(wxEmptyString, wxEmptyString, configfile);
+    long langId = cfg.ReadLong(_T("Language"), wxLANGUAGE_DEFAULT); 
+    
+    m_locale.Init(langId, wxLOCALE_DONT_LOAD_DEFAULT);
+    
+    wxString exeDir = wxPathOnly(wxStandardPaths::Get().GetExecutablePath());
+    m_locale.AddCatalogLookupPathPrefix(exeDir + wxFILE_SEP_PATH + _T("locale"));
+    m_locale.AddCatalogLookupPathPrefix(_T("locale"));
+    m_locale.AddCatalogLookupPathPrefix(_T("../po")); 
+#ifdef __UNIX__
+    m_locale.AddCatalogLookupPathPrefix(_T("/usr/share/locale"));
+#endif
+    m_locale.AddCatalog(_T("assdraw"));
+
 	SetAppName(TITLE);
     // create the main application window
     ASSDrawFrame * assdrawframe = new ASSDrawFrame( this, TITLE, wxDefaultPosition, wxDefaultSize );
@@ -264,79 +281,92 @@ void ASSDrawFrame::SetToolBars()
 void ASSDrawFrame::SetMenus()
 {
 	drawMenu = new wxMenu;
-	drawMenu->Append(MENU_CLEAR, _T("&Clear\tCtrl+N"), TIPS_CLEAR);
-	//drawMenu->Append(MENU_EDITSRC, _T("&Source"), TIPS_EDITSRC);
-	drawMenu->Append(MENU_PREVIEW, _T("&Preview\tCtrl+P"), TIPS_PREVIEW, wxITEM_CHECK);
-	drawMenu->Append(MENU_TRANSFORM, _T("&Transform"), TIPS_TRANSFORM);
-	drawMenu->Append(MENU_PASTE, _T("&Paste\tCtrl+V"), TIPS_PASTE);
+	drawMenu->Append(MENU_CLEAR, _("&Clear\tCtrl+N"), TIPS_CLEAR);
+	//drawMenu->Append(MENU_EDITSRC, _("&Source"), TIPS_EDITSRC);
+	drawMenu->Append(MENU_PREVIEW, _("&Preview\tCtrl+P"), TIPS_PREVIEW, wxITEM_CHECK);
+	drawMenu->Append(MENU_TRANSFORM, _("&Transform"), TIPS_TRANSFORM);
+	drawMenu->Append(MENU_PASTE, _("&Paste\tCtrl+V"), TIPS_PASTE);
 	drawMenu->AppendSeparator();
-	drawMenu->Append(MENU_UNDO, _T("&Undo\tCtrl+Z"), TIPS_UNDO);
-	drawMenu->Append(MENU_REDO, _T("&Redo\tCtrl+Y"), TIPS_REDO);
+	drawMenu->Append(MENU_UNDO, _("&Undo\tCtrl+Z"), TIPS_UNDO);
+	drawMenu->Append(MENU_REDO, _("&Redo\tCtrl+Y"), TIPS_REDO);
 	drawMenu->Enable(MENU_UNDO, false);
 	drawMenu->Enable(MENU_REDO, false);
 
 	modeMenu = new wxMenu;
-	modeMenu->Append(MODE_ARR, _T("D&rag\tF1"), TIPS_ARR, wxITEM_RADIO);
-	modeMenu->Append(MODE_M, _T("Draw &M\tF2"), TIPS_M, wxITEM_RADIO);
-	modeMenu->Append(MODE_L, _T("Draw &L\tF3"), TIPS_L, wxITEM_RADIO);
-	modeMenu->Append(MODE_B, _T("Draw &B\tF4"), TIPS_B, wxITEM_RADIO);
-	modeMenu->Append(MODE_DEL, _T("&Delete\tF5"), TIPS_DEL, wxITEM_RADIO);
-	modeMenu->Append(MODE_SCALEROTATE, _T("&Scale/Rotate\tF6"), TIPS_NUTB, wxITEM_RADIO);
-	modeMenu->Append(MODE_NUT_BILINEAR, _T("&Bilinear transformation\tF7"), TIPS_SCALEROTATE, wxITEM_RADIO);
+	modeMenu->Append(MODE_ARR, _("D&rag\tF1"), TIPS_ARR, wxITEM_RADIO);
+	modeMenu->Append(MODE_M, _("Draw &M\tF2"), TIPS_M, wxITEM_RADIO);
+	modeMenu->Append(MODE_L, _("Draw &L\tF3"), TIPS_L, wxITEM_RADIO);
+	modeMenu->Append(MODE_B, _("Draw &B\tF4"), TIPS_B, wxITEM_RADIO);
+	modeMenu->Append(MODE_DEL, _("&Delete\tF5"), TIPS_DEL, wxITEM_RADIO);
+	modeMenu->Append(MODE_SCALEROTATE, _("&Scale/Rotate\tF6"), TIPS_NUTB, wxITEM_RADIO);
+	modeMenu->Append(MODE_NUT_BILINEAR, _("&Bilinear transformation\tF7"), TIPS_SCALEROTATE, wxITEM_RADIO);
 
 	bgimgMenu = new wxMenu;
-	bgimgMenu->Append(DRAG_DWG, _T("Pan/Zoom &Drawing\tShift+F1"), TIPS_DWG, wxITEM_CHECK);
-	bgimgMenu->Append(DRAG_BGIMG, _T("Pan/Zoom Back&ground\tShift+F2"), TIPS_BGIMG, wxITEM_CHECK);
+	bgimgMenu->Append(DRAG_DWG, _("Pan/Zoom &Drawing\tShift+F1"), TIPS_DWG, wxITEM_CHECK);
+	bgimgMenu->Append(DRAG_BGIMG, _("Pan/Zoom Back&ground\tShift+F2"), TIPS_BGIMG, wxITEM_CHECK);
 	bgimgMenu->AppendSeparator();
-	bgimgMenu->Append(MENU_BGIMG_ALPHA, _T("Set background image opacity"), _T(""));
+	bgimgMenu->Append(MENU_BGIMG_ALPHA, _("Set background image opacity"), _T(""));
 	wxMenu* reposbgMenu = new wxMenu;
-	reposbgMenu->Append( MENU_REPOS_BGTOPLEFT, _T("Top left\tCtrl+Shift+7") );
-	reposbgMenu->Append( MENU_REPOS_BGTOPRIGHT, _T("Top right\tCtrl+Shift+9") );
-	reposbgMenu->Append( MENU_REPOS_BGCENTER, _T("&Center\tCtrl+Shift+5") );
-	reposbgMenu->Append( MENU_REPOS_BGBOTLEFT, _T("Bottom left\tCtrl+Shift+1") );
-	reposbgMenu->Append( MENU_REPOS_BGBOTRIGHT, _T("Bottom right\tCtrl+Shift+3") );
-	bgimgMenu->Append(MENU_BGIMG_RECENTER, _T("Reposition [&0, 0]"), reposbgMenu);
-	bgimgMenu->Append(MENU_BGIMG_REMOVE, _T("Remove background\tShift+Del"), _T(""));
+	reposbgMenu->Append( MENU_REPOS_BGTOPLEFT, _("Top left\tCtrl+Shift+7") );
+	reposbgMenu->Append( MENU_REPOS_BGTOPRIGHT, _("Top right\tCtrl+Shift+9") );
+	reposbgMenu->Append( MENU_REPOS_BGCENTER, _("&Center\tCtrl+Shift+5") );
+	reposbgMenu->Append( MENU_REPOS_BGBOTLEFT, _("Bottom left\tCtrl+Shift+1") );
+	reposbgMenu->Append( MENU_REPOS_BGBOTRIGHT, _("Bottom right\tCtrl+Shift+3") );
+	bgimgMenu->Append(MENU_BGIMG_RECENTER, _("Reposition [&0, 0]"), reposbgMenu);
+	bgimgMenu->Append(MENU_BGIMG_REMOVE, _("Remove background\tShift+Del"), _T(""));
 
 	wxMenu* reposMenu = new wxMenu;
-	reposMenu->Append( MENU_REPOS_TOPLEFT, _T("Top left\tCtrl+7") );
-	reposMenu->Append( MENU_REPOS_TOPRIGHT, _T("Top right\tCtrl+9") );
-	reposMenu->Append( MENU_REPOS_CENTER, _T("&Center\tCtrl+5") );
-	reposMenu->Append( MENU_REPOS_BOTLEFT, _T("Bottom left\tCtrl+1") );
-	reposMenu->Append( MENU_REPOS_BOTRIGHT, _T("Bottom right\tCtrl+3") );
+	reposMenu->Append( MENU_REPOS_TOPLEFT, _("Top left\tCtrl+7") );
+	reposMenu->Append( MENU_REPOS_TOPRIGHT, _("Top right\tCtrl+9") );
+	reposMenu->Append( MENU_REPOS_CENTER, _("&Center\tCtrl+5") );
+	reposMenu->Append( MENU_REPOS_BOTLEFT, _("Bottom left\tCtrl+1") );
+	reposMenu->Append( MENU_REPOS_BOTRIGHT, _("Bottom right\tCtrl+3") );
 
 	tbarMenu = new wxMenu;
 	tbarMenu->AppendCheckItem(MENU_TB_DRAW, TBNAME_DRAW);
 	tbarMenu->AppendCheckItem(MENU_TB_MODE, TBNAME_MODE);
 	tbarMenu->AppendCheckItem(MENU_TB_BGIMG, TBNAME_BGIMG);
 	tbarMenu->AppendSeparator();
-	tbarMenu->Append(MENU_TB_ALL, _T("Show all"));
-	tbarMenu->Append(MENU_TB_NONE, _T("Hide all"));
-	tbarMenu->Append(MENU_TB_DOCK, _T("Dock all"));
-	tbarMenu->Append(MENU_TB_UNDOCK, _T("Undock all"));
+	tbarMenu->Append(MENU_TB_ALL, _("Show all"));
+	tbarMenu->Append(MENU_TB_NONE, _("Hide all"));
+	tbarMenu->Append(MENU_TB_DOCK, _("Dock all"));
+	tbarMenu->Append(MENU_TB_UNDOCK, _("Undock all"));
 
 	viewMenu = new wxMenu;
-	viewMenu->Append(MENU_LIBRARY, _T("&Library"), TIPS_LIBRARY, wxITEM_CHECK);
+	viewMenu->Append(MENU_LIBRARY, _("&Library"), TIPS_LIBRARY, wxITEM_CHECK);
 	if (settingsdlg)
-		viewMenu->Append(MENU_SETTINGS, _T("&Settings"), _T(""), wxITEM_CHECK);
-	viewMenu->Append(MENU_TBAR, _T("&Toolbars"), tbarMenu);
-	viewMenu->Append(MENU_RECENTER, _T("Reposition [&0, 0]"), reposMenu);
+		viewMenu->Append(MENU_SETTINGS, _("&Settings"), _T(""), wxITEM_CHECK);
+	viewMenu->Append(MENU_TBAR, _("&Toolbars"), tbarMenu);
+	viewMenu->Append(MENU_RECENTER, _("Reposition [&0, 0]"), reposMenu);
 	viewMenu->AppendSeparator();
-	viewMenu->Append(MENU_RESETPERSPECTIVE, _T("&Reset workspace"));
+	viewMenu->Append(MENU_RESETPERSPECTIVE, _("&Reset workspace"));
 
 	wxMenu* helpMenu = new wxMenu;
-	helpMenu->Append(MENU_HELP, _T("&Manual"));
-	helpMenu->Append(wxID_ABOUT, _T("&About"));
+	helpMenu->Append(MENU_HELP, _("&Manual"));
+	helpMenu->Append(wxID_ABOUT, _("&About"));
 
 	wxMenuBar *menuBar = new wxMenuBar();
-	menuBar->Append(drawMenu, _T("&Canvas"));
-	menuBar->Append(modeMenu, _T("&Mode"));
-	menuBar->Append(bgimgMenu, _T("&Background"));
-	menuBar->Append(viewMenu, _T("&Workspace"));
-	menuBar->Append(helpMenu, _T("&Help"));
+	menuBar->Append(drawMenu, _("&Canvas"));
+	menuBar->Append(modeMenu, _("&Mode"));
+	menuBar->Append(bgimgMenu, _("&Background"));
+	menuBar->Append(viewMenu, _("&Workspace"));
+	menuBar->Append(helpMenu, _("&Help"));
 
 
-	SetMenuBar(menuBar);
+	
+    wxMenu* langMenu = new wxMenu;
+    langMenu->AppendRadioItem(6000, _("System Default"));
+    langMenu->AppendRadioItem(6001, _("Turkish"));
+    langMenu->AppendRadioItem(6002, _("English"));
+
+    long currentLang;
+    config->Read(_T("Language"), &currentLang, wxLANGUAGE_DEFAULT);
+    if (currentLang == wxLANGUAGE_TURKISH) langMenu->Check(6001, true);
+    else     if (currentLang == wxLANGUAGE_ENGLISH) langMenu->Check(6002, true);
+    else  langMenu->Check(6000, true);
+    
+    menuBar->Append(langMenu, _("Language"));
+    SetMenuBar(menuBar);
 }
 
 void ASSDrawFrame::SetPanes()
@@ -711,23 +741,23 @@ void ASSDrawFrame::UpdateUndoRedoMenu()
 	wxString nextUndo = m_canvas->GetTopUndo();
 	if (nextUndo.IsSameAs(_T("")))
 	{
-		drawMenu->SetLabel(MENU_UNDO, _T("Undo\tCtrl+Z"));
+		drawMenu->SetLabel(MENU_UNDO, _("Undo\tCtrl+Z"));
 		drawMenu->Enable(MENU_UNDO, false);
 	}
 	else
 	{
-		drawMenu->SetLabel(MENU_UNDO, wxString::Format(_T("Undo: %s\tCtrl+Z"), nextUndo.c_str()));
+		drawMenu->SetLabel(MENU_UNDO, wxString::Format(_("Undo: %s\tCtrl+Z"), nextUndo.c_str()));
 		drawMenu->Enable(MENU_UNDO, true);
 	}
 	wxString nextRedo = m_canvas->GetTopRedo();
 	if (nextRedo.IsSameAs(_T("")))
 	{
-		drawMenu->SetLabel(MENU_REDO, _T("Redo\tCtrl+Y"));
+		drawMenu->SetLabel(MENU_REDO, _("Redo\tCtrl+Y"));
 		drawMenu->Enable(MENU_REDO, false);
 	}
 	else
 	{
-		drawMenu->SetLabel(MENU_REDO, wxString::Format(_T("Redo: %s\tCtrl+Y"), nextRedo.c_str()));
+		drawMenu->SetLabel(MENU_REDO, wxString::Format(_("Redo: %s\tCtrl+Y"), nextRedo.c_str()));
 		drawMenu->Enable(MENU_REDO, true);
 	}
 }
@@ -762,7 +792,7 @@ void ASSDrawFrame::UpdateFrameUI(unsigned level)
 		tbarMenu->Check(MENU_TB_BGIMG, m_mgr.GetPane(bgimgtbar).IsShown());
 	case 3:	// zoom slider
 		zoomslider->SetValue(zoom);
-		SetStatusText( wxString::Format(_T("%d%%"), zoom), 2 );
+		SetStatusText( wxString::Format(_("%d%%"), zoom), 2 );
 		zoomslider->Enable(m_canvas->GetDragMode().drawing && m_canvas->CanZoom());
 	}
 }
@@ -772,6 +802,20 @@ void ASSDrawFrame::OnDPIChanged(wxDPIChangedEvent& event)
 	CallAfter(&ASSDrawFrame::ApplyDpiLayout);
 	event.Skip();
 }
+
+
+void ASSDrawFrame::OnChangeLanguage(wxCommandEvent& event) {
+    int langId = wxLANGUAGE_DEFAULT;
+    if (event.GetId() == 6001) langId = wxLANGUAGE_TURKISH;
+    else if (event.GetId() == 6002) langId = wxLANGUAGE_ENGLISH;
+
+
+    config->Write(_T("Language"), (long)langId);
+    config->Flush();
+
+    wxMessageBox(_("Please restart Assdraw for language changes to take effect."), _("Restart Required"), wxICON_INFORMATION);
+}
+
 
 void ASSDrawFrame::OnClose(wxCloseEvent &event)
 {
