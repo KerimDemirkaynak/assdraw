@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -597,7 +598,7 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
     if (hasStatusBar)
 	{
         m_frame->SetStatusText(
-            wxString::Format( _T("%5d %5d"), (int)wx, (int)wy ), 0 );
+            wxString::Format( _("%5d %5d"), (int)wx, (int)wy ), 0 );
         if (pointedAt_point == NULL ||
              (newcommand != NULL && !newcommand->initialized) )
            m_frame->SetStatusText( _T(""), 1 );
@@ -881,14 +882,14 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 		switch (dblclicked_point_right->cmd_main->type)
 		{
 			case L:
-				menu->Append(MENU_DRC_LNTOBEZ, _T("Convert to Bezier curve (B command)"));
+				menu->Append(MENU_DRC_LNTOBEZ, _("Convert to Bezier curve (B command)"));
 				break;
 			case B:
 				if (dblclicked_point_right->type != MP) break;
-				menu->AppendCheckItem(MENU_DRC_BEZTOLN, _T("Convert to line (L command)"));
+				menu->AppendCheckItem(MENU_DRC_BEZTOLN, _("Convert to line (L command)"));
 				if (dblclicked_point_right->cmd_next && dblclicked_point_right->cmd_next->type == B)
 				{
-					menu->AppendCheckItem(MENU_DRC_C1CONTBEZ, _T("Smooth connection"));
+					menu->AppendCheckItem(MENU_DRC_C1CONTBEZ, _("Smooth connection"));
 					if (static_cast<DrawCmd_B*>(dblclicked_point_right->cmd_main)->C1Cont)
 						menu->Check(MENU_DRC_C1CONTBEZ, true);
 				}
@@ -898,13 +899,13 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 	}
 	else
 	{
-		menu->Append(MENU_DRC_MOVE00, _T("Move [0,0] here"));
+		menu->Append(MENU_DRC_MOVE00, _("Move [0,0] here"));
 		menu->AppendSeparator();
-		menu->AppendRadioItem(MODE_ARR, _T("Mode: D&rag"));
-		menu->AppendRadioItem(MODE_M, _T("Mode: Draw &M"));
-		menu->AppendRadioItem(MODE_L, _T("Mode: Draw &L"));
-		menu->AppendRadioItem(MODE_B, _T("Mode: Draw &B"));
-		menu->AppendRadioItem(MODE_DEL, _T("Mode: &Delete"));
+		menu->AppendRadioItem(MODE_ARR, _("Mode: D&rag"));
+		menu->AppendRadioItem(MODE_M, _("Mode: Draw &M"));
+		menu->AppendRadioItem(MODE_L, _("Mode: Draw &L"));
+		menu->AppendRadioItem(MODE_B, _("Mode: Draw &B"));
+		menu->AppendRadioItem(MODE_DEL, _("Mode: &Delete"));
 		menu->Check(GetDrawMode(), true);
 	}
 
@@ -1616,14 +1617,14 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 void ASSDrawCanvas::ReceiveBackgroundImageFileDropEvent(const wxString& filename)
 {
 	const wxChar *shortfname = wxFileName::FileName(filename).GetFullName().c_str();
-	m_frame->SetStatusText(wxString::Format(_T("Loading '%s' as canvas background ..."), shortfname), 1);
+	m_frame->SetStatusText(wxString::Format(_("Loading '%s' as canvas background ..."), shortfname), 1);
 	wxImage img;
 	img.LoadFile(filename);
 	if (img.IsOk())
 	{
 		SetBackgroundImage(img, filename);
 	}
-	m_frame->SetStatusText(_T("Canvas background loaded"), 1);
+	m_frame->SetStatusText(_("Canvas background loaded"), 1);
 }
 
 void ASSDrawCanvas::RemoveBackgroundImage()
