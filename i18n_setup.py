@@ -188,24 +188,19 @@ def update_about_and_version(cache):
         hpp_content = hpp_content.replace('_T("3.0 final")', '_T("3.1")')
         cache.write(hpp_path, hpp_content)
 
-    # 2. About (Hakkında) diyaloğuna "Kerim Demirkaynak" metnini ekle (dlgctrl.cpp)
+    # 2. About (Hakkında) diyaloğuna metni Regex olmadan, direkt string replace ile hatasız ekle (dlgctrl.cpp)
     dlg_path = 'src/dlgctrl.cpp'
     if os.path.exists(dlg_path):
         dlg_content = cache.read(dlg_path)
         if "Kerim Demirkaynak" not in dlg_content:
-            old_pattern = r'htmlwin->SetPage\(\s*_T\("<html>(.*?)</body></html>"\)\s*\);'
-            
-            def replacer(m):
-                inner_html = m.group(1)
-                # HTML yapısını bozmadan çevrilebilir string'i C++ operator+ ile son satıra enjekte ediyoruz.
-                return 'htmlwin->SetPage(wxString(_T("<html>' + inner_html + '<br><br>")) + _("This version was created by Kerim Demirkaynak.") + _T("</body></html>"));'
-            
-            dlg_content = re.sub(old_pattern, replacer, dlg_content, flags=re.DOTALL)
+            # HTML'in bittiği yeri tam olarak bulup çevrilebilir metni operator+ ile ekliyoruz
+            dlg_content = dlg_content.replace(
+                '</body></html>")',
+                '<br><br>" ) + _("This version was created by Kerim Demirkaynak.") + _T("</body></html>")'
+            )
             cache.write(dlg_path, dlg_content)
 
 def get_escaped_utf8(text):
-    # Derleyicinin (MSVC) karakter kodlamasını bozmasını %100 engellemek için
-    # string'i doğrudan UTF-8 sekizli (octal) C++ kodlarına çeviren güvenlik fonksiyonu.
     return "".join(f"\\{b:03o}" for b in text.encode('utf-8'))
 
 def setup_language_support(cache):
@@ -231,12 +226,20 @@ def setup_language_support(cache):
     cache.write(hpp_path, hpp_content)
 
     if 'm_locale.Init' not in cpp_content:
+        # Sistem dilini zorla okuyan güncellenmiş Init bloğu
         locale_code = """
     wxString configfile = wxFileName(wxStandardPaths::Get().GetUserDataDir(), _T("ASSDraw3.cfg")).GetFullPath();
     wxFileConfig cfg(wxEmptyString, wxEmptyString, configfile);
     long langId = cfg.ReadLong(_T("Language"), wxLANGUAGE_DEFAULT); 
     
-    m_locale.Init(langId, wxLOCALE_DONT_LOAD_DEFAULT);
+    if (langId == wxLANGUAGE_DEFAULT) {
+        int sysLang = wxLocale::GetSystemLanguage();
+        if (sysLang != wxLANGUAGE_UNKNOWN) {
+            langId = sysLang;
+        }
+    }
+    
+    m_locale.Init(langId, wxLOCALE_CONV_ENCODING);
     
     wxString exeDir = wxPathOnly(wxStandardPaths::Get().GetExecutablePath());
     m_locale.AddCatalogLookupPathPrefix(exeDir + wxFILE_SEP_PATH + _T("locale"));
@@ -263,7 +266,6 @@ def setup_language_support(cache):
             native = lang['native']
             wx_lang = lang['wx_lang']
             
-            # Karakter bozulmasını engellemek için Octal kodlu FromUTF8 kullanımı eklendi.
             menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, wxString::FromUTF8("{get_escaped_utf8(native)}"));\n'
             checks_cpp += f'    if (currentLang == {wx_lang}) langMenu->Check({menu_id}, true);\n    else '
 
@@ -371,7 +373,6 @@ def run_gettext_tools(src_dir, target_langs):
             ple_str = "Dil ayarlarının etkinleşmesi için lütfen Assdraw'ı yeniden başlatın." if lang == "tr" else "Please restart Assdraw for language changes to take effect."
             author_str = "Bu sürüm Kerim Demirkaynak tarafından oluşturuldu." if lang == "tr" else "This version was created by Kerim Demirkaynak."
             
-            # İngilizce seçildiğinde kendi içindeki (msgid) metinlere fallback atması için msgstr bilerek boş bırakılır.
             if lang == "en":
                 sys_def = lang_str = req_str = ple_str = author_str = ""
 
