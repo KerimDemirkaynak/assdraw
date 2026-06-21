@@ -1,0 +1,794 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Assdraw3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-21 04:17+0000\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/include_once.hpp:39
+msgid "Clear the canvas and create a new drawing"
+msgstr ""
+
+#: src/include_once.hpp:40
+msgid "Edit the source"
+msgstr ""
+
+#: src/include_once.hpp:41
+msgid "Draw the shapes without enlarged points and control points"
+msgstr ""
+
+#: src/include_once.hpp:42
+msgid "Transform the drawing using matrix transformation"
+msgstr ""
+
+#: src/include_once.hpp:43
+msgid "Shapes library"
+msgstr ""
+
+#: src/include_once.hpp:44
+msgid "Help! Help!"
+msgstr ""
+
+#: src/include_once.hpp:45
+msgid ""
+"Depending on what's in the clipboard, import as drawing commands or "
+"background"
+msgstr ""
+
+#: src/include_once.hpp:46
+msgid "Undo last action"
+msgstr ""
+
+#: src/include_once.hpp:47
+msgid "Redo last undo"
+msgstr ""
+
+#: src/include_once.hpp:48
+msgid "Drag mode"
+msgstr ""
+
+#: src/include_once.hpp:49
+msgid ""
+"Draw M mode (Close current shape and move the virtual pen to a new point)"
+msgstr ""
+
+#: src/include_once.hpp:50
+msgid "Draw N mode (Same as M but doesn't close the shape)"
+msgstr ""
+
+#: src/include_once.hpp:51
+msgid "Draw L mode (Straight line)"
+msgstr ""
+
+#: src/include_once.hpp:52
+msgid "Draw B mode (Cubic Bezier curve)"
+msgstr ""
+
+#: src/include_once.hpp:53
+msgid "Draw S mode (Spline)"
+msgstr ""
+
+#: src/include_once.hpp:54
+msgid "Draw P mode (Extends a spline with another point)"
+msgstr ""
+
+#: src/include_once.hpp:55
+msgid "Draw C mode (Close the last spline)"
+msgstr ""
+
+#: src/include_once.hpp:56
+msgid "Delete mode"
+msgstr ""
+
+#: src/include_once.hpp:57
+msgid ""
+"Bilinear transformation mode: Drag the vertices to distort the shape; "
+"Dragging an edge moves two adjacent vertices together"
+msgstr ""
+
+#: src/include_once.hpp:58
+msgid ""
+"Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag "
+"to rotate"
+msgstr ""
+
+#: src/include_once.hpp:59
+msgid "Right-dragging pans drawing, mousewheel zooms in/out drawing"
+msgstr ""
+
+#: src/include_once.hpp:60
+msgid "Right-dragging pans background, mousewheel zooms in/out background"
+msgstr ""
+
+#: src/include_once.hpp:61
+msgid ""
+"Right-dragging pans drawing & background, mousewheel zooms in/out drawing & "
+"background"
+msgstr ""
+
+#: src/include_once.hpp:63 src/settings.cpp:79
+msgid "Canvas"
+msgstr ""
+
+#: src/include_once.hpp:64
+msgid "Drawing mode"
+msgstr ""
+
+#: src/include_once.hpp:65
+msgid "Background"
+msgstr ""
+
+#: src/include_once.hpp:66
+msgid "Zoom"
+msgstr ""
+
+#: src/include_once.hpp:69
+msgid "<Select>"
+msgstr ""
+
+#: src/include_once.hpp:70
+msgid "Move 5 units down"
+msgstr ""
+
+#: src/include_once.hpp:71
+msgid "Move 5 units right"
+msgstr ""
+
+#: src/include_once.hpp:72
+msgid "Rotate 90 clockwise at (1, 2)"
+msgstr ""
+
+#: src/include_once.hpp:73
+msgid "Rotate 90 counterclockwise at (-1, 2)"
+msgstr ""
+
+#: src/include_once.hpp:74
+msgid "Rotate 180 at (0, 0)"
+msgstr ""
+
+#: src/include_once.hpp:75
+msgid "Flip horizontally at X = 4"
+msgstr ""
+
+#: src/include_once.hpp:76
+msgid "Flip vertically at Y = 3"
+msgstr ""
+
+#: src/include_once.hpp:77
+msgid "Scale up horizontally by a factor of 2"
+msgstr ""
+
+#: src/include_once.hpp:78
+msgid "Scale up vertically by a factor of 3"
+msgstr ""
+
+#: src/canvas.cpp:152
+msgid "Modify drawing commands"
+msgstr ""
+
+#: src/canvas.cpp:601
+#, c-format
+msgid "%5d %5d"
+msgstr ""
+
+#: src/canvas.cpp:885
+msgid "Convert to Bezier curve (B command)"
+msgstr ""
+
+#: src/canvas.cpp:889
+msgid "Convert to line (L command)"
+msgstr ""
+
+#: src/canvas.cpp:892
+msgid "Smooth connection"
+msgstr ""
+
+#: src/canvas.cpp:902
+msgid "Move [0,0] here"
+msgstr ""
+
+#: src/canvas.cpp:904
+msgid "Mode: D&rag"
+msgstr ""
+
+#: src/canvas.cpp:905
+msgid "Mode: Draw &M"
+msgstr ""
+
+#: src/canvas.cpp:906
+msgid "Mode: Draw &L"
+msgstr ""
+
+#: src/canvas.cpp:907
+msgid "Mode: Draw &B"
+msgstr ""
+
+#: src/canvas.cpp:908
+msgid "Mode: &Delete"
+msgstr ""
+
+#: src/canvas.cpp:1057
+msgid "Convert Line to Bezier"
+msgstr ""
+
+#: src/canvas.cpp:1073
+msgid "Convert Bezier to Line"
+msgstr ""
+
+#: src/canvas.cpp:1089
+msgid "Unset continuous"
+msgstr ""
+
+#: src/canvas.cpp:1089
+msgid "Set continuous"
+msgstr ""
+
+#: src/canvas.cpp:1096
+msgid "Move origin"
+msgstr ""
+
+#: src/canvas.cpp:1477
+#, c-format
+msgid "%d,%d"
+msgstr ""
+
+#: src/canvas.cpp:1620
+#, c-format
+msgid "Loading '%s' as canvas background ..."
+msgstr ""
+
+#: src/canvas.cpp:1627
+msgid "Canvas background loaded"
+msgstr ""
+
+#: src/settings.cpp:78
+msgid "Appearance"
+msgstr ""
+
+#: src/settings.cpp:80
+msgid "Drawing"
+msgstr ""
+
+#: src/settings.cpp:81
+msgid "Drawing @"
+msgstr ""
+
+#: src/settings.cpp:82 src/assdraw.cpp:241
+msgid "Preview"
+msgstr ""
+
+#: src/settings.cpp:83
+msgid "Preview @"
+msgstr ""
+
+#: src/settings.cpp:84
+msgid "Outline"
+msgstr ""
+
+#: src/settings.cpp:85
+msgid "Outline @"
+msgstr ""
+
+#: src/settings.cpp:86
+msgid "Control lines"
+msgstr ""
+
+#: src/settings.cpp:87
+msgid "Control lines @"
+msgstr ""
+
+#: src/settings.cpp:88
+msgid "Points"
+msgstr ""
+
+#: src/settings.cpp:89
+msgid "Points @"
+msgstr ""
+
+#: src/settings.cpp:90
+msgid "Control points"
+msgstr ""
+
+#: src/settings.cpp:91
+msgid "Control points @"
+msgstr ""
+
+#: src/settings.cpp:92
+msgid "Selected points"
+msgstr ""
+
+#: src/settings.cpp:93
+msgid "Selected points @"
+msgstr ""
+
+#: src/settings.cpp:94
+msgid "Library"
+msgstr ""
+
+#: src/settings.cpp:95
+msgid "Library shapes"
+msgstr ""
+
+#: src/settings.cpp:96
+msgid "Origin"
+msgstr ""
+
+#: src/settings.cpp:97
+msgid "Origin cross size"
+msgstr ""
+
+#: src/settings.cpp:98
+msgid "H ruler"
+msgstr ""
+
+#: src/settings.cpp:99
+msgid "V ruler"
+msgstr ""
+
+#: src/settings.cpp:101
+msgid "Behaviors"
+msgstr ""
+
+#: src/settings.cpp:102
+msgid "Capitalize commands"
+msgstr ""
+
+#: src/settings.cpp:103
+msgid "Ask for image opacity"
+msgstr ""
+
+#: src/settings.cpp:104
+msgid "Parse S/P/C"
+msgstr ""
+
+#: src/settings.cpp:105
+msgid "No splash screen"
+msgstr ""
+
+#: src/settings.cpp:106
+msgid "Confirm quit"
+msgstr ""
+
+#: src/settings.cpp:114
+msgid "Apply"
+msgstr ""
+
+#: src/settings.cpp:117
+msgid "Revert"
+msgstr ""
+
+#: src/dlgctrl.cpp:116
+msgid "Templates"
+msgstr ""
+
+#: src/dlgctrl.cpp:130
+msgid "m11"
+msgstr ""
+
+#: src/dlgctrl.cpp:136
+msgid "m12"
+msgstr ""
+
+#: src/dlgctrl.cpp:142
+msgid "m21"
+msgstr ""
+
+#: src/dlgctrl.cpp:148
+msgid "m22"
+msgstr ""
+
+#: src/dlgctrl.cpp:154
+msgid "mx"
+msgstr ""
+
+#: src/dlgctrl.cpp:160
+msgid "my"
+msgstr ""
+
+#: src/dlgctrl.cpp:166
+msgid "nx"
+msgstr ""
+
+#: src/dlgctrl.cpp:172
+msgid "ny"
+msgstr ""
+
+#: src/dlgctrl.cpp:184
+msgid "&OK"
+msgstr ""
+
+#: src/dlgctrl.cpp:187
+msgid "&Cancel"
+msgstr ""
+
+#: src/dlgctrl.cpp:259
+msgid ""
+"One or more values entered are not real numbers.\n"
+"Please fix."
+msgstr ""
+
+#: src/dlgctrl.cpp:259
+msgid "Value error"
+msgstr ""
+
+#: src/dlgctrl.cpp:271
+msgid ""
+"<html><body> <p>ASSDraw3 is a tool for designing shapes to be used in ASS "
+"subtitle file. <p>To add lines or curves, initiate the draw mode by clicking "
+"on the drawing tools. Then, either click on empty space or drag from an "
+"existing point to add the new lines/curves. Control points for Bezier curves "
+"are generated once you release the mouse button. <p>To modify shapes, drag "
+"their points (squares) and control points (circles) in the drag mode. "
+"<p><b>Some tips & tricks:</b> <ul> <li> Set background image by dragging "
+"image file from explorer onto the canvas <li> Use the Shapes Library to "
+"store your drawings <li> Ctrl-Z for undo, Ctrl-Y for redo <li> Use your "
+"mousewheel to zoom in/out (PageUp/PageDown keys work too) <li> Dragging with "
+"right mouse button moves the drawing and/or background image around. <li> "
+"Double clicking with right mouse button for popup menus. <li> Holding shift "
+"key while in the draw mode temporarily switches to the drag mode <li> The "
+"shapes origin (coordinate [0, 0] depicted by the small cross) is draggable </"
+"ul> <p><b>Acknowledgements:</b> <ul> <li> Maxim Shemanarev <a href=\"http://"
+"www.antigrain.com\">http://www.antigrain.com</a> for his Anti-Grain Geometry "
+"(AGG) graphic toolkit. <li> wxWidgets Project <a href=\"http://www.wxwidgets."
+"org\">http://www.wxwidgets.org</a> for the ultracool GUI toolkit. <li> "
+"Adrian Secord <a href=\"http://mrl.nyu.edu/~ajsecord/index.html\">http://mrl."
+"nyu.edu/~ajsecord/index.html</a> for wxAGG, that combines AGG and "
+"wxWidgets<li> jfs, ArchMageZeratul, RoRo and everyone at Aegisub's forum <a "
+"href=\"http://malakith.net/aegisub\">http://malakith.net/aegisub</a> for all "
+"suggestions and supports. </ul> <p>ai-chan recommends Aegisub for all your "
+"subtitle and typesetting needs! <br><br>"
+msgstr ""
+
+#: src/dlgctrl.cpp:296
+msgid "This version was created by Kerim Demirkaynak."
+msgstr ""
+
+#: src/dlgctrl.cpp:306
+#, c-format
+msgid "Version: %s"
+msgstr ""
+
+#: src/assdraw.cpp:239
+msgid "Clear"
+msgstr ""
+
+#: src/assdraw.cpp:259
+msgid "Drag"
+msgstr ""
+
+#: src/assdraw.cpp:260
+msgid "Move"
+msgstr ""
+
+#: src/assdraw.cpp:262
+msgid "Line"
+msgstr ""
+
+#: src/assdraw.cpp:263
+msgid "Bezier"
+msgstr ""
+
+#: src/assdraw.cpp:267
+msgid "Delete"
+msgstr ""
+
+#: src/assdraw.cpp:268
+msgid "Scale/Rotate"
+msgstr ""
+
+#: src/assdraw.cpp:269
+msgid "Bilinear"
+msgstr ""
+
+#: src/assdraw.cpp:278
+msgid "Pan drawing"
+msgstr ""
+
+#: src/assdraw.cpp:279
+msgid "Pan background"
+msgstr ""
+
+#: src/assdraw.cpp:291
+msgid "&Clear\tCtrl+N"
+msgstr ""
+
+#: src/assdraw.cpp:293
+msgid "&Preview\tCtrl+P"
+msgstr ""
+
+#: src/assdraw.cpp:294
+msgid "&Transform"
+msgstr ""
+
+#: src/assdraw.cpp:295
+msgid "&Paste\tCtrl+V"
+msgstr ""
+
+#: src/assdraw.cpp:297
+msgid "&Undo\tCtrl+Z"
+msgstr ""
+
+#: src/assdraw.cpp:298
+msgid "&Redo\tCtrl+Y"
+msgstr ""
+
+#: src/assdraw.cpp:303
+msgid "D&rag\tF1"
+msgstr ""
+
+#: src/assdraw.cpp:304
+msgid "Draw &M\tF2"
+msgstr ""
+
+#: src/assdraw.cpp:305
+msgid "Draw &L\tF3"
+msgstr ""
+
+#: src/assdraw.cpp:306
+msgid "Draw &B\tF4"
+msgstr ""
+
+#: src/assdraw.cpp:307
+msgid "&Delete\tF5"
+msgstr ""
+
+#: src/assdraw.cpp:308
+msgid "&Scale/Rotate\tF6"
+msgstr ""
+
+#: src/assdraw.cpp:309
+msgid "&Bilinear transformation\tF7"
+msgstr ""
+
+#: src/assdraw.cpp:312
+msgid "Pan/Zoom &Drawing\tShift+F1"
+msgstr ""
+
+#: src/assdraw.cpp:313
+msgid "Pan/Zoom Back&ground\tShift+F2"
+msgstr ""
+
+#: src/assdraw.cpp:315
+msgid "Set background image opacity"
+msgstr ""
+
+#: src/assdraw.cpp:317
+msgid "Top left\tCtrl+Shift+7"
+msgstr ""
+
+#: src/assdraw.cpp:318
+msgid "Top right\tCtrl+Shift+9"
+msgstr ""
+
+#: src/assdraw.cpp:319
+msgid "&Center\tCtrl+Shift+5"
+msgstr ""
+
+#: src/assdraw.cpp:320
+msgid "Bottom left\tCtrl+Shift+1"
+msgstr ""
+
+#: src/assdraw.cpp:321
+msgid "Bottom right\tCtrl+Shift+3"
+msgstr ""
+
+#: src/assdraw.cpp:322 src/assdraw.cpp:347
+msgid "Reposition [&0, 0]"
+msgstr ""
+
+#: src/assdraw.cpp:323
+msgid "Remove background\tShift+Del"
+msgstr ""
+
+#: src/assdraw.cpp:326
+msgid "Top left\tCtrl+7"
+msgstr ""
+
+#: src/assdraw.cpp:327
+msgid "Top right\tCtrl+9"
+msgstr ""
+
+#: src/assdraw.cpp:328
+msgid "&Center\tCtrl+5"
+msgstr ""
+
+#: src/assdraw.cpp:329
+msgid "Bottom left\tCtrl+1"
+msgstr ""
+
+#: src/assdraw.cpp:330
+msgid "Bottom right\tCtrl+3"
+msgstr ""
+
+#: src/assdraw.cpp:337
+msgid "Show all"
+msgstr ""
+
+#: src/assdraw.cpp:338
+msgid "Hide all"
+msgstr ""
+
+#: src/assdraw.cpp:339
+msgid "Dock all"
+msgstr ""
+
+#: src/assdraw.cpp:340
+msgid "Undock all"
+msgstr ""
+
+#: src/assdraw.cpp:343
+msgid "&Library"
+msgstr ""
+
+#: src/assdraw.cpp:345
+msgid "&Settings"
+msgstr ""
+
+#: src/assdraw.cpp:346
+msgid "&Toolbars"
+msgstr ""
+
+#: src/assdraw.cpp:349
+msgid "&Reset workspace"
+msgstr ""
+
+#: src/assdraw.cpp:352
+msgid "&Manual"
+msgstr ""
+
+#: src/assdraw.cpp:353
+msgid "&About"
+msgstr ""
+
+#: src/assdraw.cpp:356
+msgid "&Canvas"
+msgstr ""
+
+#: src/assdraw.cpp:357
+msgid "&Mode"
+msgstr ""
+
+#: src/assdraw.cpp:358
+msgid "&Background"
+msgstr ""
+
+#: src/assdraw.cpp:359
+msgid "&Workspace"
+msgstr ""
+
+#: src/assdraw.cpp:360
+msgid "&Help"
+msgstr ""
+
+#: src/assdraw.cpp:365
+msgid "System Default"
+msgstr ""
+
+#: src/assdraw.cpp:385
+msgid "Language"
+msgstr ""
+
+#: src/assdraw.cpp:495
+msgid "Clear canvas"
+msgstr ""
+
+#: src/assdraw.cpp:557
+msgid "Transform"
+msgstr ""
+
+#: src/assdraw.cpp:761
+msgid "Undo\tCtrl+Z"
+msgstr ""
+
+#: src/assdraw.cpp:766
+#, c-format
+msgid "Undo: %s\tCtrl+Z"
+msgstr ""
+
+#: src/assdraw.cpp:772
+msgid "Redo\tCtrl+Y"
+msgstr ""
+
+#: src/assdraw.cpp:777
+#, c-format
+msgid "Redo: %s\tCtrl+Y"
+msgstr ""
+
+#: src/assdraw.cpp:812
+#, c-format
+msgid "%d%%"
+msgstr ""
+
+#: src/assdraw.cpp:838
+msgid "Please restart Assdraw for language changes to take effect."
+msgstr ""
+
+#: src/assdraw.cpp:838
+msgid "Restart Required"
+msgstr ""
+
+#: src/assdraw.cpp:846
+msgid "Do you want to close ASSDraw3 now?"
+msgstr ""
+
+#: src/assdraw.cpp:846
+msgid "Confirmation"
+msgstr ""
+
+#: src/library.cpp:82
+msgid "Save canvas"
+msgstr ""
+
+#: src/library.cpp:84
+msgid "Select all"
+msgstr ""
+
+#: src/library.cpp:85
+msgid "Select none"
+msgstr ""
+
+#: src/library.cpp:86
+msgid "Delete selected"
+msgstr ""
+
+#: src/library.cpp:199
+msgid "Load to canvas"
+msgstr ""
+
+#: src/library.cpp:207
+msgid "Copy commands to clipboard"
+msgstr ""
+
+#: src/library.cpp:208
+msgid "Save canvas here"
+msgstr ""
+
+#: src/library.cpp:210
+msgid "Confirm delete?"
+msgstr ""
+
+#: src/library.cpp:211
+msgid "Delete from library"
+msgstr ""
+
+#: src/library.cpp:300
+msgid "Load shape from library"
+msgstr ""
+
+#: src/cmd.cpp:53
+#, c-format
+msgid "m %d %d"
+msgstr ""
+
+#: src/cmd.cpp:72
+#, c-format
+msgid "l %d %d"
+msgstr ""
+
+#: src/cmd.cpp:133
+#, c-format
+msgid "b %d %d %d %d %d %d"
+msgstr ""
+
+#: src/cmd.cpp:136
+#, c-format
+msgid "b ? ? ? ? %d %d"
+msgstr ""
+
+#: src/cmd.cpp:207 src/cmd.cpp:211
+#, c-format
+msgid "%s %d %d"
+msgstr ""
+
+#: src/cmd.cpp:209
+#, c-format
+msgid "%s ? ?"
+msgstr ""
+
+#: src/cmd.cpp:212
+#, c-format
+msgid "%s c"
+msgstr ""

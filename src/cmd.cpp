@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -49,7 +50,7 @@ DrawCmd_M::DrawCmd_M ( int x, int y, PointSystem *ps, DrawCmd *prev )
 // to ASS drawing command
 wxString DrawCmd_M::ToString()
 {
-     return wxString::Format(_T("m %d %d"), m_point->x(), m_point->y());
+     return wxString::Format(_("m %d %d"), m_point->x(), m_point->y());
 }
 
 
@@ -68,7 +69,7 @@ DrawCmd_L::DrawCmd_L ( int x, int y, PointSystem *ps, DrawCmd *prev )
 // to ASS drawing command
 wxString DrawCmd_L::ToString()
 {
-     return wxString::Format(_T("l %d %d"), m_point->x(), m_point->y());
+     return wxString::Format(_("l %d %d"), m_point->x(), m_point->y());
 }
 
 
@@ -129,10 +130,10 @@ wxString DrawCmd_B::ToString()
 		PointList::iterator iterate = controlpoints.begin();
 		Point* c1 = (*iterate++);
 		Point* c2 = (*iterate);
-		return wxString::Format(_T("b %d %d %d %d %d %d"), c1->x(), c1->y(), c2->x(), c2->y(), m_point->x(), m_point->y());
+		return wxString::Format(_("b %d %d %d %d %d %d"), c1->x(), c1->y(), c2->x(), c2->y(), m_point->x(), m_point->y());
 	}
 	else
-		return wxString::Format(_T("b ? ? ? ? %d %d"), m_point->x(), m_point->y());
+		return wxString::Format(_("b ? ? ? ? %d %d"), m_point->x(), m_point->y());
 }
 
 
@@ -203,11 +204,11 @@ wxString DrawCmd_S::ToString()
 	for (; iterate != controlpoints.end(); iterate++)
 	{
 		if (initialized)
-			assout = wxString::Format(_T("%s %d %d"), assout.c_str(), (*iterate)->x(), (*iterate)->y());
+			assout = wxString::Format(_("%s %d %d"), assout.c_str(), (*iterate)->x(), (*iterate)->y());
 		else
-			assout = wxString::Format(_T("%s ? ?"), assout.c_str());
+			assout = wxString::Format(_("%s ? ?"), assout.c_str());
 	}
-	assout = wxString::Format(_T("%s %d %d"), assout.c_str(), m_point->x(), m_point->y());
-	if (closed) assout = wxString::Format(_T("%s c"), assout.c_str());
+	assout = wxString::Format(_("%s %d %d"), assout.c_str(), m_point->x(), m_point->y());
+	if (closed) assout = wxString::Format(_("%s c"), assout.c_str());
 	return assout;
 }
