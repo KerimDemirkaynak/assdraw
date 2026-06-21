@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -195,19 +196,19 @@ void ASSDrawShapeLibrary::OnMouseRightClick(wxMouseEvent &event)
 	{
 		activepreview = prev;
 		wxMenu *menu = new wxMenu;
-		wxMenuItem *menuload = new wxMenuItem(menu, MENU_LOAD, _T("Load to canvas"));
+		wxMenuItem *menuload = new wxMenuItem(menu, MENU_LOAD, _("Load to canvas"));
 #ifdef __WINDOWS__
 		wxFont f = menuload->GetFont();
 		f.SetWeight(wxFONTWEIGHT_BOLD);
 		menuload->SetFont(f);
 #endif
 		menu->Append(menuload);
-		//menu->Append(MENU_LOAD, _T("Load to canvas"))->GetFont().SetWeight(wxFONTWEIGHT_BOLD);
-		menu->Append(MENU_COPYCLIPBOARD, _T("Copy commands to clipboard"));
-		menu->Append(MENU_SAVECANVAS, _T("Save canvas here"));
+		//menu->Append(MENU_LOAD, _("Load to canvas"))->GetFont().SetWeight(wxFONTWEIGHT_BOLD);
+		menu->Append(MENU_COPYCLIPBOARD, _("Copy commands to clipboard"));
+		menu->Append(MENU_SAVECANVAS, _("Save canvas here"));
 		wxMenu *submenu = new wxMenu;
-		submenu->Append(MENU_DELETE, _T("Confirm delete?"));
-		menu->Append(MENU_DUMMY, _T("Delete from library"), submenu);
+		submenu->Append(MENU_DELETE, _("Confirm delete?"));
+		menu->Append(MENU_DUMMY, _("Delete from library"), submenu);
 		PopupMenu(menu);
 		delete menu;
 	}
@@ -296,7 +297,7 @@ std::vector< ASSDrawShapePreview *> ASSDrawShapeLibrary::GetShapePreviews()
 
 void ASSDrawShapeLibrary::LoadToCanvas(ASSDrawShapePreview *preview)
 {
-	m_frame->m_canvas->AddUndo(_T("Load shape from library"));
+	m_frame->m_canvas->AddUndo(_("Load shape from library"));
 	m_frame->m_canvas->ParseASS(preview->GenerateASS());
 	m_frame->m_canvas->RefreshDisplay();
 	m_frame->m_canvas->RefreshUndocmds();
