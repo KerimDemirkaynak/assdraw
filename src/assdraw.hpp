@@ -1,3 +1,5 @@
+#include <wx/intl.h>
+#include <wx/stdpaths.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -59,13 +61,17 @@ class ASSDrawFrame;
 class ASSDrawCanvas;
 
 class ASSDrawApp : public wxApp 
-{ 
+{
+public:
+    wxLocale m_locale; 
 public:      
     bool OnInit();
 };
 
 class ASSDrawFrame : public wxFrame
 {
+public:
+    void OnChangeLanguage(wxCommandEvent& event);
 public:
     // constructor
     ASSDrawFrame(wxApp *app, const wxString& title, const wxPoint& pos, const wxSize& size = wxDefaultSize,

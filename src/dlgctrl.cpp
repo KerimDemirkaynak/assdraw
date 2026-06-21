@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -80,7 +81,7 @@ void ASSDrawSrcTxtCtrl::CustomOnChar(wxKeyEvent &event)
 	case WXK_TAB:
 		break; //do nothing
 	default:
-		//m_frame->SetTitle(wxString::Format(_T("Key: %d"), event.GetKeyCode()));
+		//m_frame->SetTitle(wxString::Format(_("Key: %d"), event.GetKeyCode()));
 		event.Skip(true);
 	}
 
@@ -253,7 +254,7 @@ void ASSDrawTransformDlg::EndModal(int retCode)
 	if (ok)
 		wxDialog::EndModal(wxID_OK);
 	else
-	    wxMessageBox(_T("One or more values entered are not real numbers.\nPlease fix."), _T("Value error"), wxOK | wxICON_INFORMATION, m_frame);
+	    wxMessageBox(_("One or more values entered are not real numbers.\nPlease fix."), _("Value error"), wxOK | wxICON_INFORMATION, m_frame);
 
 }
 
@@ -300,7 +301,7 @@ Control points for Bezier curves are generated once you release the mouse button
 
 	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), *wxWHITE, this), 1, wxEXPAND);
 	sizer->Add(htmlwin, 1, wxLEFT | wxRIGHT, FromDIP(2));
-	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_T("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
+	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
 	sizer->Add(new wxButton(this, wxID_OK), 0, wxALIGN_CENTER | wxBOTTOM, FromDIP(10));
 	SetSizer(sizer);
 	sizer->Layout();
