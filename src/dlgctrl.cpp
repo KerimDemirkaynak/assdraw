@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -80,7 +81,7 @@ void ASSDrawSrcTxtCtrl::CustomOnChar(wxKeyEvent &event)
 	case WXK_TAB:
 		break; //do nothing
 	default:
-		//m_frame->SetTitle(wxString::Format(_T("Key: %d"), event.GetKeyCode()));
+		//m_frame->SetTitle(wxString::Format(_("Key: %d"), event.GetKeyCode()));
 		event.Skip(true);
 	}
 
@@ -115,7 +116,9 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
     sizer_templates->Add(new wxStaticText( this, -1, _("Templates"), __DPDS__ , 0 ),
 						0, wxALIGN_CENTER_VERTICAL|wxALL, border);
 
-    combo_templates = new wxComboBox( this, -1, combo_templatesStrings[0], __DPDS__ , 10, combo_templatesStrings, wxCB_READONLY );
+    wxArrayString translated_templates;
+    for (int i = 0; i < combo_templatesCount; i++) translated_templates.Add(wxGetTranslation(combo_templatesStrings[i]));
+    combo_templates = new wxComboBox( this, -1, translated_templates[0], __DPDS__ , translated_templates, wxCB_READONLY );
     sizer_templates->Add(combo_templates, 0, wxALIGN_CENTER_VERTICAL|wxALL, border);
 
     wxFlexGridSizer* sizer_fields = new wxFlexGridSizer(3, 4, 0, 0);
@@ -253,7 +256,7 @@ void ASSDrawTransformDlg::EndModal(int retCode)
 	if (ok)
 		wxDialog::EndModal(wxID_OK);
 	else
-	    wxMessageBox(_T("One or more values entered are not real numbers.\nPlease fix."), _T("Value error"), wxOK | wxICON_INFORMATION, m_frame);
+	    wxMessageBox(_("One or more values entered are not real numbers.\nPlease fix."), _("Value error"), wxOK | wxICON_INFORMATION, m_frame);
 
 }
 
@@ -265,7 +268,7 @@ ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	html_logical_size = wxSize(396, 200);
 	htmlwin = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, FromDIP(html_logical_size), wxHW_DEFAULT_STYLE | wxSIMPLE_BORDER);
 	htmlwin->SetPage(
-_T("<html><body> \
+_("<html><body> \
 <p>ASSDraw3 is a tool for designing shapes to be used in ASS subtitle file. \
 <p>To add lines or curves, initiate the draw mode by clicking on the drawing tools. \
 Then, either click on empty space or drag from an existing point to add the new lines/curves. \
@@ -289,7 +292,8 @@ Control points for Bezier curves are generated once you release the mouse button
 <li> Adrian Secord <a href=\"http://mrl.nyu.edu/~ajsecord/index.html\">http://mrl.nyu.edu/~ajsecord/index.html</a> for wxAGG, that combines AGG and wxWidgets\
 <li> jfs, ArchMageZeratul, RoRo and everyone at Aegisub's forum <a href=\"http://malakith.net/aegisub\">http://malakith.net/aegisub</a> for all suggestions and supports. \
 </ul> \
-<p>ai-chan recommends Aegisub for all your subtitle and typesetting needs! \
+<p>ai-chan recommends Aegisub for all your subtitle and typesetting needs!</p> \
+<p>This version was created by Kerim Demirkaynak.</p> \
 </body></html>")
 	);
 	htmlwin->Connect(wxEVT_COMMAND_HTML_LINK_CLICKED, wxHtmlLinkEventHandler(ASSDrawAboutDlg::OnURL), NULL, this);
@@ -300,7 +304,7 @@ Control points for Bezier curves are generated once you release the mouse button
 
 	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), *wxWHITE, this), 1, wxEXPAND);
 	sizer->Add(htmlwin, 1, wxLEFT | wxRIGHT, FromDIP(2));
-	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_T("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
+	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
 	sizer->Add(new wxButton(this, wxID_OK), 0, wxALIGN_CENTER | wxBOTTOM, FromDIP(10));
 	SetSizer(sizer);
 	sizer->Layout();

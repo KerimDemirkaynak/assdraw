@@ -38,6 +38,7 @@ Name: "uk_UA"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
+Source: "build-dir\Release\ASSDraw3.chm"; DestDir: "{app}\bin"; Flags: ignoreversion
 Source: "build-dir\Release\assdraw3.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build-dir\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
