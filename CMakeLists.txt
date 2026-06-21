@@ -140,3 +140,36 @@ set_target_properties(
 )
 
 install(TARGETS assdraw RUNTIME DESTINATION .)
+
+# --- i18n (gettext) CMake Entegrasyonu ---
+find_program(MSGFMT_EXECUTABLE msgfmt PATHS "C:/Program Files/Git/usr/bin" "C:/msys64/usr/bin")
+set(ASSDRAW_LINGUAS tr;en;fr;de;es;zh_TW;vi)
+if(MSGFMT_EXECUTABLE)
+    message(STATUS "Harika! msgfmt bulundu: ${MSGFMT_EXECUTABLE}")
+    set(MO_FILES "")
+    foreach(LANG ${ASSDRAW_LINGUAS})
+        set(PO_FILE "${CMAKE_SOURCE_DIR}/po/${LANG}.po")
+        set(MO_DIR "${CMAKE_CURRENT_BINARY_DIR}/locale/${LANG}/LC_MESSAGES")
+        set(MO_FILE "${MO_DIR}/assdraw.mo")
+        add_custom_command(
+            OUTPUT ${MO_FILE}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_DIR}
+            COMMAND ${MSGFMT_EXECUTABLE} -o ${MO_FILE} ${PO_FILE}
+            DEPENDS ${PO_FILE}
+        )
+        list(APPEND MO_FILES ${MO_FILE})
+    endforeach()
+    add_custom_target(translations DEPENDS ${MO_FILES})
+    
+    if(TARGET assdraw)
+        add_dependencies(assdraw translations)
+        add_custom_command(TARGET assdraw POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/locale"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_CURRENT_BINARY_DIR}/locale"
+            "$<TARGET_FILE_DIR:assdraw>/locale"
+        )
+    endif()
+else()
+    message(FATAL_ERROR "msgfmt bulunamadı! Dil dosyaları derlenemez.")
+endif()

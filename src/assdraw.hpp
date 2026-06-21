@@ -1,3 +1,5 @@
+#include <wx/intl.h>
+#include <wx/stdpaths.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -51,7 +53,7 @@
 #include "library.hpp" // shape library
 
 //#define BETAVERSION 2
-#define VERSION _T("3.0 final")
+#define VERSION _T("3.1")
 
 // this header file declares the following classes
 class ASSDrawApp;
@@ -59,13 +61,17 @@ class ASSDrawFrame;
 class ASSDrawCanvas;
 
 class ASSDrawApp : public wxApp 
-{ 
+{
+public:
+    wxLocale m_locale; 
 public:      
     bool OnInit();
 };
 
 class ASSDrawFrame : public wxFrame
 {
+public:
+    void OnChangeLanguage(wxCommandEvent& event);
 public:
     // constructor
     ASSDrawFrame(wxApp *app, const wxString& title, const wxPoint& pos, const wxSize& size = wxDefaultSize,
