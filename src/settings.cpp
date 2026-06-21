@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -74,7 +75,7 @@ void ASSDrawSettingsDialog::Init()
     	propgrid->SetPropertyAttribute( pgid, wxPG_BOOL_USE_CHECKBOX, (long)1 );
 	wxLongPropertyValidator validator(0x0,0xFF);
 
-    propgrid->Append(new wxPropertyCategory(_T("Appearance"),wxPG_LABEL) );
+    propgrid->Append(new wxPropertyCategory(_("Appearance"),wxPG_LABEL) );
 	APPENDCOLOURPROP(colors_canvas_bg_pgid, _T("Canvas"), m_frame->colors.canvas_bg)
 	APPENDCOLOURPROP(colors_canvas_shape_normal_pgid, _T("Drawing"), m_frame->colors.canvas_shape_normal)
 	APPENDUINTPROP(alphas_canvas_shape_normal_pgid, _T("Drawing @"), m_frame->alphas.canvas_shape_normal)
@@ -97,7 +98,7 @@ void ASSDrawSettingsDialog::Init()
 	APPENDCOLOURPROP(colors_ruler_h_pgid, _T("H ruler"), m_frame->colors.ruler_h)
 	APPENDCOLOURPROP(colors_ruler_v_pgid, _T("V ruler"), m_frame->colors.ruler_v)
 
-    propgrid->Append(new wxPropertyCategory(_T("Behaviors"),wxPG_LABEL) );
+    propgrid->Append(new wxPropertyCategory(_("Behaviors"),wxPG_LABEL) );
 	APPENDBOOLPROP(behaviors_capitalizecmds_pgid, _T("Capitalize commands"), m_frame->behaviors.capitalizecmds);
 	APPENDBOOLPROP(behaviors_autoaskimgopac_pgid, _T("Ask for image opacity"), m_frame->behaviors.autoaskimgopac);
 	APPENDBOOLPROP(behaviors_parse_spc_pgid, _T("Parse S/P/C"), m_frame->behaviors.parse_spc);
@@ -110,10 +111,10 @@ void ASSDrawSettingsDialog::Init()
 	sizer->Add(propgrid, 1, wxEXPAND);
 
 	wxBoxSizer *bsizer = new wxBoxSizer(wxHORIZONTAL);
-	wxButton *abutton = new wxButton(this, wxID_ANY, _T("Apply"));
+	wxButton *abutton = new wxButton(this, wxID_ANY, _("Apply"));
 	abutton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ASSDrawSettingsDialog::OnSettingsApplyButtonClicked), NULL, this);
 	bsizer->Add(abutton, 2, wxEXPAND);
-	wxButton *rbutton = new wxButton(this, wxID_ANY, _T("Revert"));
+	wxButton *rbutton = new wxButton(this, wxID_ANY, _("Revert"));
 	rbutton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ASSDrawSettingsDialog::OnSettingsRevertButtonClicked), NULL, this);
 	bsizer->Add(rbutton, 1, wxEXPAND);
 	bsizer->Layout();
