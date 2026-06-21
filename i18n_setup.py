@@ -9,17 +9,22 @@ import subprocess
 DOMAIN = "assdraw"
 PO_DIR = "po"
 
-LANG_INFO = {
-    "tr": {"wx_lang": "wxLANGUAGE_TURKISH", "label": "Turkish", "native": "Türkçe"},
-    "en": {"wx_lang": "wxLANGUAGE_ENGLISH", "label": "English", "native": "English"}
-}
+# Hedef dil (İngilizce C++'ın varsayılan dili olduğu için çeviri dosyasına gerek yok, kaldırıldı)
+TARGET_LANGUAGES = ["tr"]
 
-# ÇÖZÜM 2: SetPage, wxMessageDialog, wxString::Format ve AddUndo gibi atlanan tüm UI fonksiyonları eklendi.
+# Dil menüsünde görünecek diller (Sabit isimlerle, çevrilmeden kalacak)
+MENU_LANGUAGES = [
+    {"id_num": 6001, "wx_lang": "wxLANGUAGE_ENGLISH", "native": "English"},
+    {"id_num": 6002, "wx_lang": "wxLANGUAGE_TURKISH", "native": "Türkçe"}
+]
+
+# EKSİK 1 ÇÖZÜMÜ: AddTool, AddCheckTool, AddRadioTool eklendi. Artık ToolBar metinleri kaçmayacak.
 CALL_FUNCS = [
     "SetTitle", "SetLabel", "SetToolTip", "SetHelpText", "SetStatusText", "SetPage",
     "wxMessageBox", "wxMessageDialog", "Append", "AppendItem", "AppendRadioItem", "AppendCheckItem",
     "Insert", "SetName", "AddUndo", "wxString::Format", "Format",
-    "APPENDCOLOURPROP", "APPENDUINTPROP", "APPENDBOOLPROP"
+    "APPENDCOLOURPROP", "APPENDUINTPROP", "APPENDBOOLPROP",
+    "AddTool", "AddCheckTool", "AddRadioTool", "AddControl"
 ]
 CTOR_CLASSES = [
     "wxStaticText", "wxButton", "wxCheckBox", "wxRadioButton",
@@ -27,7 +32,6 @@ CTOR_CLASSES = [
     "wxPropertyCategory", "wxColourProperty", "wxUIntProperty", "wxBoolProperty"
 ]
 
-# ÇÖZÜM 2 (Devamı): About sayfasındaki gibi çok satırlı HTML metinlerini yakalamak için re.DOTALL (Satır atlama) eklendi.
 STRLIT = re.compile(
     r'_\(\s*"(?:[^"\\]|\\.)*"\s*\)'
     r'|_T\(\s*"((?:[^"\\]|\\.)*)"\s*\)'
@@ -147,15 +151,14 @@ def wrap_ui_strings(src_dir, cache):
     print(f"[*] Toplam {total_files} dosyada {total_strings} UI metni _() ile güvenle sarıldı.")
 
 def fix_include_once_and_dlgctrl(cache):
-    # ÇÖZÜM 1 & 2: Uygulama başlangıç çökmesini (static init fiasco) ve eksik kelimeleri düzeltir
     path_inc = "src/include_once.hpp"
     if os.path.exists(path_inc):
         content = cache.read(path_inc)
         
-        # 1. TIPS_ ve TBNAME_ sabitlerini #define (Makro) formatına çevir, böylece çalışma zamanında güvenle çevrilir.
-        content = re.sub(r'const\s+wxString\s+((?:TIPS|TBNAME)_[A-Z0-9_]+)\s*=\s*(?:wxT|_T|_)?\(\s*(".*?")\s*\);', r'#define \1 _(\2)', content)
+        # EKSİK 2 ÇÖZÜMÜ: TIPS_CLEAR gibi global değişkenleri makroya (#define) çevir.
+        # Bu sayede çalışma zamanında çağrıldıkları an güvenle çevrilirler.
+        content = re.sub(r'const\s+wxString\s+([A-Za-z0-9_]+)\s*=\s*(?:wxT|_T)\(\s*(".*?")\s*\);', r'#define \1 _(\2)', content)
 
-        # 2. combo_templatesStrings dizisindeki tehlikeli _() kalıplarını wxTRANSLATE() ile değiştir (ÇÖKMEYİ ENGELLER)
         def repl_array(match):
             inner = match.group(1)
             inner = re.sub(r'(?:_|_T|wxT)\(\s*("[^"]+")\s*\)', r'wxTRANSLATE(\1)', inner)
@@ -163,9 +166,7 @@ def fix_include_once_and_dlgctrl(cache):
         
         content = re.sub(r'wxString\s+ASSDrawTransformDlg::combo_templatesStrings\[\]\s*=\s*\{(.*?)\};', repl_array, content, flags=re.DOTALL)
         cache.write(path_inc, content)
-        print("[*] include_once.hpp çökme koruması uygulandı ve sabitler makroya çevrildi.")
 
-    # 3. wxTRANSLATE ile tutulan dizi kelimelerini ComboBox'a aktarılırken dinamik olarak çevir
     path_dlg = "src/dlgctrl.cpp"
     if os.path.exists(path_dlg):
         content = cache.read(path_dlg)
@@ -176,9 +177,8 @@ def fix_include_once_and_dlgctrl(cache):
         if 'translated_templates' not in content:
             content = re.sub(old_combo_code, new_combo_code, content)
             cache.write(path_dlg, content)
-            print("[*] dlgctrl.cpp ComboBox dinamik çeviri entegrasyonu tamamlandı.")
 
-def setup_language_support(cache, target_langs):
+def setup_language_support(cache):
     hpp_path = 'src/assdraw.hpp'
     cpp_path = 'src/assdraw.cpp'
     
@@ -228,12 +228,13 @@ def setup_language_support(cache, target_langs):
         
         menu_items_cpp = ""
         checks_cpp = ""
-        for idx, lang in enumerate(target_langs):
-            menu_id = 6001 + idx
-            label = LANG_INFO[lang]['label']
-            wx_lang = LANG_INFO[lang]['wx_lang']
+        for lang in MENU_LANGUAGES:
+            menu_id = lang['id_num']
+            native = lang['native']
+            wx_lang = lang['wx_lang']
             
-            menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, _("{label}"));\n'
+            # EKSİK 4 ÇÖZÜMÜ: Sabit menü isimleri için _() kaldırıldı, doğrudan wxT("English") kullanıldı.
+            menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, wxT("{native}"));\n'
             checks_cpp += f'    if (currentLang == {wx_lang}) langMenu->Check({menu_id}, true);\n    else '
 
         menu_code = f"""
@@ -250,9 +251,9 @@ def setup_language_support(cache, target_langs):
 
     if 'void ASSDrawFrame::OnChangeLanguage' not in cpp_content:
         branches_cpp = ""
-        for idx, lang in enumerate(target_langs):
-            menu_id = 6001 + idx
-            wx_lang = LANG_INFO[lang]['wx_lang']
+        for lang in MENU_LANGUAGES:
+            menu_id = lang['id_num']
+            wx_lang = lang['wx_lang']
             branches_cpp += f'    else if (event.GetId() == {menu_id}) langId = {wx_lang};\n'
 
         func_code = f"""
@@ -322,12 +323,16 @@ endif()
 
 def run_gettext_tools(src_dir, target_langs):
     os.makedirs(PO_DIR, exist_ok=True)
+    
+    # EKSİK 3 ÇÖZÜMÜ: Eğer önceden kalmış gereksiz bir en.po dosyası varsa sil
+    if os.path.exists(os.path.join(PO_DIR, "en.po")):
+        os.remove(os.path.join(PO_DIR, "en.po"))
+        
     src_files = [os.path.join(root, fn) for root, _, files in os.walk(src_dir) for fn in files if fn.endswith((".cpp", ".hpp", ".h"))]
 
     pot_path = os.path.join(PO_DIR, f"{DOMAIN}.pot")
     
     if shutil.which("xgettext"):
-        # wxTRANSLATE komutunu da xgettext'in lugatına ekledik
         subprocess.run(["xgettext", "--keyword=_", "--keyword=wxTRANSLATE", "--from-code=UTF-8", "--package-name", DOMAIN, "-d", DOMAIN, "-o", pot_path] + src_files, check=True)
 
     for lang in target_langs:
@@ -354,9 +359,6 @@ msgstr "Yeniden Başlatma Gerekli"
 
 msgid "Please restart Assdraw for language changes to take effect."
 msgstr "Dil ayarlarının etkinleşmesi için lütfen Assdraw'ı yeniden başlatın."
-
-msgid "{LANG_INFO[lang]['label']}"
-msgstr "{LANG_INFO[lang]['native']}"
 '''
                 f.write(content)
 
@@ -368,27 +370,31 @@ def update_inno_setup():
     if not os.path.exists(path): return
     with open(path, "r", encoding="utf-8") as f: content = f.read()
 
+    # EKSİK 5 ÇÖZÜMÜ: DLL görüntü kirliliğini gidermek için tüm ikili dosyaları {app}\bin içine paketle
+    content = content.replace('DestDir: "{app}"', 'DestDir: "{app}\\bin"')
+    content = content.replace('Filename: "{app}\\assdraw3.exe"', 'Filename: "{app}\\bin\\assdraw3.exe"')
     content = re.sub(r'\s*skipifsourcedoesntexist', '', content)
 
     if "locale\\*" not in content:
-        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs\n'
+        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\bin\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs\n'
         if "[Files]" in content:
             content = content.replace("[Files]\n", "[Files]\n" + insert_line)
             with open(path, "w", encoding="utf-8") as f: f.write(content)
 
 def main():
     print("=== ASSDraw3 i18n Kesin Fix Başlıyor ===\n")
-    TARGET_LANGUAGES = ["tr", "en"] 
     
     cache = FileCache()
     wrap_ui_strings("src", cache)
     fix_include_once_and_dlgctrl(cache)
-    setup_language_support(cache, TARGET_LANGUAGES)
+    setup_language_support(cache)
     cache.flush()
+    
     update_cmake(TARGET_LANGUAGES)
     run_gettext_tools("src", TARGET_LANGUAGES)
     update_inno_setup()
-    print("\n=== İşlem Tamamlandı! Artık çökme yok, eksik metin yok. ===")
+    
+    print("\n=== İşlem Tamamlandı! ===")
 
 if __name__ == "__main__":
     main()
