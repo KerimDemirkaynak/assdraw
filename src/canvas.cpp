@@ -1,3 +1,4 @@
+#include <wx/intl.h>
 /*
 * Copyright (c) 2007, ai-chan
 * All rights reserved.
@@ -148,7 +149,7 @@ ASSDrawCanvas::~ASSDrawCanvas()
 void ASSDrawCanvas::ParseASS(wxString str, bool addundo)
 {
 	if (addundo)
-		AddUndo(_T("Modify drawing commands"));
+		AddUndo(_("Modify drawing commands"));
 
 	ASSDrawEngine::ParseASS(str);
 
@@ -597,7 +598,7 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
     if (hasStatusBar)
 	{
         m_frame->SetStatusText(
-            wxString::Format( _T("%5d %5d"), (int)wx, (int)wy ), 0 );
+            wxString::Format( _("%5d %5d"), (int)wx, (int)wy ), 0 );
         if (pointedAt_point == NULL ||
              (newcommand != NULL && !newcommand->initialized) )
            m_frame->SetStatusText( _T(""), 1 );
@@ -881,14 +882,14 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 		switch (dblclicked_point_right->cmd_main->type)
 		{
 			case L:
-				menu->Append(MENU_DRC_LNTOBEZ, _T("Convert to Bezier curve (B command)"));
+				menu->Append(MENU_DRC_LNTOBEZ, _("Convert to Bezier curve (B command)"));
 				break;
 			case B:
 				if (dblclicked_point_right->type != MP) break;
-				menu->AppendCheckItem(MENU_DRC_BEZTOLN, _T("Convert to line (L command)"));
+				menu->AppendCheckItem(MENU_DRC_BEZTOLN, _("Convert to line (L command)"));
 				if (dblclicked_point_right->cmd_next && dblclicked_point_right->cmd_next->type == B)
 				{
-					menu->AppendCheckItem(MENU_DRC_C1CONTBEZ, _T("Smooth connection"));
+					menu->AppendCheckItem(MENU_DRC_C1CONTBEZ, _("Smooth connection"));
 					if (static_cast<DrawCmd_B*>(dblclicked_point_right->cmd_main)->C1Cont)
 						menu->Check(MENU_DRC_C1CONTBEZ, true);
 				}
@@ -898,13 +899,13 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 	}
 	else
 	{
-		menu->Append(MENU_DRC_MOVE00, _T("Move [0,0] here"));
+		menu->Append(MENU_DRC_MOVE00, _("Move [0,0] here"));
 		menu->AppendSeparator();
-		menu->AppendRadioItem(MODE_ARR, _T("Mode: D&rag"));
-		menu->AppendRadioItem(MODE_M, _T("Mode: Draw &M"));
-		menu->AppendRadioItem(MODE_L, _T("Mode: Draw &L"));
-		menu->AppendRadioItem(MODE_B, _T("Mode: Draw &B"));
-		menu->AppendRadioItem(MODE_DEL, _T("Mode: &Delete"));
+		menu->AppendRadioItem(MODE_ARR, _("Mode: D&rag"));
+		menu->AppendRadioItem(MODE_M, _("Mode: Draw &M"));
+		menu->AppendRadioItem(MODE_L, _("Mode: Draw &L"));
+		menu->AppendRadioItem(MODE_B, _("Mode: Draw &B"));
+		menu->AppendRadioItem(MODE_DEL, _("Mode: &Delete"));
 		menu->Check(GetDrawMode(), true);
 	}
 
@@ -1053,7 +1054,7 @@ void ASSDrawCanvas::MoveCanvasBackground(double xamount, double yamount)
 void ASSDrawCanvas::OnSelect_ConvertLineToBezier(wxCommandEvent&)
 {
 	if (!dblclicked_point_right) return;
-	AddUndo( _T("Convert Line to Bezier") );
+	AddUndo( _("Convert Line to Bezier") );
 	DrawCmd_B *newB = new DrawCmd_B(dblclicked_point_right->x(), dblclicked_point_right->y(),
 		pointsys, dblclicked_point_right->cmd_main);
 	InsertCmd ( newB, dblclicked_point_right->cmd_main );
@@ -1069,7 +1070,7 @@ void ASSDrawCanvas::OnSelect_ConvertLineToBezier(wxCommandEvent&)
 void ASSDrawCanvas::OnSelect_ConvertBezierToLine(wxCommandEvent&)
 {
 	if (!dblclicked_point_right) return;
-	AddUndo( _T("Convert Bezier to Line") );
+	AddUndo( _("Convert Bezier to Line") );
 	DrawCmd_L *newL = new DrawCmd_L(dblclicked_point_right->x(), dblclicked_point_right->y(), pointsys, dblclicked_point_right->cmd_main);
 	InsertCmd ( newL, dblclicked_point_right->cmd_main );
 	ClearPointsSelection();
@@ -1085,14 +1086,14 @@ void ASSDrawCanvas::OnSelect_C1ContinuityBezier(wxCommandEvent&)
 {
 	if (!dblclicked_point_right) return;
 	DrawCmd_B *cmdb = static_cast<DrawCmd_B*>(dblclicked_point_right->cmd_main);
-	AddUndo( cmdb->C1Cont? _T("Unset continuous"):_T("Set continuous") );
+	AddUndo( cmdb->C1Cont? _("Unset continuous"):_("Set continuous") );
 	cmdb->C1Cont = !cmdb->C1Cont;
 	RefreshUndocmds();
 }
 
 void ASSDrawCanvas::OnSelect_Move00Here(wxCommandEvent&)
 {
-	AddUndo( _T("Move origin") );
+	AddUndo( _("Move origin") );
 	int wx, wy;
 	pointsys->FromWxPoint(mouse_point, wx, wy);
 	wxPoint wxp = pointsys->ToWxPoint(wx, wy);
@@ -1473,7 +1474,7 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 				t.size(scale_ui(8.0));
 				wxPoint pxy = hilite_point->ToWxPoint(true);
 				t.start_point(pxy.x + dip(5), pxy.y - dip(5));
-				t.text(wxString::Format(_T("%d,%d"), hilite_point->x(), hilite_point->y()).mb_str(wxConvUTF8));
+				t.text(wxString::Format(_("%d,%d"), hilite_point->x(), hilite_point->y()).mb_str(wxConvUTF8));
 				agg::conv_stroke< agg::gsv_text > pt(t);
 				pt.line_cap(agg::round_cap);
 				pt.line_join(agg::round_join);
@@ -1616,14 +1617,14 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 void ASSDrawCanvas::ReceiveBackgroundImageFileDropEvent(const wxString& filename)
 {
 	const wxChar *shortfname = wxFileName::FileName(filename).GetFullName().c_str();
-	m_frame->SetStatusText(wxString::Format(_T("Loading '%s' as canvas background ..."), shortfname), 1);
+	m_frame->SetStatusText(wxString::Format(_("Loading '%s' as canvas background ..."), shortfname), 1);
 	wxImage img;
 	img.LoadFile(filename);
 	if (img.IsOk())
 	{
 		SetBackgroundImage(img, filename);
 	}
-	m_frame->SetStatusText(_T("Canvas background loaded"), 1);
+	m_frame->SetStatusText(_("Canvas background loaded"), 1);
 }
 
 void ASSDrawCanvas::RemoveBackgroundImage()
