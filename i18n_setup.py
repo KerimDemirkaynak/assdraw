@@ -240,7 +240,6 @@ void ASSDrawFrame::OnChangeLanguage(wxCommandEvent& event) {{
             cpp_content += "\n" + func_code
 
     cache.write(cpp_path, cpp_content)
-    print("[*] wxWidgets Dinamik Dil Menüsü başarıyla enjekte edildi.")
 
 def update_cmake(target_langs):
     path = "CMakeLists.txt"
@@ -252,11 +251,14 @@ def update_cmake(target_langs):
 
     linguas_cmake = ";".join(target_langs)
     
+    # İŞTE ÇÖZÜM BURADA: CMake'e Windows (GitHub Actions) üzerinde msgfmt'nin gizlendiği yeri söylüyoruz.
+    # Ayrıca hata durumunda sessiz kalmak yerine (WARNING) zorunlu olarak fail (FATAL_ERROR) vermesini sağlıyoruz.
     block = f'''
 # --- i18n (gettext) CMake Entegrasyonu ---
-find_program(MSGFMT_EXECUTABLE msgfmt)
+find_program(MSGFMT_EXECUTABLE msgfmt PATHS "C:/Program Files/Git/usr/bin" "C:/msys64/usr/bin")
 set(ASSDRAW_LINGUAS {linguas_cmake})
 if(MSGFMT_EXECUTABLE)
+    message(STATUS "Harika! msgfmt bulundu: ${{MSGFMT_EXECUTABLE}}")
     set(MO_FILES "")
     foreach(LANG ${{ASSDRAW_LINGUAS}})
         set(PO_FILE "${{CMAKE_SOURCE_DIR}}/po/${{LANG}}.po")
@@ -278,7 +280,7 @@ if(MSGFMT_EXECUTABLE)
         "$<TARGET_FILE_DIR:assdraw>/locale"
     )
 else()
-    message(WARNING "msgfmt bulunamadı, .po dosyaları derlenmeyecek.")
+    message(FATAL_ERROR "msgfmt bulunamadı! Dil dosyaları derlenemez. Lütfen CMake PATH'ini kontrol edin.")
 endif()
 '''
     with open(path, "w", encoding="utf-8") as f: f.write(content + "\n" + block)
@@ -330,14 +332,15 @@ def update_inno_setup():
     if not os.path.exists(path): return
     with open(path, "r", encoding="utf-8") as f: content = f.read()
 
-    # Eğer locale klasörü [Files] altına henüz eklenmemişse ekle
-    # ÇÖZÜM: skipifsourcedoesntexist eklendi.
+    # Önceki hatalı 'skipifsourcedoesntexist' ibaresini tamamen temizliyoruz.
+    content = re.sub(r'\s*skipifsourcedoesntexist', '', content)
+
     if "locale\\*" not in content:
-        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist\n'
+        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs\n'
         if "[Files]" in content:
             content = content.replace("[Files]\n", "[Files]\n" + insert_line)
             with open(path, "w", encoding="utf-8") as f: f.write(content)
-            print("[*] setup.iss Inno Setup dosyası güncellendi (locale klasörü paketleyiciye eklendi).")
+            print("[*] setup.iss güncellendi (locale klasörü paketleyiciye eklendi).")
 
 def main():
     print("=== ASSDraw3 i18n Fix Başlıyor ===\n")
