@@ -1,0 +1,47 @@
+name: i18n Auto-Setup & Update
+
+on:
+  workflow_dispatch: # Sadece Actions sekmesinden manuel tetiklendiğinde çalışır
+
+jobs:
+  run-i18n-automation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install gettext (for xgettext, msgmerge)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext
+
+      - name: Run i18n Automation Script
+        run: |
+          # Betiğin ana dizinde i18n_setup.py adıyla bulunduğunu varsayıyoruz
+          python i18n_setup.py
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: auto-apply i18n wrapping and translation templates"
+          title: "🌐 Otomatik i18n (Çeviri) Güncellemesi"
+          body: |
+            Bu PR, `i18n_setup.py` betiği tarafından otomatik olarak oluşturulmuştur.
+            
+            **Yapılan Değişiklikler:**
+            - UI metinleri güvenli bir şekilde `_()` ile sarıldı.
+            - `assdraw.cpp` ve `assdraw.hpp` içerisine wxLocale ve Dil Menüsü enjekte edildi.
+            - `CMakeLists.txt` gettext derlemesi yapacak şekilde güncellendi.
+            - `.po` dil dosyaları güncellendi/oluşturuldu.
+            
+            Lütfen birleştirilmeden önce değiştirilen C++ kodlarını hızlıca gözden geçirin.
+          branch: i18n-auto-update
+          base: master # veya ana dalınızın adı main ise main olarak değiştirin
+          labels: "i18n, automated pr"
