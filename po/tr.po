@@ -1,0 +1,517 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Assdraw3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-21 01:08+0000\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/include_once.hpp:69
+msgid "<Select>"
+msgstr ""
+
+#: src/include_once.hpp:70
+msgid "Move 5 units down"
+msgstr ""
+
+#: src/include_once.hpp:71
+msgid "Move 5 units right"
+msgstr ""
+
+#: src/include_once.hpp:72
+msgid "Rotate 90 clockwise at (1, 2)"
+msgstr ""
+
+#: src/include_once.hpp:73
+msgid "Rotate 90 counterclockwise at (-1, 2)"
+msgstr ""
+
+#: src/include_once.hpp:74
+msgid "Rotate 180 at (0, 0)"
+msgstr ""
+
+#: src/include_once.hpp:75
+msgid "Flip horizontally at X = 4"
+msgstr ""
+
+#: src/include_once.hpp:76
+msgid "Flip vertically at Y = 3"
+msgstr ""
+
+#: src/include_once.hpp:77
+msgid "Scale up horizontally by a factor of 2"
+msgstr ""
+
+#: src/include_once.hpp:78
+msgid "Scale up vertically by a factor of 3"
+msgstr ""
+
+#: src/canvas.cpp:601
+#, c-format
+msgid "%5d %5d"
+msgstr ""
+
+#: src/canvas.cpp:885
+msgid "Convert to Bezier curve (B command)"
+msgstr ""
+
+#: src/canvas.cpp:889
+msgid "Convert to line (L command)"
+msgstr ""
+
+#: src/canvas.cpp:892
+msgid "Smooth connection"
+msgstr ""
+
+#: src/canvas.cpp:902
+msgid "Move [0,0] here"
+msgstr ""
+
+#: src/canvas.cpp:904
+msgid "Mode: D&rag"
+msgstr ""
+
+#: src/canvas.cpp:905
+msgid "Mode: Draw &M"
+msgstr ""
+
+#: src/canvas.cpp:906
+msgid "Mode: Draw &L"
+msgstr ""
+
+#: src/canvas.cpp:907
+msgid "Mode: Draw &B"
+msgstr ""
+
+#: src/canvas.cpp:908
+msgid "Mode: &Delete"
+msgstr ""
+
+#: src/canvas.cpp:1620
+#, c-format
+msgid "Loading '%s' as canvas background ..."
+msgstr ""
+
+#: src/canvas.cpp:1627
+msgid "Canvas background loaded"
+msgstr ""
+
+#: src/settings.cpp:78
+msgid "Appearance"
+msgstr ""
+
+#: src/settings.cpp:79
+msgid "Canvas"
+msgstr ""
+
+#: src/settings.cpp:80
+msgid "Drawing"
+msgstr ""
+
+#: src/settings.cpp:81
+msgid "Drawing @"
+msgstr ""
+
+#: src/settings.cpp:82
+msgid "Preview"
+msgstr ""
+
+#: src/settings.cpp:83
+msgid "Preview @"
+msgstr ""
+
+#: src/settings.cpp:84
+msgid "Outline"
+msgstr ""
+
+#: src/settings.cpp:85
+msgid "Outline @"
+msgstr ""
+
+#: src/settings.cpp:86
+msgid "Control lines"
+msgstr ""
+
+#: src/settings.cpp:87
+msgid "Control lines @"
+msgstr ""
+
+#: src/settings.cpp:88
+msgid "Points"
+msgstr ""
+
+#: src/settings.cpp:89
+msgid "Points @"
+msgstr ""
+
+#: src/settings.cpp:90
+msgid "Control points"
+msgstr ""
+
+#: src/settings.cpp:91
+msgid "Control points @"
+msgstr ""
+
+#: src/settings.cpp:92
+msgid "Selected points"
+msgstr ""
+
+#: src/settings.cpp:93
+msgid "Selected points @"
+msgstr ""
+
+#: src/settings.cpp:94
+msgid "Library"
+msgstr ""
+
+#: src/settings.cpp:95
+msgid "Library shapes"
+msgstr ""
+
+#: src/settings.cpp:96
+msgid "Origin"
+msgstr ""
+
+#: src/settings.cpp:97
+msgid "Origin cross size"
+msgstr ""
+
+#: src/settings.cpp:98
+msgid "H ruler"
+msgstr ""
+
+#: src/settings.cpp:99
+msgid "V ruler"
+msgstr ""
+
+#: src/settings.cpp:101
+msgid "Behaviors"
+msgstr ""
+
+#: src/settings.cpp:102
+msgid "Capitalize commands"
+msgstr ""
+
+#: src/settings.cpp:103
+msgid "Ask for image opacity"
+msgstr ""
+
+#: src/settings.cpp:104
+msgid "Parse S/P/C"
+msgstr ""
+
+#: src/settings.cpp:105
+msgid "No splash screen"
+msgstr ""
+
+#: src/settings.cpp:106
+msgid "Confirm quit"
+msgstr ""
+
+#: src/settings.cpp:114
+msgid "Apply"
+msgstr ""
+
+#: src/settings.cpp:117
+msgid "Revert"
+msgstr ""
+
+#: src/dlgctrl.cpp:116
+msgid "Templates"
+msgstr ""
+
+#: src/dlgctrl.cpp:128
+msgid "m11"
+msgstr ""
+
+#: src/dlgctrl.cpp:134
+msgid "m12"
+msgstr ""
+
+#: src/dlgctrl.cpp:140
+msgid "m21"
+msgstr ""
+
+#: src/dlgctrl.cpp:146
+msgid "m22"
+msgstr ""
+
+#: src/dlgctrl.cpp:152
+msgid "mx"
+msgstr ""
+
+#: src/dlgctrl.cpp:158
+msgid "my"
+msgstr ""
+
+#: src/dlgctrl.cpp:164
+msgid "nx"
+msgstr ""
+
+#: src/dlgctrl.cpp:170
+msgid "ny"
+msgstr ""
+
+#: src/dlgctrl.cpp:182
+msgid "&OK"
+msgstr ""
+
+#: src/dlgctrl.cpp:185
+msgid "&Cancel"
+msgstr ""
+
+#: src/dlgctrl.cpp:257
+msgid ""
+"One or more values entered are not real numbers.\n"
+"Please fix."
+msgstr ""
+
+#: src/dlgctrl.cpp:257
+msgid "Value error"
+msgstr ""
+
+#: src/dlgctrl.cpp:304
+#, c-format
+msgid "Version: %s"
+msgstr ""
+
+#: src/assdraw.cpp:284
+msgid "&Clear\tCtrl+N"
+msgstr ""
+
+#: src/assdraw.cpp:286
+msgid "&Preview\tCtrl+P"
+msgstr ""
+
+#: src/assdraw.cpp:287
+msgid "&Transform"
+msgstr ""
+
+#: src/assdraw.cpp:288
+msgid "&Paste\tCtrl+V"
+msgstr ""
+
+#: src/assdraw.cpp:290
+msgid "&Undo\tCtrl+Z"
+msgstr ""
+
+#: src/assdraw.cpp:291
+msgid "&Redo\tCtrl+Y"
+msgstr ""
+
+#: src/assdraw.cpp:296
+msgid "D&rag\tF1"
+msgstr ""
+
+#: src/assdraw.cpp:297
+msgid "Draw &M\tF2"
+msgstr ""
+
+#: src/assdraw.cpp:298
+msgid "Draw &L\tF3"
+msgstr ""
+
+#: src/assdraw.cpp:299
+msgid "Draw &B\tF4"
+msgstr ""
+
+#: src/assdraw.cpp:300
+msgid "&Delete\tF5"
+msgstr ""
+
+#: src/assdraw.cpp:301
+msgid "&Scale/Rotate\tF6"
+msgstr ""
+
+#: src/assdraw.cpp:302
+msgid "&Bilinear transformation\tF7"
+msgstr ""
+
+#: src/assdraw.cpp:305
+msgid "Pan/Zoom &Drawing\tShift+F1"
+msgstr ""
+
+#: src/assdraw.cpp:306
+msgid "Pan/Zoom Back&ground\tShift+F2"
+msgstr ""
+
+#: src/assdraw.cpp:308
+msgid "Set background image opacity"
+msgstr ""
+
+#: src/assdraw.cpp:310
+msgid "Top left\tCtrl+Shift+7"
+msgstr ""
+
+#: src/assdraw.cpp:311
+msgid "Top right\tCtrl+Shift+9"
+msgstr ""
+
+#: src/assdraw.cpp:312
+msgid "&Center\tCtrl+Shift+5"
+msgstr ""
+
+#: src/assdraw.cpp:313
+msgid "Bottom left\tCtrl+Shift+1"
+msgstr ""
+
+#: src/assdraw.cpp:314
+msgid "Bottom right\tCtrl+Shift+3"
+msgstr ""
+
+#: src/assdraw.cpp:315 src/assdraw.cpp:340
+msgid "Reposition [&0, 0]"
+msgstr ""
+
+#: src/assdraw.cpp:316
+msgid "Remove background\tShift+Del"
+msgstr ""
+
+#: src/assdraw.cpp:319
+msgid "Top left\tCtrl+7"
+msgstr ""
+
+#: src/assdraw.cpp:320
+msgid "Top right\tCtrl+9"
+msgstr ""
+
+#: src/assdraw.cpp:321
+msgid "&Center\tCtrl+5"
+msgstr ""
+
+#: src/assdraw.cpp:322
+msgid "Bottom left\tCtrl+1"
+msgstr ""
+
+#: src/assdraw.cpp:323
+msgid "Bottom right\tCtrl+3"
+msgstr ""
+
+#: src/assdraw.cpp:330
+msgid "Show all"
+msgstr ""
+
+#: src/assdraw.cpp:331
+msgid "Hide all"
+msgstr ""
+
+#: src/assdraw.cpp:332
+msgid "Dock all"
+msgstr ""
+
+#: src/assdraw.cpp:333
+msgid "Undock all"
+msgstr ""
+
+#: src/assdraw.cpp:336
+msgid "&Library"
+msgstr ""
+
+#: src/assdraw.cpp:338
+msgid "&Settings"
+msgstr ""
+
+#: src/assdraw.cpp:339
+msgid "&Toolbars"
+msgstr ""
+
+#: src/assdraw.cpp:342
+msgid "&Reset workspace"
+msgstr ""
+
+#: src/assdraw.cpp:345
+msgid "&Manual"
+msgstr ""
+
+#: src/assdraw.cpp:346
+msgid "&About"
+msgstr ""
+
+#: src/assdraw.cpp:349
+msgid "&Canvas"
+msgstr ""
+
+#: src/assdraw.cpp:350
+msgid "&Mode"
+msgstr ""
+
+#: src/assdraw.cpp:351
+msgid "&Background"
+msgstr ""
+
+#: src/assdraw.cpp:352
+msgid "&Workspace"
+msgstr ""
+
+#: src/assdraw.cpp:353
+msgid "&Help"
+msgstr ""
+
+#: src/assdraw.cpp:358
+msgid "System Default"
+msgstr "Sistem Varsayılanı"
+
+#: src/assdraw.cpp:359
+msgid "Turkish"
+msgstr "Türkçe"
+
+#: src/assdraw.cpp:360
+msgid "English"
+msgstr ""
+
+#: src/assdraw.cpp:368
+msgid "Language"
+msgstr "Dil"
+
+#: src/assdraw.cpp:744
+msgid "Undo\tCtrl+Z"
+msgstr ""
+
+#: src/assdraw.cpp:749
+#, c-format
+msgid "Undo: %s\tCtrl+Z"
+msgstr ""
+
+#: src/assdraw.cpp:755
+msgid "Redo\tCtrl+Y"
+msgstr ""
+
+#: src/assdraw.cpp:760
+#, c-format
+msgid "Redo: %s\tCtrl+Y"
+msgstr ""
+
+#: src/assdraw.cpp:795
+#, c-format
+msgid "%d%%"
+msgstr ""
+
+#: src/assdraw.cpp:816
+msgid "Please restart Assdraw for language changes to take effect."
+msgstr "Dil ayarlarının etkinleşmesi için lütfen Assdraw'ı yeniden başlatın."
+
+#: src/assdraw.cpp:816
+msgid "Restart Required"
+msgstr "Yeniden Başlatma Gerekli"
+
+#: src/library.cpp:199
+msgid "Load to canvas"
+msgstr ""
+
+#: src/library.cpp:207
+msgid "Copy commands to clipboard"
+msgstr ""
+
+#: src/library.cpp:208
+msgid "Save canvas here"
+msgstr ""
+
+#: src/library.cpp:210
+msgid "Confirm delete?"
+msgstr ""
+
+#: src/library.cpp:211
+msgid "Delete from library"
+msgstr ""
