@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-ASSDraw3 i18n Kusursuz Otomasyon Betiği
-=======================================
-Claude'un güvenli C++ AST (parantez sayıcı) ayrıştırıcısı ile 
-doğru CMake (gettext) ve wxWidgets yapılandırmasının birleştirilmiş halidir.
-"""
 
 import os
 import re
@@ -205,7 +199,8 @@ def setup_language_support(cache):
 """
             cpp_content = cpp_content.replace(match.group(0), menu_code + "\n    " + match.group(0))
 
-    if 'ASSDrawFrame::OnChangeLanguage' not in cpp_content:
+    # HATA BURADAYDI: Kontrolü void ekleyerek daha spesifik hale getirdik
+    if 'void ASSDrawFrame::OnChangeLanguage' not in cpp_content:
         func_code = """
 void ASSDrawFrame::OnChangeLanguage(wxCommandEvent& event) {
     int langId = wxLANGUAGE_DEFAULT;
@@ -225,13 +220,10 @@ void ASSDrawFrame::OnChangeLanguage(wxCommandEvent& event) {
             cpp_content += "\n" + func_code
 
     cache.write(cpp_path, cpp_content)
-    print("[*] wxWidgets Dil Menüsü ve Locale ayarları assdraw.cpp/hpp'ye başarıyla enjekte edildi.")
 
 def update_cmake(target_langs):
     path = "CMakeLists.txt"
-    if not os.path.exists(path):
-        print("[!] CMakeLists.txt bulunamadı!")
-        return
+    if not os.path.exists(path): return
     with open(path, "r", encoding="utf-8") as f: content = f.read()
     if "MSGFMT_EXECUTABLE" in content: return
     
@@ -260,11 +252,9 @@ else()
 endif()
 '''
     with open(path, "a", encoding="utf-8") as f: f.write(block)
-    print("[*] CMakeLists.txt gettext destekleyecek şekilde güncellendi.")
 
 def run_gettext_tools(src_dir, target_langs):
     if shutil.which("xgettext") is None:
-        print("[!] xgettext bulunamadı. Şablon dosyaları manuel oluşturulacak.")
         os.makedirs(PO_DIR, exist_ok=True)
         po_path = 'po/tr.po'
         if not os.path.exists(po_path):
@@ -277,16 +267,13 @@ def run_gettext_tools(src_dir, target_langs):
 
     pot_path = os.path.join(PO_DIR, f"{DOMAIN}.pot")
     subprocess.run(["xgettext", "--keyword=_", "--keyword=wxTRANSLATE", "--from-code=UTF-8", "--package-name", DOMAIN, "-d", DOMAIN, "-o", pot_path] + src_files, check=True)
-    print(f"[*] {pot_path} şablonu oluşturuldu.")
 
     for lang in target_langs:
         po_path = os.path.join(PO_DIR, f"{lang}.po")
         if os.path.exists(po_path):
             subprocess.run(["msgmerge", "--update", "--backup=off", po_path, pot_path], check=True)
-            print(f"[*] {po_path} güncellendi.")
         elif shutil.which("msginit"):
             subprocess.run(["msginit", "--no-translator", "-i", pot_path, "-o", po_path, "-l", lang], check=True)
-            print(f"[*] {po_path} oluşturuldu.")
         else:
             shutil.copy(pot_path, po_path)
 
