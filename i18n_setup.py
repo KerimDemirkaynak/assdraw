@@ -9,9 +9,6 @@ import subprocess
 DOMAIN = "assdraw"
 PO_DIR = "po"
 
-# Hedef diller ve wxWidgets karşılıkları
-# KOD İÇİNDE SADECE "label" (İngilizce/ASCII) KULLANILACAK, 
-# ÇEVİRİ .po DOSYASINDAN "native" (Türkçe vb.) OLARAK ÇEKİLECEK.
 LANG_INFO = {
     "tr": {"wx_lang": "wxLANGUAGE_TURKISH", "label": "Turkish", "native": "Türkçe"},
     "en": {"wx_lang": "wxLANGUAGE_ENGLISH", "label": "English", "native": "English"},
@@ -155,8 +152,6 @@ def setup_language_support(cache, target_langs):
     hpp_content = cache.read(hpp_path)
     cpp_content = cache.read(cpp_path)
 
-    # RE-RUN GÜVENLİĞİ VE REGEX ÇÖKME HATASI ÇÖZÜMÜ
-    # \ ve ( ) karakterleri regex engine'in çökmemesi için düzgünce kaçırıldı (escaped)
     cpp_content = re.sub(r'\s*wxMenu\*\s*langMenu\s*=\s*new\s*wxMenu;.*?Append\(langMenu,\s*_\("Language"\)\);', '', cpp_content, flags=re.DOTALL)
     cpp_content = re.sub(r'\s*void\s+ASSDrawFrame::OnChangeLanguage\(wxCommandEvent&\s*event\)\s*\{.*?\}', '', cpp_content, flags=re.DOTALL)
     cpp_content = re.sub(r'\s*EVT_MENU_RANGE\(6000,\s*6100,\s*ASSDrawFrame::OnChangeLanguage\)', '', cpp_content)
@@ -172,7 +167,6 @@ def setup_language_support(cache, target_langs):
         
     cache.write(hpp_path, hpp_content)
 
-    # İSTEK 1: VARSAYILAN OLARAK SİSTEM DİLİ KULLANILACAK (wxLANGUAGE_DEFAULT)
     if 'm_locale.Init' not in cpp_content:
         locale_code = """
     wxString configfile = wxFileName(wxStandardPaths::Get().GetUserDataDir(), _T("ASSDraw3.cfg")).GetFullPath();
@@ -195,7 +189,6 @@ def setup_language_support(cache, target_langs):
     if 'ASSDrawFrame::OnChangeLanguage' not in cpp_content and 'BEGIN_EVENT_TABLE(ASSDrawFrame' in cpp_content:
         cpp_content = re.sub(r'(BEGIN_EVENT_TABLE\(ASSDrawFrame,\s*wxFrame\))', r'\1\n    EVT_MENU_RANGE(6000, 6100, ASSDrawFrame::OnChangeLanguage)', cpp_content, count=1)
 
-    # İSTEK 2: KOD İÇİNE UTF-8 BOZAN KARAKTER YAZMIYORUZ.
     match = re.search(r'SetMenuBar\(\s*([a-zA-Z0-9_]+)\s*\);', cpp_content)
     if match and 'langMenu->AppendRadioItem' not in cpp_content:
         menubar_var = match.group(1)
@@ -204,7 +197,7 @@ def setup_language_support(cache, target_langs):
         checks_cpp = ""
         for idx, lang in enumerate(target_langs):
             menu_id = 6001 + idx
-            label = LANG_INFO[lang]['label'] # Örn: "Turkish", "French" (Sadece ASCII)
+            label = LANG_INFO[lang]['label']
             wx_lang = LANG_INFO[lang]['wx_lang']
             
             menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, _("{label}"));\n'
@@ -302,7 +295,6 @@ def run_gettext_tools(src_dir, target_langs):
     for lang in target_langs:
         po_path = os.path.join(PO_DIR, f"{lang}.po")
         
-        # Eğer dosya yoksa, zorunlu çevirilerle birlikte (C++ kodunda yazan İngilizce kelimelerin native karşılıkları) şablonu oluştur
         if not os.path.exists(po_path):
             with open(po_path, 'w', encoding='utf-8') as f:
                 content = f'''msgid ""
@@ -333,6 +325,19 @@ msgstr "{LANG_INFO[lang]['native']}"
         if shutil.which("msgmerge") and os.path.exists(pot_path):
             subprocess.run(["msgmerge", "--update", "--backup=off", po_path, pot_path], check=True)
 
+def update_inno_setup():
+    path = "setup.iss"
+    if not os.path.exists(path): return
+    with open(path, "r", encoding="utf-8") as f: content = f.read()
+
+    # Eğer locale klasörü [Files] altına henüz eklenmemişse ekle
+    if "locale\\*" not in content:
+        insert_line = 'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs\n'
+        if "[Files]" in content:
+            content = content.replace("[Files]\n", "[Files]\n" + insert_line)
+            with open(path, "w", encoding="utf-8") as f: f.write(content)
+            print("[*] setup.iss Inno Setup dosyası güncellendi (locale klasörü paketleyiciye eklendi).")
+
 def main():
     print("=== ASSDraw3 i18n Fix Başlıyor ===\n")
     TARGET_LANGUAGES = ["tr", "en"] 
@@ -343,6 +348,7 @@ def main():
     cache.flush()
     update_cmake(TARGET_LANGUAGES)
     run_gettext_tools("src", TARGET_LANGUAGES)
+    update_inno_setup() # Yeni eklenen Inno Setup yama fonksiyonu
     print("\n=== İşlem Tamamlandı! ===")
 
 if __name__ == "__main__":
