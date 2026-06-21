@@ -10,7 +10,7 @@ import urllib.request
 DOMAIN = "assdraw"
 PO_DIR = "po"
 
-# Hedef diller (İngilizce eksikliği menünün Türkçe kalmasına yol açıyordu, bu yüzden en eklendi)
+# Hedef diller
 TARGET_LANGUAGES = ["tr", "en", "fr", "de", "es", "zh_TW", "vi"]
 
 # Dil menüsünde görünecek diller (Sabit isimlerle, çevrilmeden kalacak)
@@ -181,35 +181,32 @@ def fix_include_once_and_dlgctrl(cache):
             cache.write(path_dlg, content)
 
 def update_about_and_version(cache):
-    cpp_path = 'src/assdraw.cpp'
-    if not os.path.exists(cpp_path): return
-    content = cache.read(cpp_path)
-    
-    # 1. Sürüm numarasını güncelle
-    content = content.replace("3.0 final", "3.1")
-    
-    # 2. About (Hakkında) diyaloğuna "Kerim Demirkaynak" metnini ekle
-    about_match = re.search(r'(void\s+ASSDrawFrame::OnAbout\b.*?\{)(.*?)(\})', content, re.DOTALL)
-    if about_match:
-        func_start = about_match.group(1)
-        func_body = about_match.group(2)
-        func_end = about_match.group(3)
-        
-        if "Kerim Demirkaynak" not in func_body:
-            # wxMessageBox çağrısını bul ve metin alanına yazar bilgisini _() sararak ekle
-            mbox_match = re.search(r'wxMessageBox\s*\(\s*(.*?)\s*,\s*(.*?)\s*,\s*(.*?)\s*\);', func_body, re.DOTALL)
-            if mbox_match:
-                msg = mbox_match.group(1)
-                title = mbox_match.group(2)
-                flags = mbox_match.group(3)
-                
-                new_msg = f'wxString({msg}) + _("\\n\\nThis version was created by Kerim Demirkaynak.")'
-                new_mbox = f'wxMessageBox({new_msg}, {title}, {flags});'
-                
-                new_body = func_body[:mbox_match.start()] + new_mbox + func_body[mbox_match.end():]
-                content = content[:about_match.start()] + func_start + new_body + func_end + content[about_match.end():]
-                
-    cache.write(cpp_path, content)
+    # 1. Sürüm numarasını güncelle (assdraw.hpp)
+    hpp_path = 'src/assdraw.hpp'
+    if os.path.exists(hpp_path):
+        hpp_content = cache.read(hpp_path)
+        hpp_content = hpp_content.replace('_T("3.0 final")', '_T("3.1")')
+        cache.write(hpp_path, hpp_content)
+
+    # 2. About (Hakkında) diyaloğuna "Kerim Demirkaynak" metnini ekle (dlgctrl.cpp)
+    dlg_path = 'src/dlgctrl.cpp'
+    if os.path.exists(dlg_path):
+        dlg_content = cache.read(dlg_path)
+        if "Kerim Demirkaynak" not in dlg_content:
+            old_pattern = r'htmlwin->SetPage\(\s*_T\("<html>(.*?)</body></html>"\)\s*\);'
+            
+            def replacer(m):
+                inner_html = m.group(1)
+                # HTML yapısını bozmadan çevrilebilir string'i C++ operator+ ile son satıra enjekte ediyoruz.
+                return 'htmlwin->SetPage(wxString(_T("<html>' + inner_html + '<br><br>")) + _("This version was created by Kerim Demirkaynak.") + _T("</body></html>"));'
+            
+            dlg_content = re.sub(old_pattern, replacer, dlg_content, flags=re.DOTALL)
+            cache.write(dlg_path, dlg_content)
+
+def get_escaped_utf8(text):
+    # Derleyicinin (MSVC) karakter kodlamasını bozmasını %100 engellemek için
+    # string'i doğrudan UTF-8 sekizli (octal) C++ kodlarına çeviren güvenlik fonksiyonu.
+    return "".join(f"\\{b:03o}" for b in text.encode('utf-8'))
 
 def setup_language_support(cache):
     hpp_path = 'src/assdraw.hpp'
@@ -266,7 +263,8 @@ def setup_language_support(cache):
             native = lang['native']
             wx_lang = lang['wx_lang']
             
-            menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, wxT("{native}"));\n'
+            # Karakter bozulmasını engellemek için Octal kodlu FromUTF8 kullanımı eklendi.
+            menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, wxString::FromUTF8("{get_escaped_utf8(native)}"));\n'
             checks_cpp += f'    if (currentLang == {wx_lang}) langMenu->Check({menu_id}, true);\n    else '
 
         menu_code = f"""
@@ -433,7 +431,6 @@ def update_inno_setup():
         if "[Files]" in content:
             content = content.replace("[Files]\n", "[Files]\n" + insert_line)
             
-    # CHM kılavuz dosyasını direkt olarak build edilecek setub'a ve bin klasörüne de taşı
     if "ASSDraw3.chm" not in content:
         insert_chm = 'Source: "docs\\ASSDraw3.chm"; DestDir: "{app}\\bin"; Flags: ignoreversion\n'
         if "[Files]" in content:
