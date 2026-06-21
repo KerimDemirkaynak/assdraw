@@ -10,10 +10,9 @@ import urllib.request
 DOMAIN = "assdraw"
 PO_DIR = "po"
 
-# İSTEK 2: İstenen tüm yeni diller eklendi. wxWidgets'ın dil motorunu tetiklemek için "en" zorunlu olarak listede.
+# İstenen tüm diller listeye eklendi
 TARGET_LANGUAGES = ["tr", "en", "fr", "de", "es", "zh_TW", "vi"]
 
-# İSTEK 1: Karakter bozulmalarını önlemek için menü isimleri wxString::FromUTF8() ile sarmalanacak.
 MENU_LANGUAGES = [
     {"id_num": 6001, "wx_lang": "wxLANGUAGE_ENGLISH", "native": "English"},
     {"id_num": 6002, "wx_lang": "wxLANGUAGE_TURKISH", "native": "Türkçe"},
@@ -173,9 +172,9 @@ def fix_include_once_and_dlgctrl(cache):
     if os.path.exists(path_dlg):
         content = cache.read(path_dlg)
         
-        # İSTEK 4: Hakkında (About) kutusuna yapımcı imzası eklendi.
+        # Hakkında (About) kutusuna yapımcı imzası eklendi.
         if "Kerim Demirkaynak" not in content:
-            content = re.sub(r'(needs!\s*\\\s*</body></html>)', r'needs!</p> \\\n<p>This version was created by Kerim Demirkaynak.</p> \\\n</body></html>', content)
+            content = content.replace('needs! \\', 'needs!</p> \\\n<p>This version was created by Kerim Demirkaynak.</p> \\')
             
         old_combo_code = r'combo_templates\s*=\s*new\s*wxComboBox\(\s*this,\s*-1,\s*combo_templatesStrings\[0\],\s*__DPDS__\s*,\s*10,\s*combo_templatesStrings,\s*wxCB_READONLY\s*\);'
         new_combo_code = """wxArrayString translated_templates;
@@ -193,7 +192,7 @@ def setup_language_support(cache):
     hpp_content = cache.read(hpp_path)
     cpp_content = cache.read(cpp_path)
 
-    # İSTEK 3: Versiyon 3.0 final'den 3.1'e yükseltildi.
+    # Versiyon 3.0 final'den 3.1'e yükseltildi.
     hpp_content = re.sub(r'#define\s+VERSION\s+(?:_T\()?"3\.0 final"\)?', r'#define VERSION _T("3.1")', hpp_content)
 
     cpp_content = re.sub(r'\s*wxMenu\*\s*langMenu\s*=\s*new\s*wxMenu;.*?Append\(langMenu,\s*_\("Language"\)\);', '', cpp_content, flags=re.DOTALL)
@@ -244,7 +243,7 @@ def setup_language_support(cache):
             native = lang['native']
             wx_lang = lang['wx_lang']
             
-            # UTF-8 Düzeltmesi
+            # UTF-8 Düzeltmesi (Çince, Vietnamca gibi alfabeler bozulmasın diye FromUTF8 kullanıldı)
             menu_items_cpp += f'    langMenu->AppendRadioItem({menu_id}, wxString::FromUTF8("{native}"));\n'
             checks_cpp += f'    if (currentLang == {wx_lang}) langMenu->Check({menu_id}, true);\n    else '
 
@@ -296,7 +295,6 @@ def update_cmake():
 
     linguas_cmake = ";".join(TARGET_LANGUAGES)
     
-    # İSTEK 5: CHM Kılavuz dosyası derleme sonrası .exe'nin yanına kopyalanıyor
     block = f'''
 # --- i18n (gettext) CMake Entegrasyonu ---
 find_program(MSGFMT_EXECUTABLE msgfmt PATHS "C:/Program Files/Git/usr/bin" "C:/msys64/usr/bin")
@@ -322,12 +320,9 @@ if(MSGFMT_EXECUTABLE)
         add_dependencies(assdraw translations)
         add_custom_command(TARGET assdraw POST_BUILD
             COMMAND ${{CMAKE_COMMAND}} -E make_directory "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
-            COMMAND ${{CMAKE_COMMAND}} -E copy_directory
-            "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
-            "$<TARGET_FILE_DIR:assdraw>/locale"
-            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
-            "${{CMAKE_SOURCE_DIR}}/docs/ASSDraw3.chm"
-            "$<TARGET_FILE_DIR:assdraw>/ASSDraw3.chm"
+            COMMAND ${{CMAKE_COMMAND}} -E make_directory "$<TARGET_FILE_DIR:assdraw>/locale"
+            COMMAND ${{CMAKE_COMMAND}} -E copy_directory "${{CMAKE_CURRENT_BINARY_DIR}}/locale" "$<TARGET_FILE_DIR:assdraw>/locale"
+            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different "${{CMAKE_SOURCE_DIR}}/docs/ASSDraw3.chm" "$<TARGET_FILE_DIR:assdraw>/ASSDraw3.chm"
         )
     endif()
 else()
@@ -389,15 +384,33 @@ msgstr "Dil ayarlarının etkinleşmesi için lütfen Assdraw'ı yeniden başlat
 def update_inno_setup():
     path = "setup.iss"
     if not os.path.exists(path): return
-    with open(path, "r", encoding="utf-8") as f: content = f.read()
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
 
-    # İSTEK 5: CHM dosyasını setup'a dahil et
-    if "ASSDraw3.chm" not in content:
-        insert_chm = 'Source: "build-dir\\Release\\ASSDraw3.chm"; DestDir: "{app}\\bin"; Flags: ignoreversion\n'
-        if "[Files]" in content:
-            content = content.replace("[Files]\n", "[Files]\n" + insert_chm)
-            
-    with open(path, "w", encoding="utf-8") as f: f.write(content)
+    # KENDİNİ ONARAN SİSTEM: Önceki hatalı `bin` klasörü referanslarını kökten temizle.
+    lines = content.split('\n')
+    new_lines = []
+    for line in lines:
+        if 'Release\\locale' in line or 'ASSDraw3.chm' in line:
+            continue  
+        # Hatalı {app}\bin yollarını normale çeviriyoruz.
+        line = line.replace('{app}\\bin', '{app}')
+        new_lines.append(line)
+    
+    content = '\n'.join(new_lines)
+    
+    # Standartlara uygun şekilde kök dizine ({app}) dosyaları yerleştir.
+    insert_lines = (
+        'Source: "build-dir\\Release\\locale\\*"; DestDir: "{app}\\locale"; Flags: ignoreversion recursesubdirs createallsubdirs\n'
+        'Source: "build-dir\\Release\\ASSDraw3.chm"; DestDir: "{app}"; Flags: ignoreversion\n'
+    )
+    
+    if "[Files]" in content:
+        content = content.replace("[Files]", "[Files]\n" + insert_lines.strip())
+        
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("[*] Inno Setup dosyası onarıldı ve güncellendi.")
 
 def main():
     print("=== ASSDraw3 i18n Kesin Fix Başlıyor ===\n")
@@ -414,7 +427,7 @@ def main():
     run_gettext_tools("src")
     update_inno_setup()
     
-    print("\n=== İşlem Tamamlandı! ===")
+    print("\n=== İşlem Tamamlandı! Inno Setup hatası düzeltildi. ===")
 
 if __name__ == "__main__":
     main()
