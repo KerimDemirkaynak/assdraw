@@ -247,12 +247,12 @@ def update_cmake(target_langs):
     with open(path, "r", encoding="utf-8") as f: content = f.read()
     
     if "MSGFMT_EXECUTABLE" in content:
-        content = re.sub(r'# --- i18n \(gettext\) CMake Entegrasyonu ---.*?endif\(\)\n', '', content, flags=re.DOTALL)
+        content = re.sub(r'# --- i18n \(gettext\) CMake Entegrasyonu ---.*?endif\(\)\n?', '', content, flags=re.DOTALL)
 
     linguas_cmake = ";".join(target_langs)
     
-    # İŞTE ÇÖZÜM BURADA: CMake'e Windows (GitHub Actions) üzerinde msgfmt'nin gizlendiği yeri söylüyoruz.
-    # Ayrıca hata durumunda sessiz kalmak yerine (WARNING) zorunlu olarak fail (FATAL_ERROR) vermesini sağlıyoruz.
+    # İŞTE KESİN ÇÖZÜM BURADA: add_dependencies ile assdraw'ı translations hedefine bağladık.
+    # Böylece cmake --target assdraw çalıştırıldığında translations es geçilmeyecek!
     block = f'''
 # --- i18n (gettext) CMake Entegrasyonu ---
 find_program(MSGFMT_EXECUTABLE msgfmt PATHS "C:/Program Files/Git/usr/bin" "C:/msys64/usr/bin")
@@ -272,18 +272,24 @@ if(MSGFMT_EXECUTABLE)
         )
         list(APPEND MO_FILES ${{MO_FILE}})
     endforeach()
-    add_custom_target(translations ALL DEPENDS ${{MO_FILES}})
+    add_custom_target(translations DEPENDS ${{MO_FILES}})
     
-    add_custom_command(TARGET assdraw POST_BUILD
-        COMMAND ${{CMAKE_COMMAND}} -E copy_directory
-        "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
-        "$<TARGET_FILE_DIR:assdraw>/locale"
-    )
+    if(TARGET assdraw)
+        # 1. assdraw'ın derlenmeden önce çevirilerin bitmesini sağla
+        add_dependencies(assdraw translations)
+        # 2. assdraw derlemesi bitince locale klasörünü exe'nin yanına kopyala
+        add_custom_command(TARGET assdraw POST_BUILD
+            COMMAND ${{CMAKE_COMMAND}} -E make_directory "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
+            COMMAND ${{CMAKE_COMMAND}} -E copy_directory
+            "${{CMAKE_CURRENT_BINARY_DIR}}/locale"
+            "$<TARGET_FILE_DIR:assdraw>/locale"
+        )
+    endif()
 else()
     message(FATAL_ERROR "msgfmt bulunamadı! Dil dosyaları derlenemez. Lütfen CMake PATH'ini kontrol edin.")
 endif()
 '''
-    with open(path, "w", encoding="utf-8") as f: f.write(content + "\n" + block)
+    with open(path, "w", encoding="utf-8") as f: f.write(content.rstrip() + "\n\n" + block.strip() + "\n")
 
 def run_gettext_tools(src_dir, target_langs):
     os.makedirs(PO_DIR, exist_ok=True)
@@ -332,7 +338,6 @@ def update_inno_setup():
     if not os.path.exists(path): return
     with open(path, "r", encoding="utf-8") as f: content = f.read()
 
-    # Önceki hatalı 'skipifsourcedoesntexist' ibaresini tamamen temizliyoruz.
     content = re.sub(r'\s*skipifsourcedoesntexist', '', content)
 
     if "locale\\*" not in content:
@@ -340,7 +345,6 @@ def update_inno_setup():
         if "[Files]" in content:
             content = content.replace("[Files]\n", "[Files]\n" + insert_line)
             with open(path, "w", encoding="utf-8") as f: f.write(content)
-            print("[*] setup.iss güncellendi (locale klasörü paketleyiciye eklendi).")
 
 def main():
     print("=== ASSDraw3 i18n Fix Başlıyor ===\n")
