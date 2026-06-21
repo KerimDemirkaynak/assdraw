@@ -193,7 +193,6 @@ def update_about_and_version(cache):
     if os.path.exists(dlg_path):
         dlg_content = cache.read(dlg_path)
         if "Kerim Demirkaynak" not in dlg_content:
-            # HTML'in bittiği yeri tam olarak bulup çevrilebilir metni operator+ ile ekliyoruz
             dlg_content = dlg_content.replace(
                 '</body></html>")',
                 '<br><br>" ) + _("This version was created by Kerim Demirkaynak.") + _T("</body></html>")'
@@ -226,7 +225,7 @@ def setup_language_support(cache):
     cache.write(hpp_path, hpp_content)
 
     if 'm_locale.Init' not in cpp_content:
-        # Sistem dilini zorla okuyan güncellenmiş Init bloğu
+        # Sistem dilini okuma kodu (wxLOCALE_CONV_ENCODING hatası düzeltildi)
         locale_code = """
     wxString configfile = wxFileName(wxStandardPaths::Get().GetUserDataDir(), _T("ASSDraw3.cfg")).GetFullPath();
     wxFileConfig cfg(wxEmptyString, wxEmptyString, configfile);
@@ -239,7 +238,7 @@ def setup_language_support(cache):
         }
     }
     
-    m_locale.Init(langId, wxLOCALE_CONV_ENCODING);
+    m_locale.Init(langId, wxLOCALE_DONT_LOAD_DEFAULT);
     
     wxString exeDir = wxPathOnly(wxStandardPaths::Get().GetExecutablePath());
     m_locale.AddCatalogLookupPathPrefix(exeDir + wxFILE_SEP_PATH + _T("locale"));
