@@ -5,15 +5,9 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 
 DOMAIN = "assdraw"
 PO_DIR = "po"
-
-LANG_INFO = {
-    "tr": {"wx_lang": "wxLANGUAGE_TURKISH", "label": "Türkçe"},
-    "en": {"wx_lang": "wxLANGUAGE_ENGLISH", "label": "English"}
-}
 
 CALL_FUNCS = [
     "SetTitle", "SetLabel", "SetToolTip", "SetHelpText", "SetStatusText",
@@ -176,7 +170,7 @@ def setup_language_support(cache):
 """
         cpp_content = re.sub(r'(bool\s+ASSDrawApp::OnInit\(\)\s*\{)', r'\1' + locale_code, cpp_content, count=1)
 
-    if 'OnChangeLanguage' not in cpp_content and 'BEGIN_EVENT_TABLE(ASSDrawFrame' in cpp_content:
+    if 'EVT_MENU_RANGE(6000, 6002' not in cpp_content and 'BEGIN_EVENT_TABLE(ASSDrawFrame' in cpp_content:
         cpp_content = re.sub(r'(BEGIN_EVENT_TABLE\(ASSDrawFrame,\s*wxFrame\))', r'\1\n    EVT_MENU_RANGE(6000, 6002, ASSDrawFrame::OnChangeLanguage)', cpp_content, count=1)
 
     if 'langMenu->AppendRadioItem' not in cpp_content:
@@ -199,7 +193,6 @@ def setup_language_support(cache):
 """
             cpp_content = cpp_content.replace(match.group(0), menu_code + "\n    " + match.group(0))
 
-    # HATA BURADAYDI: Kontrolü void ekleyerek daha spesifik hale getirdik
     if 'void ASSDrawFrame::OnChangeLanguage' not in cpp_content:
         func_code = """
 void ASSDrawFrame::OnChangeLanguage(wxCommandEvent& event) {
@@ -213,13 +206,17 @@ void ASSDrawFrame::OnChangeLanguage(wxCommandEvent& event) {
     wxMessageBox(_("Please restart Assdraw for language changes to take effect."), _("Restart Required"), wxICON_INFORMATION);
 }
 """
-        cpp_content = cpp_content.rstrip()
-        if cpp_content.endswith('}'):
-            cpp_content = cpp_content[:-1] + func_code + "\n}"
+        # Hata Fix: Dosyanın sonundaki süslü parantez karmaşasını atlamak için
+        # OnChangeLanguage fonksiyonunu güvenli bir liman olan OnClose fonksiyonunun hemen üstüne enjekte ediyoruz.
+        match = re.search(r'void\s+ASSDrawFrame::OnClose\b', cpp_content)
+        if match:
+            cpp_content = cpp_content[:match.start()] + func_code + "\n\n" + cpp_content[match.start():]
         else:
+            # Fallback (asla buraya düşmemesi lazım ama güvenli olsun)
             cpp_content += "\n" + func_code
 
     cache.write(cpp_path, cpp_content)
+    print("[*] wxWidgets Dil Menüsü ve Locale ayarları assdraw.cpp/hpp'ye başarıyla enjekte edildi.")
 
 def update_cmake(target_langs):
     path = "CMakeLists.txt"
