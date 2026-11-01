@@ -26,6 +26,7 @@
 */
 
 #include "assdraw.hpp"
+#include "styled_ass.hpp"
 #include "library.hpp"
 
 #include <wx/clipbrd.h>
@@ -45,6 +46,20 @@ ASSDrawShapePreview::ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary 
 	if (ParseASS(initialcmds) > 0)
 		SetFitToViewPointOnNextPaint(FromDIP(5), FromDIP(5));
 	cb = new wxCheckBox(this, wxID_ANY, _T(""));
+}
+
+int ASSDrawShapePreview::ParseASS(wxString str)
+{
+	// Retain the complete styled output for copying, loading, and config saves.
+	// Preview geometry uses the same shared coordinate system as the canvas.
+	source_ass = str;
+	const StyledAssImport imported = ImportStyledAss(std::string(str.mb_str(wxConvUTF8)), ShapeStyle());
+	return ASSDrawEngine::ParseASS(wxString(imported.drawing_text.c_str(), wxConvUTF8));
+}
+
+wxString ASSDrawShapePreview::GenerateASS()
+{
+	return source_ass;
 }
 
 void ASSDrawShapePreview::OnSize(wxSizeEvent& event)
@@ -167,7 +182,7 @@ void ASSDrawShapeLibrary::UpdatePreviewDisplays()
 	if (dim < 1)
 		dim = 1;
 	libarea->Show(false);
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
@@ -254,7 +269,7 @@ void ASSDrawShapeLibrary::SaveShapeFromCanvas(wxCommandEvent& WXUNUSED(event))
 void ASSDrawShapeLibrary::CheckUncheckAllPreviews(wxCommandEvent &event)
 {
 	bool checked = event.GetId() == TOOL_CHECK;
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
@@ -265,9 +280,10 @@ void ASSDrawShapeLibrary::CheckUncheckAllPreviews(wxCommandEvent &event)
 
 void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 {
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
+		wxSizerItemList::compatibility_iterator next = node->GetNext();
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
 		if (shprvw->cb->GetValue())
 		{
@@ -275,7 +291,7 @@ void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 			shprvw->Show(false);
 			shprvw->Destroy();
 		}
-		node = node->GetNext();
+		node = next;
 	}
 	UpdatePreviewDisplays();
 	Refresh();
@@ -284,7 +300,7 @@ void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 std::vector< ASSDrawShapePreview *> ASSDrawShapeLibrary::GetShapePreviews()
 {
 	std::vector< ASSDrawShapePreview *> out;
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();

@@ -97,9 +97,10 @@ void ASSDrawSettingsDialog::Init()
 	APPENDCOLOURPROP(colors_ruler_h_pgid, _T("H ruler"), m_frame->colors.ruler_h)
 	APPENDCOLOURPROP(colors_ruler_v_pgid, _T("V ruler"), m_frame->colors.ruler_v)
 
-    propgrid->Append(new wxPropertyCategory(_T("Behaviors"),wxPG_LABEL) );
+	propgrid->Append(new wxPropertyCategory(_T("Behaviors"),wxPG_LABEL) );
 	APPENDBOOLPROP(behaviors_capitalizecmds_pgid, _T("Capitalize commands"), m_frame->behaviors.capitalizecmds);
 	APPENDBOOLPROP(behaviors_autoaskimgopac_pgid, _T("Ask for image opacity"), m_frame->behaviors.autoaskimgopac);
+	APPENDUINTPROP(alphas_dfltimgopac_pgid, _("Default image opacity (0-255)"), m_frame->alphas.dfltimgopac)
 	APPENDBOOLPROP(behaviors_parse_spc_pgid, _T("Parse S/P/C"), m_frame->behaviors.parse_spc);
 	APPENDBOOLPROP(behaviors_nosplashscreen_pgid, _T("No splash screen"), m_frame->behaviors.nosplashscreen);
 	APPENDBOOLPROP(behaviors_confirmquit_pgid, _T("Confirm quit"), m_frame->behaviors.confirmquit);
@@ -131,14 +132,15 @@ ASSDrawSettingsDialog::~ASSDrawSettingsDialog()
 void ASSDrawSettingsDialog::OnSettingsApplyButtonClicked(wxCommandEvent &event)
 {
 
-	wxButton *button = (wxButton *) event.GetEventObject();
-	//wxPropertyGrid *propgrid = (wxPropertyGrid *) button->GetClientData();
+	wxObject *event_object = event.GetEventObject();
 	if (propgrid == NULL) return;
 
 	#define PARSECOLOR(color, pgid) \
 	{ \
 		wxVariant variant = propgrid->GetPropertyValue(pgid); \
-		color = *wxGetVariantCast(variant,wxColour); \
+		wxColour value; \
+		value << variant; \
+		if (value.IsOk()) color = value; \
 	}
 
 	#define PARSE(ptr, pgid) propgrid->GetPropertyValue(pgid).Convert(ptr);
@@ -164,6 +166,7 @@ void ASSDrawSettingsDialog::OnSettingsApplyButtonClicked(wxCommandEvent &event)
 	PARSE(&m_frame->alphas.canvas_shape_outline, alphas_canvas_shape_outline_pgid)
 	PARSE(&m_frame->alphas.canvas_shape_preview, alphas_canvas_shape_preview_pgid)
 	PARSE(&m_frame->alphas.canvas_shape_selectpoint, alphas_canvas_shape_selectpoint_pgid)
+	PARSE(&m_frame->alphas.dfltimgopac, alphas_dfltimgopac_pgid)
 
 	PARSE(&m_frame->sizes.origincross, sizes_origincross_pgid)
 
@@ -174,7 +177,7 @@ void ASSDrawSettingsDialog::OnSettingsApplyButtonClicked(wxCommandEvent &event)
 	PARSE(&m_frame->behaviors.confirmquit, behaviors_confirmquit_pgid)
 
 	wxCommandEvent evento( wxEVT_SETTINGS_CHANGED, event.GetId() );
-    evento.SetEventObject( button );
+	evento.SetEventObject(event_object);
     m_frame->GetEventHandler()->ProcessEvent( evento );
 
 }
@@ -211,6 +214,7 @@ void ASSDrawSettingsDialog::RefreshSettingsDisplay()
 	UPDATESETTING(m_frame->alphas.canvas_shape_outline, alphas_canvas_shape_outline_pgid)
 	UPDATESETTING(m_frame->alphas.canvas_shape_preview, alphas_canvas_shape_preview_pgid)
 	UPDATESETTING(m_frame->alphas.canvas_shape_selectpoint, alphas_canvas_shape_selectpoint_pgid)
+	UPDATESETTING(m_frame->alphas.dfltimgopac, alphas_dfltimgopac_pgid)
 
 	UPDATESETTING(m_frame->sizes.origincross, sizes_origincross_pgid)
 
@@ -219,5 +223,4 @@ void ASSDrawSettingsDialog::RefreshSettingsDisplay()
 	UPDATESETTING(m_frame->behaviors.parse_spc, behaviors_parse_spc_pgid)
 	UPDATESETTING(m_frame->behaviors.nosplashscreen, behaviors_nosplashscreen_pgid)
 	UPDATESETTING(m_frame->behaviors.confirmquit, behaviors_confirmquit_pgid)
-
 }

@@ -6,6 +6,21 @@ on:
   workflow_dispatch: # Bu parametre sayesinde Actions sekmesinden manuel tetikleyebilirsin.
 
 jobs:
+  build-linux:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwxgtk3.2-dev ninja-build xvfb
+    - name: Configure
+      run: cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
+    - name: Build editor and tests
+      run: cmake --build build-linux --parallel 2
+    - name: Run regression tests
+      run: ctest --test-dir build-linux --output-on-failure
+
   build-windows:
     runs-on: windows-latest
 
@@ -42,6 +57,12 @@ jobs:
 
     - name: Build with PowerShell helper
       run: .\build\build-win-vcpkg.ps1 -Fresh
+      shell: pwsh
+
+    - name: Build and run regression tests
+      run: |
+        cmake --build build-dir --config Release --target assdraw-core-tests assdraw-gui-tests --parallel
+        ctest --test-dir build-dir -C Release --output-on-failure
       shell: pwsh
 
     - name: Compile Inno Setup Installer

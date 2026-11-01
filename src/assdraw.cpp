@@ -50,13 +50,19 @@
 //DEFINE_EVENT_TYPE(wxEVT_SETTINGS_CHANGED)
 
 // initialize wxWidget to accept our App class
+#ifndef ASSDRAW_NO_APP_MAIN
 IMPLEMENT_APP(ASSDrawApp)
+#endif
 
 BEGIN_EVENT_TABLE(ASSDrawFrame, wxFrame)
     EVT_TOOL(TB_CLEAR, ASSDrawFrame::OnSelect_Clear)
     EVT_TOOL(TB_PREVIEW, ASSDrawFrame::OnSelect_Preview)
     EVT_TOOL(TB_TRANSFORM, ASSDrawFrame::OnSelect_Transform)
-    EVT_TOOL_RANGE(MODE_ARR, MODE_DEL, ASSDrawFrame::OnChoose_Mode)
+    EVT_TOOL_RANGE(MODE_ARR, MODE_COLOR, ASSDrawFrame::OnChoose_Mode)
+    // wxToolBar check tools and wxMenu check items dispatch different events.
+    // Both must reach the pan/zoom toggle handler for right-dragging to work.
+    EVT_TOOL_RANGE(DRAG_DWG, DRAG_BGIMG, ASSDrawFrame::OnChoose_DragMode)
+    EVT_MENU_RANGE(DRAG_DWG, DRAG_BGIMG, ASSDrawFrame::OnChoose_DragMode)
     EVT_TOOL_RCLICKED(wxID_ANY, ASSDrawFrame::OnToolRClick)
     EVT_COMMAND(wxID_ANY, wxEVT_SETTINGS_CHANGED, ASSDrawFrame::OnSettingsChanged)
     EVT_MENU_RANGE(MENU_TB_ALL, MENU_TB_BGIMG, ASSDrawFrame::OnChoose_TBarRClickMenu)
@@ -73,7 +79,7 @@ BEGIN_EVENT_TABLE(ASSDrawFrame, wxFrame)
     EVT_MENU(MENU_PASTE, ASSDrawFrame::OnSelect_Paste)
     EVT_MENU(MENU_BGIMG_REMOVE, ASSDrawFrame::OnSelect_RemoveBG)
     EVT_MENU(MENU_BGIMG_ALPHA, ASSDrawFrame::OnSelect_AlphaBG)
-    EVT_MENU_RANGE(MODE_ARR, MODE_NUT_BILINEAR, ASSDrawFrame::OnChoose_Mode)
+    EVT_MENU_RANGE(MODE_ARR, MODE_COLOR, ASSDrawFrame::OnChoose_Mode)
     EVT_MENU_RANGE(MENU_REPOS_TOPLEFT, MENU_REPOS_BOTRIGHT, ASSDrawFrame::OnChoose_Recenter)
     EVT_MENU_RANGE(MENU_REPOS_BGTOPLEFT, MENU_REPOS_BGBOTRIGHT, ASSDrawFrame::OnChoose_RecenterToBG)
 	EVT_DPI_CHANGED(ASSDrawFrame::OnDPIChanged)
@@ -151,8 +157,17 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 	// shapes library
 	shapelib = new ASSDrawShapeLibrary(this, this);
 
-	// source text ctrl
-	srctxtctrl = new ASSDrawSrcTxtCtrl(this, this);
+	// Source text control and a direct clipboard action for generated ASS.
+	commandpanel = new wxPanel(this, wxID_ANY);
+	srctxtctrl = new ASSDrawSrcTxtCtrl(commandpanel, this);
+	wxButton* copy_button = new wxButton(commandpanel, wxID_COPY, _T("Copy ASS"));
+	copy_button->SetMinSize(FromDIP(wxSize(128, -1)));
+	copy_button->SetToolTip(_T("Copy the command text, including ASS style tags"));
+	copy_button->Bind(wxEVT_BUTTON, &ASSDrawFrame::OnSelect_CopyCommands, this);
+	wxBoxSizer* command_sizer = new wxBoxSizer(wxHORIZONTAL);
+	command_sizer->Add(srctxtctrl, 1, wxEXPAND | wxALL, 3);
+	command_sizer->Add(copy_button, 0, wxEXPAND | wxTOP | wxRIGHT | wxBOTTOM, 3);
+	commandpanel->SetSizer(command_sizer);
 
 	// settings
 	settingsdlg = new ASSDrawSettingsDialog(this, this);
@@ -216,7 +231,9 @@ void ASSDrawFrame::SetToolBars()
     //tbar->AddTool(TB_EDITSRC, _T("Source"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), TIPS_EDITSRC);
     drawtbar->AddCheckTool(TB_PREVIEW, _T("Preview"), ASSDRAW_BITMAP_BUNDLE(preview_), wxBitmapBundle(), _T(""), TIPS_PREVIEW);
     //drawtbar->AddTool(TB_TRANSFORM, _T("Transform"), ASSDRAW_BITMAP_BUNDLE(rot_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), TIPS_TRANSFORM);
-	zoomslider = new wxSlider(drawtbar, TB_ZOOMSLIDER, 1000, 100, 5000, __DPDS__ );
+	drawtbar->AddCheckTool(MODE_COLOR, _("Coloring"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), _T(""),
+		_T("Select a shape, then double-click it to choose its fill color"));
+	zoomslider = new wxSlider(drawtbar, TB_ZOOMSLIDER, 1000, 100, 5000, wxDefaultPosition, FromDIP(wxSize(140, -1)));
 	//zoomslider->SetSize(280, zoomslider->GetSize().y);
 	zoomslider->Connect(wxEVT_SCROLL_LINEUP, wxScrollEventHandler(ASSDrawFrame::OnZoomSliderChanged), NULL, this);
 	zoomslider->Connect(wxEVT_SCROLL_LINEDOWN, wxScrollEventHandler(ASSDrawFrame::OnZoomSliderChanged), NULL, this);
@@ -244,6 +261,8 @@ void ASSDrawFrame::SetToolBars()
     modetbar->AddRadioTool(MODE_SCALEROTATE, _T("Scale/Rotate"), ASSDRAW_BITMAP_BUNDLE(sc_rot_), wxBitmapBundle(), _T(""), TIPS_SCALEROTATE);
     modetbar->AddRadioTool(MODE_NUT_BILINEAR, _T("Bilinear"), ASSDRAW_BITMAP_BUNDLE(nut_), wxBitmapBundle(), _T(""), TIPS_NUTB);
     //modetbar->AddRadioTool(MODE_NUT_PERSPECTIVE, _T("NUT:P"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), _T(""));
+	modetbar->AddRadioTool(MODE_COLOR, _("Coloring"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), _T(""),
+		_T("Click a filled shape to select it; double-click to choose its fill color"));
     modetbar->Realize();
 
     m_mgr.AddPane(modetbar, wxAuiPaneInfo().Name(_T("modetbar")).Caption(TBNAME_MODE).
@@ -283,6 +302,7 @@ void ASSDrawFrame::SetMenus()
 	modeMenu->Append(MODE_DEL, _T("&Delete\tF5"), TIPS_DEL, wxITEM_RADIO);
 	modeMenu->Append(MODE_SCALEROTATE, _T("&Scale/Rotate\tF6"), TIPS_NUTB, wxITEM_RADIO);
 	modeMenu->Append(MODE_NUT_BILINEAR, _T("&Bilinear transformation\tF7"), TIPS_SCALEROTATE, wxITEM_RADIO);
+	modeMenu->Append(MODE_COLOR, _T("&Coloring"), _T("Click a filled shape to select it; double-click to choose its fill color"), wxITEM_RADIO);
 
 	bgimgMenu = new wxMenu;
 	bgimgMenu->Append(DRAG_DWG, _T("Pan/Zoom &Drawing\tShift+F1"), TIPS_DWG, wxITEM_CHECK);
@@ -346,8 +366,8 @@ void ASSDrawFrame::SetPanes()
 
 	m_mgr.AddPane(m_canvas, wxAuiPaneInfo().Name(_T("canvas")).CenterPane());
 
-	m_mgr.AddPane(srctxtctrl, wxAuiPaneInfo().Name(_T("commands")).Caption(_T("Drawing commands")).
-                  Bottom().Layer(1).CloseButton(false).BestSize(FromDIP(wxSize(320, 48))));
+	m_mgr.AddPane(commandpanel, wxAuiPaneInfo().Name(_T("commands")).Caption(_T("Drawing commands")).
+			  Bottom().Layer(1).CloseButton(false).BestSize(FromDIP(wxSize(420, 58))));
 
 	if (settingsdlg)
 		m_mgr.AddPane(settingsdlg, wxAuiPaneInfo().Name(_T("settings")).Caption(_T("Settings")).
@@ -390,9 +410,9 @@ void ASSDrawFrame::ApplyDpiLayout()
 	if (library_pane.IsOk())
 		library_pane.BestSize(FromDIP(wxSize(120, 480))).MinSize(FromDIP(wxSize(100, 200)));
 
-	wxAuiPaneInfo& commands_pane = m_mgr.GetPane(srctxtctrl);
+	wxAuiPaneInfo& commands_pane = m_mgr.GetPane(commandpanel);
 	if (commands_pane.IsOk())
-		commands_pane.BestSize(FromDIP(wxSize(320, 48)));
+		commands_pane.BestSize(FromDIP(wxSize(420, 58)));
 
 	if (settingsdlg)
 	{
@@ -686,12 +706,26 @@ void ASSDrawFrame::UpdateASSCommandStringFromSrcTxtCtrl(wxString cmds)
 	m_canvas->RefreshDisplay();
 }
 
+void ASSDrawFrame::OnSelect_CopyCommands(wxCommandEvent& WXUNUSED(event))
+{
+	if (!wxTheClipboard->Open())
+		return;
+	wxString text = srctxtctrl->GetValue();
+	text.Replace(_T("\r"), _T(" "));
+	text.Replace(_T("\n"), _T(" "));
+	text.Replace(_T("\t"), _T(" "));
+	const std::string canonical = CanonicalizeAssHexLiterals(std::string(text.mb_str(wxConvUTF8)));
+	const bool copied = wxTheClipboard->SetData(new wxTextDataObject(wxString(canonical.c_str(), wxConvUTF8)));
+	wxTheClipboard->Close();
+	if (copied)
+		SetStatusText(_("ASS drawing copied to clipboard."), 1);
+}
+
 void ASSDrawFrame::UpdateASSCommandStringToSrcTxtCtrl(wxString cmd)
 {
-	if (behaviors.capitalizecmds)
-		cmd.UpperCase();
-	else
-		cmd.LowerCase();
+	const std::string canonical = FormatAssCommandCase(
+		std::string(cmd.mb_str(wxConvUTF8)), behaviors.capitalizecmds);
+	cmd = wxString(canonical.c_str(), wxConvUTF8);
 	srctxtctrl->ChangeValue(cmd);
 	//srctxtctrl->AppendText(cmd);
 }
@@ -740,6 +774,7 @@ void ASSDrawFrame::UpdateFrameUI(unsigned level)
 	{
 	case 0: // all
 		drawtbar->ToggleTool(TB_PREVIEW, m_canvas->IsPreviewMode());
+		drawtbar->ToggleTool(MODE_COLOR, m_canvas->GetDrawMode() == MODE_COLOR);
 		modetbar->ToggleTool(m_canvas->GetDrawMode(), true);
 		drawMenu->Check(MENU_PREVIEW, m_canvas->IsPreviewMode());
 		modeMenu->Check(m_canvas->GetDrawMode(), true);
@@ -777,7 +812,9 @@ void ASSDrawFrame::OnClose(wxCloseEvent &event)
 {
 	if (event.CanVeto() && behaviors.confirmquit)
 	{
-		if (wxMessageDialog(this, _T("Do you want to close ASSDraw3 now?"), _T("Confirmation"), wxOK | wxCANCEL).ShowModal() == wxID_OK)
+		wxMessageDialog exit_dialog(this, _("Do you want to close ASSDraw3 now?"), TITLE, wxOK | wxCANCEL | wxICON_QUESTION);
+		exit_dialog.SetOKCancelLabels(_("Exit"), _("Cancel"));
+		if (exit_dialog.ShowModal() == wxID_OK)
 			Destroy();
 		else
 			event.Veto();

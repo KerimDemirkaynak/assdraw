@@ -50,11 +50,15 @@ enum {
 
 class ASSDrawShapePreview : public ASSDrawEngine
 {
+public:
+	int ParseASS(wxString str) override;
+	wxString GenerateASS() override;
 protected:
 	ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary *shapelib, wxString initialcmds = _T(""));
 	virtual void OnSize(wxSizeEvent& event);
 
 	ASSDrawShapeLibrary *shapelib;
+	wxString source_ass;
 	wxCheckBox *cb;
 	DECLARE_EVENT_TABLE()
 	friend class ASSDrawShapeLibrary;

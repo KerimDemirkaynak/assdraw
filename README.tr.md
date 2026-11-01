@@ -10,11 +10,46 @@
 
 ---
 
+## Çizim araçları
+
+- **Coloring (Renklendirme)**: Dolu bir alt şekli seçip çift tıklayarak rengini
+  belirleyebilirsiniz. İç boşluklar dış kontura bağlı kalır. Renkler, genel
+  ayarlar uygulanırken, kitaplığa kaydederken ve geri alırken korunur.
+- **Copy ASS (ASS kopyala)**: Komut alanını dolgu, kenarlık ve alfa etiketleriyle
+  tek satır olarak kopyalar. Renkler standart ASS BGR biçiminde yazılır.
+  Enter komutları uygular; çok satırlı yapıştırmada komutlar birbirine karışmaz.
+- Farklı renkteki çizim parçaları dışa aktarılıp tekrar içe alındığında
+  ortak çizim alanındaki konumları korunur.
+- Çizimi geri almak veya yinelemek, arka plan görselini ve görünümün kaydırma/
+  yakınlaştırma durumunu değiştirmez.
+- Noktalar ve tutamaçlar uzaklaştırıldığında kullanılabilir boyutta kalır;
+  ekranın DPI değerine uyum sağlar. Arka plan için varsayılan opaklık
+  ayarlanabilir (0–255).
+- Ölçekleme/döndürme, bilineer dönüşüm, kaydırma düğmeleri ve Linux çizim
+  yenilemesi için düzeltmeler eklendi. Kaynaklar: [NOTICE.md](NOTICE.md).
+
+## Linux ve testler
+
+CMake 3.25+, C++17 derleyicisi ve Git gereklidir. Ubuntu üzerinde
+`libwxgtk3.2-dev ninja-build xvfb` paketlerini kurduktan sonra:
+
+```sh
+cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build-linux
+ctest --test-dir build-linux --output-on-failure
+```
+
+Arayüz testleri, varsa Xvfb üzerinden çalışır. Yalnızca temel renk/geçmiş
+testleri için `-DASSDRAW_BUILD_APP=OFF` kullanabilirsiniz; wxWidgets ve AGG
+gerekmez. Yerel AGG kopyası yoksa sabitlenmiş sürüm otomatik indirilir.
+Çevrimdışı derleme için `ASSDRAW_AGG_ROOT` ile mevcut `agg-src` klasörünü
+belirtebilirsiniz.
+
 ## Otomatik Derlemeler (CI/CD)
 
 Bu depo, otomatik derleme ve paketleme işlemleri için **GitHub Actions** kullanmaktadır.
 
-* **Tetikleyiciler**: Derlemeler, `master` veya `main` dallarına yapılan push ve pull request (çekme isteği) işlemlerinde otomatik olarak çalışır. Ayrıca Actions sekmesinden manuel olarak da tetikleyebilirsiniz.
+* **Tetikleyiciler**: Derlemeler, `master` veya `main` dallarına açılan pull request (çekme isteği) işlemlerinde çalışır. Ayrıca Actions sekmesinden manuel olarak tetikleyebilirsiniz.
 * **Süreç**: İş akışı repoyu klonlar (AGG alt modülü için otomatik bir yedekleme adımı içerir), `vcpkg` önbelleklerini geri yükler, PowerShell derleme betiğini kullanarak uygulamayı derler ve Inno Setup ile çalıştırılabilir bir kurulum dosyası (installer) oluşturur.
 * **Çıktılar (Artifacts)**: Derlenen Windows kurulum dosyası (`ASSDraw3_Setup.exe`), doğrudan Actions çalışma sayfasından kolayca indirebileceğiniz bir artifact olarak yüklenir.
 

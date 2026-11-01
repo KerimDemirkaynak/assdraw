@@ -51,6 +51,7 @@ void ASSDrawFrame::InitializeDefaultSettings()
 	alphas.canvas_shape_mainpoint = 128;
 	alphas.canvas_shape_controlpoint = 128;
 	alphas.canvas_shape_selectpoint = 255;
+	alphas.dfltimgopac = 128;
 
 	sizes.origincross = 2;
 
@@ -59,6 +60,7 @@ void ASSDrawFrame::InitializeDefaultSettings()
 	behaviors.parse_spc = false;
 	behaviors.nosplashscreen = false;
 	behaviors.confirmquit = true;
+	shape_style = ShapeStyle();
 }
 
 void ASSDrawFrame::ApplySettings()
@@ -98,6 +100,7 @@ void ASSDrawFrame::ApplySettings()
 	shapelib->libarea->Refresh();
 
 	m_canvas->SetDrawCmdSet(behaviors.parse_spc? _T("m n l b s p c _"):_T("m n l b _"));
+	// Editor preferences must not overwrite independently colored contours.
 
 	UpdateASSCommandStringToSrcTxtCtrl(m_canvas->GenerateASS());
 }
@@ -146,6 +149,7 @@ void ASSDrawFrame::LoadSettings()
 	CFGREAD(alphas.canvas_shape_mainpoint)
 	CFGREAD(alphas.canvas_shape_outline)
 	CFGREAD(alphas.canvas_shape_selectpoint)
+	CFGREAD(alphas.dfltimgopac)
 	CFGREAD(sizes.origincross)
 	CFGREAD(behaviors.autoaskimgopac)
 	CFGREAD(behaviors.capitalizecmds)
@@ -180,6 +184,7 @@ void ASSDrawFrame::SaveSettings()
 	CFGWRITE(alphas.canvas_shape_mainpoint)
 	CFGWRITE(alphas.canvas_shape_outline)
 	CFGWRITE(alphas.canvas_shape_selectpoint)
+	CFGWRITE(alphas.dfltimgopac)
 	CFGWRITE(sizes.origincross)
 	CFGWRITE(behaviors.autoaskimgopac)
 	CFGWRITE(behaviors.capitalizecmds)

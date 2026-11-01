@@ -71,13 +71,13 @@ public:
 	wxPGId alphas_canvas_shape_mainpoint_pgid;
 	wxPGId alphas_canvas_shape_controlpoint_pgid;
 	wxPGId alphas_canvas_shape_selectpoint_pgid;
+	wxPGId alphas_dfltimgopac_pgid;
 	wxPGId sizes_origincross_pgid;
 	wxPGId behaviors_capitalizecmds_pgid;
 	wxPGId behaviors_autoaskimgopac_pgid;
 	wxPGId behaviors_parse_spc_pgid;
 	wxPGId behaviors_nosplashscreen_pgid;
 	wxPGId behaviors_confirmquit_pgid;
-
 	wxPropertyGrid *propgrid;
 	//DECLARE_EVENT_TABLE()
 

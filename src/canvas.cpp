@@ -35,6 +35,7 @@
 
 #include "assdraw.hpp"
 #include "cmd.hpp"
+#include "styled_ass.hpp"
 #include "agg_gsv_text.h"
 #include "agg_ellipse.h"
 #include "agg_conv_dash.h"
@@ -42,9 +43,110 @@
 #include "agg_trans_perspective.h"
 
 #include "agghelper.hpp"
+#include <algorithm>
 #include <math.h>
+#include <wx/colordlg.h>
 #include <wx/image.h>
 #include <wx/filename.h>
+
+namespace {
+constexpr double kEditorPointMinimumDiameter = 8.0;
+constexpr double kEditorPointMaximumDiameter = 14.0;
+constexpr double kEditorPointHitRadius = 9.0;
+constexpr double kTransformHandleRadius = 8.0;
+
+AssDrawingCommand ToAssDrawingCommand(const DrawCmd* command)
+{
+	AssDrawingCommand serialized;
+	serialized.type = "mnlbspc"[static_cast<int>(command->type)];
+
+	if (command->type == B)
+	{
+		if (command->initialized && command->controlpoints.size() >= 2)
+		{
+			PointList::const_iterator control = command->controlpoints.begin();
+			serialized.points.push_back({ (*control)->x(), (*control)->y() });
+			++control;
+			serialized.points.push_back({ (*control)->x(), (*control)->y() });
+		}
+		else
+			serialized.unknown_point_pairs = 2;
+	}
+	else if (command->type == S)
+	{
+		if (command->initialized)
+		{
+			for (PointList::const_iterator control = command->controlpoints.begin();
+				control != command->controlpoints.end(); ++control)
+				serialized.points.push_back({ (*control)->x(), (*control)->y() });
+		}
+		else
+			serialized.unknown_point_pairs = command->controlpoints.size();
+		serialized.close_spline = static_cast<const DrawCmd_S*>(command)->closed;
+	}
+
+	if (command->m_point)
+		serialized.points.push_back({ command->m_point->x(), command->m_point->y() });
+	return serialized;
+}
+
+double EditorPointDiameter(double scale)
+{
+	if (scale < kEditorPointMinimumDiameter)
+		return kEditorPointMinimumDiameter;
+	if (scale > kEditorPointMaximumDiameter)
+		return kEditorPointMaximumDiameter;
+	return scale;
+}
+
+double SignedArea(const std::vector<wxRealPoint>& contour)
+{
+	double area = 0.0;
+	for (std::size_t index = 0; index < contour.size(); ++index)
+	{
+		const wxRealPoint& from = contour[index];
+		const wxRealPoint& to = contour[(index + 1) % contour.size()];
+		area += from.x * to.y - to.x * from.y;
+	}
+	return area * 0.5;
+}
+
+int WindingAtPoint(const std::vector<wxRealPoint>& contour, const wxRealPoint& point)
+{
+	int winding = 0;
+	if (contour.size() < 3)
+		return winding;
+
+	for (std::size_t index = 0; index < contour.size(); ++index)
+	{
+		const wxRealPoint& from = contour[index];
+		const wxRealPoint& to = contour[(index + 1) % contour.size()];
+		const double side = (to.x - from.x) * (point.y - from.y) -
+			(to.y - from.y) * (point.x - from.x);
+		if (from.y <= point.y)
+		{
+			if (to.y > point.y && side > 0.0)
+				++winding;
+		}
+		else if (to.y <= point.y && side < 0.0)
+		{
+			--winding;
+		}
+	}
+	return winding;
+}
+
+bool IsInsideContour(const std::vector<wxRealPoint>& contour, const wxRealPoint& point)
+{
+	return WindingAtPoint(contour, point) != 0;
+}
+
+agg::rgba ToAggColor(AssRgb color, std::uint8_t opacity)
+{
+	return agg::rgba(color.red / 255.0, color.green / 255.0,
+		color.blue / 255.0, opacity / 255.0);
+}
+}
 
 // ----------------------------------------------------------------------------
 // the main drawing canvas: ASSDrawCanvas
@@ -54,6 +156,7 @@ BEGIN_EVENT_TABLE(ASSDrawCanvas, ASSDrawEngine)
     EVT_MOTION (ASSDrawCanvas::OnMouseMove)
     EVT_LEFT_UP(ASSDrawCanvas::OnMouseLeftUp)
     EVT_LEFT_DOWN(ASSDrawCanvas::OnMouseLeftDown)
+	EVT_LEFT_DCLICK(ASSDrawCanvas::OnMouseLeftDClick)
     EVT_RIGHT_UP(ASSDrawCanvas::OnMouseRightUp)
     EVT_RIGHT_DOWN(ASSDrawCanvas::OnMouseRightDown)
     EVT_RIGHT_DCLICK(ASSDrawCanvas::OnMouseRightDClick)
@@ -91,6 +194,8 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 	bgimg.bgimg = NULL;
 	bgimg.alpha = 0.5;
 	rectbound2upd = -1, rectbound2upd2 = -1;
+	coloring_target_selected = false;
+	coloring_target_shape = NULL;
 
 	rgba_shape_normal = agg::rgba(0,0,1,0.5);
 	rgba_outline = agg::rgba(0,0,0);
@@ -101,6 +206,7 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 	rgba_origin = agg::rgba(0,0,0);
 	rgba_ruler_h = agg::rgba(0,0,1);
 	rgba_ruler_v = agg::rgba(1,0,0);
+	ApplyShapeStyle();
 
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(1, 1, 0);
     sizer->AddGrowableRow(0);
@@ -150,9 +256,101 @@ void ASSDrawCanvas::ParseASS(wxString str, bool addundo)
 	if (addundo)
 		AddUndo(_T("Modify drawing commands"));
 
-	ASSDrawEngine::ParseASS(str);
+	const std::string source(str.mb_str(wxConvUTF8));
+	const StyledAssImport imported = ImportStyledAss(source, shape_style);
+
+	subshape_styles.clear();
+	coloring_target_shape = NULL;
+	coloring_target_selected = false;
+	ASSDrawEngine::ParseASS(wxString(imported.drawing_text.c_str(), wxConvUTF8));
+	std::size_t style_index = 0;
+	for (DrawCmdList::iterator command = cmds.begin(); command != cmds.end(); ++command)
+	{
+		if ((*command)->type != M)
+			continue;
+		subshape_styles[*command] = style_index < imported.contour_styles.size() ?
+			imported.contour_styles[style_index] : shape_style;
+		++style_index;
+	}
+	if (!imported.contour_styles.empty())
+		shape_style = imported.contour_styles.front();
+	m_frame->shape_style = shape_style;
+	ApplyShapeStyle();
 
 	RefreshUndocmds();
+}
+
+wxString ASSDrawCanvas::GenerateDrawingASS()
+{
+	return ASSDrawEngine::GenerateASS();
+}
+
+wxString ASSDrawCanvas::GenerateASS()
+{
+	const std::vector<StyledSubshape> subshapes = BuildStyledSubshapes();
+	std::vector<StyledAssSubshape> serializable;
+	serializable.reserve(subshapes.size());
+	for (std::vector<StyledSubshape>::const_iterator shape = subshapes.begin(); shape != subshapes.end(); ++shape)
+	{
+		StyledAssSubshape encoded;
+		encoded.style = shape->style;
+		encoded.commands.reserve(shape->commands.size());
+		for (std::vector<DrawCmd*>::const_iterator command = shape->commands.begin(); command != shape->commands.end(); ++command)
+			encoded.commands.push_back(ToAssDrawingCommand(*command));
+		serializable.push_back(encoded);
+	}
+	const std::string output = SerializeStyledAss(serializable);
+	return wxString(output.c_str(), wxConvUTF8);
+}
+
+DrawCmd* ASSDrawCanvas::AppendCmd(DrawCmd* cmd)
+{
+	DrawCmd* appended = ASSDrawEngine::AppendCmd(cmd);
+	if (appended && appended->type == M)
+		subshape_styles[appended] = shape_style;
+	return appended;
+}
+
+void ASSDrawCanvas::InsertCmd(DrawCmd* cmd, DrawCmd* after)
+{
+	ASSDrawEngine::InsertCmd(cmd, after);
+	if (cmd && cmd->type == M)
+		subshape_styles[cmd] = shape_style;
+}
+
+bool ASSDrawCanvas::DeleteCommand(DrawCmd* cmd)
+{
+	const bool deleted = ASSDrawEngine::DeleteCommand(cmd);
+	if (deleted)
+	{
+		subshape_styles.erase(cmd);
+		if (coloring_target_shape == cmd)
+		{
+			coloring_target_shape = NULL;
+			coloring_target_selected = false;
+		}
+	}
+	return deleted;
+}
+
+void ASSDrawCanvas::SetShapeStyle(const ShapeStyle& new_style)
+{
+	shape_style = new_style;
+	if (draw_mode == MODE_COLOR && coloring_target_shape)
+		SetSubshapeStyle(coloring_target_shape, new_style);
+	else
+		for (std::map<DrawCmd*, ShapeStyle>::iterator style = subshape_styles.begin(); style != subshape_styles.end(); ++style)
+			style->second = new_style;
+	ApplyShapeStyle();
+	RefreshDisplay();
+}
+
+void ASSDrawCanvas::ApplyShapeStyle()
+{
+	// These colors are kept separate from editor guides, points, and handles.
+	rgba_shape_normal = ToAggColor(shape_style.fill_color,
+		shape_style.fill_enabled ? shape_style.fill_opacity : 0);
+	rgba_shape = rgba_shape_normal;
 }
 
 void ASSDrawCanvas::ResetEngine(bool addM)
@@ -161,6 +359,9 @@ void ASSDrawCanvas::ResetEngine(bool addM)
 	SetHighlighted(NULL, NULL);
 	SetPreviewMode(false);
 	SetDrawMode(MODE_ARR);
+	subshape_styles.clear();
+	coloring_target_shape = NULL;
+	coloring_target_selected = false;
 	ASSDrawEngine::ResetEngine(addM);
 	RefreshUndocmds();
 }
@@ -200,6 +401,11 @@ void ASSDrawCanvas::RefreshDisplay()
 void ASSDrawCanvas::SetDrawMode( MODE mode )
 {
 	draw_mode = mode;
+	if (draw_mode != MODE_COLOR)
+	{
+		coloring_target_selected = false;
+		coloring_target_shape = NULL;
+	}
 
 	if (!selected_points.empty())
 		ClearPointsSelection();
@@ -281,6 +487,302 @@ bool ASSDrawCanvas::CanZoom()
 bool ASSDrawCanvas::CanMove()
 {
 	return !IsTransformMode() || dragAnchor_left == NULL;
+}
+
+Point* ASSDrawCanvas::FindPointAtScreenPosition(const wxPoint& position, bool control_point) const
+{
+	const double hit_radius = kEditorPointHitRadius * std::max(1.0, GetDPIScaleFactor());
+	const double maximum_distance_squared = hit_radius * hit_radius;
+	double closest_distance_squared = maximum_distance_squared;
+	Point* closest_point = NULL;
+
+	for (DrawCmdList::const_iterator command = cmds.begin(); command != cmds.end(); ++command)
+	{
+		if (!control_point)
+		{
+			wxPoint candidate_position = (*command)->m_point->ToWxPoint();
+			const double dx = candidate_position.x - position.x;
+			const double dy = candidate_position.y - position.y;
+			const double distance_squared = dx * dx + dy * dy;
+			if (distance_squared <= closest_distance_squared)
+			{
+				closest_distance_squared = distance_squared;
+				closest_point = (*command)->m_point;
+			}
+			continue;
+		}
+
+		for (PointList::const_iterator point = (*command)->controlpoints.begin();
+			point != (*command)->controlpoints.end(); ++point)
+		{
+			wxPoint candidate_position = (*point)->ToWxPoint();
+			const double dx = candidate_position.x - position.x;
+			const double dy = candidate_position.y - position.y;
+			const double distance_squared = dx * dx + dy * dy;
+			if (distance_squared <= closest_distance_squared)
+			{
+				closest_distance_squared = distance_squared;
+				closest_point = *point;
+			}
+		}
+	}
+
+	return closest_point;
+}
+
+bool ASSDrawCanvas::IsScreenPositionInFilledShape(const wxPoint& position) const
+{
+	if (pointsys->scale <= 0.0)
+		return false;
+
+	const wxRealPoint click((position.x - pointsys->originx) / pointsys->scale,
+		(position.y - pointsys->originy) / pointsys->scale);
+	int winding = 0;
+	std::vector<wxRealPoint> contour;
+
+	auto add_contour_winding = [&]() {
+		if (contour.size() < 3)
+			return;
+
+		for (std::size_t index = 0; index < contour.size(); ++index)
+		{
+			const wxRealPoint& from = contour[index];
+			const wxRealPoint& to = contour[(index + 1) % contour.size()];
+			const double side = (to.x - from.x) * (click.y - from.y) -
+				(to.y - from.y) * (click.x - from.x);
+			if (from.y <= click.y)
+			{
+				if (to.y > click.y && side > 0.0)
+					++winding;
+			}
+			else if (to.y <= click.y && side < 0.0)
+			{
+				--winding;
+			}
+		}
+	};
+
+	for (DrawCmdList::const_iterator command = cmds.begin(); command != cmds.end(); ++command)
+	{
+		DrawCmd* current = *command;
+		if (current->type == M)
+		{
+			add_contour_winding();
+			contour.clear();
+			contour.push_back(wxRealPoint(current->m_point->x(), current->m_point->y()));
+			continue;
+		}
+
+		if (contour.empty())
+			continue;
+
+		if (current->type == B && current->initialized && current->controlpoints.size() == 2)
+		{
+			PointList::const_iterator controls = current->controlpoints.begin();
+			const wxRealPoint p0 = contour.back();
+			const wxRealPoint p1((*controls)->x(), (*controls)->y());
+			++controls;
+			const wxRealPoint p2((*controls)->x(), (*controls)->y());
+			const wxRealPoint p3(current->m_point->x(), current->m_point->y());
+			for (int step = 1; step <= 16; ++step)
+			{
+				const double t = step / 16.0;
+				const double inverse = 1.0 - t;
+				contour.push_back(wxRealPoint(
+					inverse * inverse * inverse * p0.x + 3.0 * inverse * inverse * t * p1.x +
+					3.0 * inverse * t * t * p2.x + t * t * t * p3.x,
+					inverse * inverse * inverse * p0.y + 3.0 * inverse * inverse * t * p1.y +
+					3.0 * inverse * t * t * p2.y + t * t * t * p3.y));
+			}
+		}
+		else
+		{
+			// Spline control points provide a conservative pick approximation.
+			if (current->type == S)
+			{
+				for (PointList::const_iterator control = current->controlpoints.begin();
+					control != current->controlpoints.end(); ++control)
+					contour.push_back(wxRealPoint((*control)->x(), (*control)->y()));
+			}
+			contour.push_back(wxRealPoint(current->m_point->x(), current->m_point->y()));
+		}
+	}
+	add_contour_winding();
+
+	// AGG's path rasterizer uses the non-zero winding fill rule. An
+	// oppositely-wound inner contour is therefore a hole and is not selectable.
+	return winding != 0;
+}
+
+std::vector<StyledSubshape> ASSDrawCanvas::BuildStyledSubshapes() const
+{
+	struct RawContour
+	{
+		DrawCmd* start_command = NULL;
+		std::vector<DrawCmd*> commands;
+		std::vector<wxRealPoint> polygon;
+		double area = 0.0;
+		int parent = -1;
+		bool is_hole = false;
+	};
+
+	std::vector<RawContour> contours;
+	RawContour* current = NULL;
+	for (DrawCmdList::const_iterator command = cmds.begin(); command != cmds.end(); ++command)
+	{
+		DrawCmd* draw_command = *command;
+		if (draw_command->type == M)
+		{
+			contours.push_back(RawContour());
+			current = &contours.back();
+			current->start_command = draw_command;
+			current->commands.push_back(draw_command);
+			current->polygon.push_back(wxRealPoint(draw_command->m_point->x(), draw_command->m_point->y()));
+			continue;
+		}
+		if (!current)
+			continue;
+
+		current->commands.push_back(draw_command);
+		if (draw_command->type == B && draw_command->initialized && draw_command->controlpoints.size() == 2)
+		{
+			PointList::const_iterator controls = draw_command->controlpoints.begin();
+			const wxRealPoint p0 = current->polygon.back();
+			const wxRealPoint p1((*controls)->x(), (*controls)->y());
+			++controls;
+			const wxRealPoint p2((*controls)->x(), (*controls)->y());
+			const wxRealPoint p3(draw_command->m_point->x(), draw_command->m_point->y());
+			for (int step = 1; step <= 16; ++step)
+			{
+				const double t = step / 16.0;
+				const double inverse = 1.0 - t;
+				current->polygon.push_back(wxRealPoint(
+					inverse * inverse * inverse * p0.x + 3.0 * inverse * inverse * t * p1.x + 3.0 * inverse * t * t * p2.x + t * t * t * p3.x,
+					inverse * inverse * inverse * p0.y + 3.0 * inverse * inverse * t * p1.y + 3.0 * inverse * t * t * p2.y + t * t * t * p3.y));
+			}
+		}
+		else
+		{
+			if (draw_command->type == S)
+			{
+				for (PointList::const_iterator control = draw_command->controlpoints.begin(); control != draw_command->controlpoints.end(); ++control)
+					current->polygon.push_back(wxRealPoint((*control)->x(), (*control)->y()));
+			}
+			current->polygon.push_back(wxRealPoint(draw_command->m_point->x(), draw_command->m_point->y()));
+		}
+	}
+
+	for (std::size_t index = 0; index < contours.size(); ++index)
+	{
+		contours[index].area = SignedArea(contours[index].polygon);
+		if (contours[index].polygon.size() < 3)
+			continue;
+		for (std::size_t candidate = 0; candidate < contours.size(); ++candidate)
+		{
+			if (candidate == index || contours[candidate].polygon.size() < 3 ||
+				!IsInsideContour(contours[candidate].polygon, contours[index].polygon.front()))
+				continue;
+			if (contours[index].parent == -1 || fabs(contours[candidate].area) < fabs(contours[contours[index].parent].area))
+				contours[index].parent = static_cast<int>(candidate);
+		}
+		if (contours[index].parent >= 0)
+		{
+			const double parent_area = contours[contours[index].parent].area;
+			contours[index].is_hole = contours[index].area * parent_area < 0.0;
+		}
+	}
+
+	std::vector<StyledSubshape> result;
+	for (std::size_t index = 0; index < contours.size(); ++index)
+	{
+		if (contours[index].is_hole)
+			continue;
+		StyledSubshape shape;
+		shape.start_command = contours[index].start_command;
+		shape.commands = contours[index].commands;
+		shape.contours.push_back(contours[index].polygon);
+		shape.style = GetSubshapeStyle(shape.start_command);
+		for (std::size_t child = 0; child < contours.size(); ++child)
+		{
+			if (contours[child].is_hole && contours[child].parent == static_cast<int>(index))
+			{
+				shape.commands.insert(shape.commands.end(), contours[child].commands.begin(), contours[child].commands.end());
+				shape.contours.push_back(contours[child].polygon);
+			}
+		}
+		result.push_back(shape);
+	}
+	return result;
+}
+
+ShapeStyle ASSDrawCanvas::GetSubshapeStyle(DrawCmd* start_command) const
+{
+	std::map<DrawCmd*, ShapeStyle>::const_iterator found = subshape_styles.find(start_command);
+	return found == subshape_styles.end() ? shape_style : found->second;
+}
+
+void ASSDrawCanvas::SetSubshapeStyle(DrawCmd* start_command, const ShapeStyle& style)
+{
+	if (!start_command)
+		return;
+	subshape_styles[start_command] = style;
+	shape_style = style;
+	m_frame->shape_style = style;
+	ApplyShapeStyle();
+	RefreshDisplay();
+}
+
+DrawCmd* ASSDrawCanvas::FindSubshapeAtScreenPosition(const wxPoint& position) const
+{
+	if (pointsys->scale <= 0.0)
+		return NULL;
+	const wxRealPoint click((position.x - pointsys->originx) / pointsys->scale,
+		(position.y - pointsys->originy) / pointsys->scale);
+	DrawCmd* selected = NULL;
+	const std::vector<StyledSubshape> shapes = BuildStyledSubshapes();
+	for (std::vector<StyledSubshape>::const_iterator shape = shapes.begin(); shape != shapes.end(); ++shape)
+	{
+		int winding = 0;
+		for (std::vector< std::vector<wxRealPoint> >::const_iterator contour = shape->contours.begin(); contour != shape->contours.end(); ++contour)
+			winding += WindingAtPoint(*contour, click);
+		if (winding != 0)
+			selected = shape->start_command;
+	}
+	return selected;
+}
+
+void ASSDrawCanvas::SelectColoringTarget(const wxPoint& position)
+{
+	coloring_target_shape = FindSubshapeAtScreenPosition(position);
+	coloring_target_selected = coloring_target_shape != NULL;
+	if (coloring_target_selected)
+		m_frame->SetStatusText(_T("Shape selected. Double-click to choose its fill color."), 1);
+	else
+		m_frame->SetStatusText(_T("Click a filled part of the shape (not a hole)."), 1);
+	RefreshDisplay();
+}
+
+void ASSDrawCanvas::ShowColorSelector()
+{
+	if (!coloring_target_shape)
+		return;
+	const ShapeStyle selected_style = GetSubshapeStyle(coloring_target_shape);
+	wxColourData color_data;
+	color_data.SetChooseFull(true);
+	color_data.SetColour(wxColour(selected_style.fill_color.red, selected_style.fill_color.green,
+		selected_style.fill_color.blue));
+	wxColourDialog dialog(m_frame, &color_data);
+	dialog.SetTitle(_T("Choose fill color"));
+	if (dialog.ShowModal() != wxID_OK)
+		return;
+
+	const wxColour color = dialog.GetColourData().GetColour();
+	AddUndo(_T("Change sub-shape color"));
+	ShapeStyle style = selected_style;
+	style.fill_enabled = true;
+	style.fill_color = { color.Red(), color.Green(), color.Blue() };
+	SetSubshapeStyle(coloring_target_shape, style);
+	RefreshUndocmds();
 }
 
 // Do the dragging
@@ -509,13 +1011,14 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
     {
 		if (IsTransformMode())
 		{
+			const double transform_hit_radius = kTransformHandleRadius * std::max(1.0, GetDPIScaleFactor());
 			int oldrectbound = rectbound2upd;
 			rectbound2upd = -1;
 			rectbound2upd2 = -1;
 			for (int i = 0; i < 4; i++)
 			{
-				if (abs((int)rectbound2[i].x - mouse_point.x) <= pointsys->scale
-					&& abs((int)rectbound2[i].y - mouse_point.y) <= pointsys->scale)
+				if (abs((int)rectbound2[i].x - mouse_point.x) <= transform_hit_radius
+					&& abs((int)rectbound2[i].y - mouse_point.y) <= transform_hit_radius)
 						rectbound2upd = i;
 			}
 			for (int i = 0; rectbound2upd == -1 && i < 4; i++)
@@ -532,9 +1035,9 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 				{
 					intersect = agg::calc_intersection(
 						pi.x, pi.y, pj.x, pj.y,
-	                    mouse_point.x - pointsys->scale, mouse_point.y,
-						mouse_point.x + pointsys->scale, mouse_point.y, &ix, &iy);
-					intersect &= fabs(mouse_point.x - ix) <= pointsys->scale;
+						mouse_point.x - transform_hit_radius, mouse_point.y,
+						mouse_point.x + transform_hit_radius, mouse_point.y, &ix, &iy);
+					intersect &= fabs(mouse_point.x - ix) <= transform_hit_radius;
 					intersect &= (pj.y > pi.y?
 						pj.y - dy3 > iy && iy > pi.y + dy3:
 						pj.y + dy3 < iy && iy < pi.y - dy3);
@@ -543,9 +1046,9 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 				{
 					intersect = agg::calc_intersection(
 						pi.x, pi.y, pj.x, pj.y,
-	                    mouse_point.x, mouse_point.y - pointsys->scale,
-						mouse_point.x, mouse_point.y + pointsys->scale, &ix, &iy);
-					intersect &= fabs(mouse_point.y - iy) <= pointsys->scale;
+						mouse_point.x, mouse_point.y - transform_hit_radius,
+						mouse_point.x, mouse_point.y + transform_hit_radius, &ix, &iy);
+					intersect &= fabs(mouse_point.y - iy) <= transform_hit_radius;
 					intersect &= (pj.x > pi.x?
 						pj.x - dx3 > ix && ix > pi.x + dx3:
 						pj.x + dx3 < ix && ix < pi.x - dx3);
@@ -569,17 +1072,13 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 	            when it's dragging
 	         */
 
-			// check if mouse points on any control point first
+			// Check controls first, then primary points.  Primary points keep the
+			// historical priority where they overlap a Bezier handle.
 			Point* last_pointedAt_point = pointedAt_point;
-			ControlAt( wx, wy, pointedAt_point );
-
-			// then check if mouse points on any m_points
-			// override any control point set to pointedAt_point above
-			DrawCmd* p = PointAt( wx, wy );
-			if (p != NULL)
-			{
-				pointedAt_point = p->m_point;
-			}
+			pointedAt_point = FindPointAtScreenPosition(mouse_point, true);
+			Point* main_point = FindPointAtScreenPosition(mouse_point, false);
+			if (main_point != NULL)
+				pointedAt_point = main_point;
 
 			if (pointedAt_point != last_pointedAt_point)
 			{
@@ -612,6 +1111,19 @@ void ASSDrawCanvas::OnMouseLeftUp(wxMouseEvent& event)
 {
 	ProcessOnMouseLeftUp();
 	event.Skip( true );
+}
+
+void ASSDrawCanvas::OnMouseLeftDClick(wxMouseEvent& event)
+{
+	if (draw_mode != MODE_COLOR)
+	{
+		event.Skip();
+		return;
+	}
+
+	SelectColoringTarget(event.GetPosition());
+	if (coloring_target_selected)
+		ShowColorSelector();
 }
 
 void ASSDrawCanvas::ProcessOnMouseLeftUp()
@@ -714,10 +1226,25 @@ void ASSDrawCanvas::OnMouseLeftDown(wxMouseEvent& event)
 		return;
 
 	wxPoint q = event.GetPosition();
+	if (draw_mode == MODE_COLOR)
+	{
+		SelectColoringTarget(q);
+		return;
+	}
 
 	// wxPoint to Point
 	int px, py;
 	pointsys->FromWxPoint(q, px, py);
+
+	// A click may arrive before a motion event (for example after changing
+	// windows), so refresh the device-space hit target here as well.
+	if (!IsTransformMode())
+	{
+		pointedAt_point = FindPointAtScreenPosition(q, true);
+		Point* main_point = FindPointAtScreenPosition(q, false);
+		if (main_point != NULL)
+			pointedAt_point = main_point;
+	}
 
 	// create new cmd if in draw mode / or delete point if del tool selected
 	switch (draw_mode)
@@ -1129,7 +1656,7 @@ void ASSDrawCanvas::EnforceC1Continuity (DrawCmd* cmd, Point* pnt)
 		theotherpoint = *it;
 		mainpoint = prevb->m_point;
 	}
-	else if (pnt->num = cmd->controlpoints.size())
+	else if (pnt->num == cmd->controlpoints.size())
 	{
 		DrawCmd_B *thisb = static_cast< DrawCmd_B* >(cmd);
 		if (!thisb->C1Cont) return;
@@ -1146,31 +1673,19 @@ void ASSDrawCanvas::EnforceC1Continuity (DrawCmd* cmd, Point* pnt)
 void ASSDrawCanvas::AddUndo( wxString desc )
 {
 	PrepareUndoRedo(_undo, false, _T(""), desc);
-	undos.push_back( _undo );
-	// also empty redos
-	redos.clear();
+	history.Push(_undo);
 	m_frame->UpdateUndoRedoMenu();
 }
 
 bool ASSDrawCanvas::UndoOrRedo(bool isundo)
 {
-	std::list<UndoRedo>* main = (isundo? &undos:&redos);
-	std::list<UndoRedo>* sub = (isundo? &redos:&undos);
-
-	if (main->empty())
+	UndoRedo current;
+	PrepareUndoRedo(current, true, GenerateASS(), _T(""));
+	UndoRedo restored;
+	const bool changed = isundo ? history.Undo(current, restored) : history.Redo(current, restored);
+	if (!changed)
 		return false;
-
-	UndoRedo r = main->back();
-	// push into sub
-	UndoRedo nr(r);
-	PrepareUndoRedo(nr, true, GenerateASS(), r.desc);
-	sub->push_back( nr );
-	// parse
-	r.Export(this);
-	// delete that
-	std::list<UndoRedo>::iterator iter = main->end();
-	iter--;
-	main->erase(iter);
+	restored.Export(this);
 
 	// reset some values before refreshing
 	mousedownAt_point = NULL;
@@ -1194,18 +1709,18 @@ bool ASSDrawCanvas::Redo()
 
 wxString ASSDrawCanvas::GetTopUndo()
 {
-	if (undos.empty())
+	if (!history.CanUndo())
 		return _T("");
 	else
-		return undos.back().desc;
+		return history.TopUndo().desc;
 }
 
 wxString ASSDrawCanvas::GetTopRedo()
 {
-	if (redos.empty())
+	if (!history.CanRedo())
 		return _T("");
 	else
-		return redos.back().desc;
+		return history.TopRedo().desc;
 }
 
 void ASSDrawCanvas::RefreshUndocmds()
@@ -1310,7 +1825,41 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 		agg::render_scanlines_aa(rasterizer, scanline, rbase, bgimg.spanalloc, spangen);
 	}
 
-	ASSDrawEngine::Draw_Draw( rbase, rprim, rsolid, mtx, preview_mode? rgba_shape:rgba_shape_normal );
+	const std::vector<StyledSubshape> subshapes = BuildStyledSubshapes();
+	for (std::vector<StyledSubshape>::const_iterator shape = subshapes.begin(); shape != subshapes.end(); ++shape)
+	{
+		agg::path_storage path;
+		for (std::vector<DrawCmd*>::const_iterator command = shape->commands.begin(); command != shape->commands.end(); ++command)
+			AddDrawCmdToAGGPathStorage(*command, path);
+		agg::conv_transform< agg::path_storage > transformed(path, mtx);
+		agg::conv_curve< agg::conv_transform< agg::path_storage > > curve(transformed);
+
+		if (shape->style.fill_enabled)
+		{
+			rasterizer.reset();
+			agg::conv_contour< agg::conv_curve< agg::conv_transform< agg::path_storage > > > fill(curve);
+			rasterizer.add_path(fill);
+			render_scanlines_aa_solid(rbase, ToAggColor(shape->style.fill_color, shape->style.fill_opacity));
+		}
+
+		if (shape->style.outline_enabled && shape->style.outline_width > 0.0)
+		{
+			rasterizer.reset();
+			agg::conv_stroke< agg::conv_curve< agg::conv_transform< agg::path_storage > > > stroke(curve);
+			stroke.width(shape->style.outline_width * pointsys->scale);
+			rasterizer.add_path(stroke);
+			render_scanlines_aa_solid(rbase, ToAggColor(shape->style.outline_color, shape->style.outline_opacity));
+		}
+
+		if (draw_mode == MODE_COLOR && coloring_target_selected && shape->start_command == coloring_target_shape)
+		{
+			rasterizer.reset();
+			agg::conv_stroke< agg::conv_curve< agg::conv_transform< agg::path_storage > > > selection_stroke(curve);
+			selection_stroke.width(scale_ui(2.0));
+			rasterizer.add_path(selection_stroke);
+			render_scanlines_aa_solid(rbase, rgba_selectpoint);
+		}
+	}
 
 	if (!preview_mode)
 	{
@@ -1364,14 +1913,14 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 			if (rectbound2upd != -1)
 			{
 				agg::ellipse circ(rectbound2[rectbound2upd].x, rectbound2[rectbound2upd].y,
-					pointsys->scale, pointsys->scale);
+					kTransformHandleRadius, kTransformHandleRadius);
 				agg::conv_contour< agg::ellipse > c(circ);
 				rasterizer.add_path(c);
 			}
 			if (rectbound2upd2 != -1)
 			{
 				agg::ellipse circ(rectbound2[rectbound2upd2].x, rectbound2[rectbound2upd2].y,
-					pointsys->scale, pointsys->scale);
+					kTransformHandleRadius, kTransformHandleRadius);
 				agg::conv_contour< agg::ellipse > c(circ);
 				rasterizer.add_path(c);
 			}
@@ -1392,7 +1941,7 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 			rasterizer.add_path(stroke);
 			render_scanlines(rsolid);
 
-			double diameter = pointsys->scale;
+			double diameter = scale_ui(EditorPointDiameter(pointsys->scale));
 			double radius = diameter / 2.0;
 			// hilite
 			if (hilite_cmd && hilite_cmd->type != M)
@@ -1644,7 +2193,8 @@ void ASSDrawCanvas::SetBackgroundImage(const wxImage& img, wxString fname, bool 
 	if (bgimg.bgimg) delete bgimg.bgimg;
 	bgimg.bgimg = new wxImage(img);
 	bgimg.bgimgfile = fname;
-	PrepareBackgroundBitmap(bgimg.alpha);
+	const long opacity = std::clamp(m_frame->alphas.dfltimgopac, 0L, 255L);
+	PrepareBackgroundBitmap(1.0 - opacity / 255.0);
     UpdateBackgroundImgScalePosition(true);
 	RefreshDisplay();
 	m_frame->UpdateFrameUI();
@@ -1937,77 +2487,22 @@ void UndoRedo::Import(ASSDrawCanvas *canvas, bool prestage, wxString cmds)
 	if (prestage)
 	{
 		this->cmds = cmds;
-		this->backupcmds.free_all();
-		this->backupcmds.concat_path(canvas->backupcmds);
-		for (int i = 0; i < 4; i++)
-		{
-			this->rectbound[i] = canvas->rectbound[i];
-			this->rectbound2[i] = canvas->rectbound2[i];
-			this->backup[i] = canvas->backup[i];
-		}
-		this->isshapetransformable = canvas->isshapetransformable;
-	}
-	else
-	{
-	    this->originx = canvas->pointsys->originx;
-		this->originy = canvas->pointsys->originy;
-	    this->scale = canvas->pointsys->scale;
-
-		this->bgimgfile = canvas->bgimg.bgimgfile;
-		this->bgdisp = canvas->bgimg.disp;
-		this->bgcenter = canvas->bgimg.center;
-		this->bgscale = canvas->bgimg.scale;
-		this->bgalpha = canvas->bgimg.alpha;
 		this->c1cont = canvas->PrepareC1ContData();
-		this->draw_mode = canvas->draw_mode;
 	}
 }
 
 void UndoRedo::Export(ASSDrawCanvas *canvas)
 {
-	canvas->pointsys->originx = this->originx;
-	canvas->pointsys->originy = this->originy;
-	canvas->pointsys->scale = this->scale;
-	canvas->ParseASS( this->cmds );
+	canvas->ParseASS(this->cmds, false);
 	DrawCmdList::iterator it1 = canvas->cmds.begin();
 	std::vector< bool >::iterator it2 = this->c1cont.begin();
 	for(; it1 != canvas->cmds.end() && it2 != this->c1cont.end(); it1++, it2++)
 		if (*it2 && (*it1)->type == B)
 			static_cast<DrawCmd_B*>(*it1)->C1Cont = true;
 
-	if (canvas->bgimg.bgimgfile != this->bgimgfile)
-	{
-		canvas->RemoveBackgroundImage();
-		if (!this->bgimgfile.IsSameAs(_T("<clipboard>")) && ::wxFileExists(this->bgimgfile))
-		{
-			canvas->bgimg.alpha = this->bgalpha;
-			canvas->ReceiveBackgroundImageFileDropEvent(this->bgimgfile);
-		}
-	}
-	else
-	{
-		canvas->bgimg.new_scale = this->bgscale;
-		canvas->bgimg.new_center = this->bgcenter;
-		canvas->bgimg.new_disp = this->bgdisp;
-		canvas->bgimg.alpha = this->bgalpha;
-		canvas->UpdateBackgroundImgScalePosition();
-	}
-
-	canvas->draw_mode = this->draw_mode;
+	// Reference images and canvas view state are deliberately not restored.
 	if (canvas->IsTransformMode())
 	{
-		canvas->backupcmds.free_all();
-		canvas->backupcmds.concat_path(this->backupcmds);
-		for (int i = 0; i < 4; i++)
-		{
-			canvas->rectbound[i] = this->rectbound[i];
-			canvas->rectbound2[i] = this->rectbound2[i];
-			canvas->backup[i] = this->backup[i];
-		}
-		canvas->UpdateNonUniformTransformation();
-		canvas->InitiateDraggingIfTransformMode();
-		canvas->rectbound2upd = -1;
-		canvas->rectbound2upd2 = -1;
-		canvas->isshapetransformable = this->isshapetransformable;
+		canvas->SetDrawMode(canvas->draw_mode);
 	}
 }

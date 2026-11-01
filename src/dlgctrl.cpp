@@ -76,7 +76,7 @@ void ASSDrawSrcTxtCtrl::CustomOnChar(wxKeyEvent &event)
 	{
 	case WXK_RETURN:
 		m_frame->UpdateASSCommandStringFromSrcTxtCtrl(GetValue());
-		break;
+		return; // Enter applies; it must not also insert a line break.
 	case WXK_TAB:
 		break; //do nothing
 	default:
@@ -118,7 +118,7 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
     combo_templates = new wxComboBox( this, -1, combo_templatesStrings[0], __DPDS__ , 10, combo_templatesStrings, wxCB_READONLY );
     sizer_templates->Add(combo_templates, 0, wxALIGN_CENTER_VERTICAL|wxALL, border);
 
-    wxFlexGridSizer* sizer_fields = new wxFlexGridSizer(3, 4, 0, 0);
+    wxFlexGridSizer* sizer_fields = new wxFlexGridSizer(4, 4, 0, 0);
     sizer_main->Add(sizer_fields, 0, wxALIGN_CENTER_HORIZONTAL|wxLEFT, border);
 
 	int flag_txtctrl = wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL;
@@ -306,7 +306,7 @@ Control points for Bezier curves are generated once you release the mouse button
 	sizer->Layout();
 	sizer->Fit(this);
 
-	Center();
+	CentreOnScreen();
 	//if (CanSetTransparent()) SetTransparent(0xCC);
 
 	timer.SetOwner(this);

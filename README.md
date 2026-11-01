@@ -10,11 +10,44 @@
 
 ---
 
+## Drawing tools
+
+- **Coloring**: select a filled sub-shape, then double-click to choose its color.
+  Holes stay attached to their enclosing contour. Each sub-shape retains its
+  own color when applying editor preferences, saving to the library, or undoing.
+- **Copy ASS**: copy the command pane as one line, including fill/outline/alpha
+  tags in canonical ASS BGR notation. Enter applies the command pane; pasted
+  multiline drawing commands keep their token boundaries.
+- Styled drawing runs are offset on export and restored on import so separate
+  colors retain their positions in the shared drawing coordinate system.
+- Drawing undo/redo leaves the tracing image and canvas pan/zoom unchanged.
+- Point markers and drag targets remain usable when zoomed out and scale with
+  the display DPI. Background opacity has a configurable default (0–255).
+- Scale/rotate, bilinear transforms, pan toggles, and wxGTK painting include
+  fixes from the reference forks. See [NOTICE.md](NOTICE.md) for attribution.
+
+## Linux and tests
+
+With CMake 3.25+, a C++17 compiler, Git, wxWidgets development packages, and
+Ninja installed:
+
+```sh
+cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build-linux
+ctest --test-dir build-linux --output-on-failure
+```
+
+On Ubuntu, install `libwxgtk3.2-dev ninja-build xvfb`. The GUI regressions run
+under Xvfb when available. Core style/history tests can also be built without
+wxWidgets or AGG using `-DASSDRAW_BUILD_APP=OFF`. A missing local AGG checkout
+is fetched automatically at the pinned revision; `ASSDRAW_AGG_ROOT` can point
+to an existing `agg-src` directory for offline builds.
+
 ## Automated Builds (CI/CD)
 
 This repository uses **GitHub Actions** for automated builds and packaging.
 
-* **Triggers**: Builds run automatically on pushes and pull requests to the `master` or `main` branches. You can also trigger them manually from the Actions tab.
+* **Triggers**: Builds run on pull requests to `master` or `main`, or manually from the Actions tab.
 * **Process**: The workflow checks out the repository (with an automated fallback for the AGG submodule), restores `vcpkg` caches, compiles the application using the PowerShell build script, and creates an executable installer using Inno Setup.
 * **Artifacts**: The compiled Windows installer (`ASSDraw3_Setup.exe`) is uploaded as an artifact, which you can easily download directly from the Actions run page.
 

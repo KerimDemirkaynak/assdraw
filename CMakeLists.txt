@@ -1,21 +1,56 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(assdraw VERSION 3.0.0 LANGUAGES CXX RC)
+project(assdraw VERSION 3.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(CTest)
+option(ASSDRAW_BUILD_APP "Build the graphical editor" ON)
+
+if(BUILD_TESTING)
+    add_executable(assdraw-core-tests
+        tests/style_history_tests.cpp
+        src/shape_style.cpp
+        src/styled_ass.cpp
+    )
+    target_include_directories(assdraw-core-tests PRIVATE src)
+    if(MSVC)
+        target_compile_options(assdraw-core-tests PRIVATE /UNDEBUG)
+    else()
+        target_compile_options(assdraw-core-tests PRIVATE -UNDEBUG)
+    endif()
+    add_test(NAME assdraw-core-tests COMMAND assdraw-core-tests)
+    find_package(Python3 COMPONENTS Interpreter)
+    if(Python3_Interpreter_FOUND)
+        add_test(NAME assdraw-pan-drag-tests
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/pan_drag_wiring_tests.py)
+    endif()
+endif()
+
+if(NOT ASSDRAW_BUILD_APP)
+    return()
+endif()
+
+if(WIN32)
+    enable_language(RC)
+endif()
+
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
-set(ASSDRAW_AGG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/agg/agg-src")
+set(ASSDRAW_AGG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/agg/agg-src" CACHE PATH "AGG source directory")
 if(NOT EXISTS "${ASSDRAW_AGG_ROOT}/include/agg_basics.h")
-    message(
-        FATAL_ERROR
-        "AGG submodule was not found. Run `git submodule update --init vendor/agg` first."
+    include(FetchContent)
+    FetchContent_Declare(agg
+        GIT_REPOSITORY https://github.com/ghaerr/agg-2.6.git
+        GIT_TAG c4f36b4432142f22c0bf82c6fbdb41567a236be2
+        SOURCE_SUBDIR __assdraw_no_upstream_cmake_project
     )
+    FetchContent_MakeAvailable(agg)
+    set(ASSDRAW_AGG_ROOT "${agg_SOURCE_DIR}/agg-src")
 endif()
 
 set(ASSDRAW_AGG_SOURCES
@@ -56,7 +91,6 @@ set(ASSDRAW_WX_COMPONENTS base core adv aui html propgrid)
 find_package(wxWidgets REQUIRED COMPONENTS ${ASSDRAW_WX_COMPONENTS})
 include(${wxWidgets_USE_FILE})
 set(ASSDRAW_WX_LIBRARIES ${wxWidgets_LIBRARIES})
-find_package(WebP CONFIG REQUIRED)
 
 set(ASSDRAW_SOURCES
     src/assdraw.cpp
@@ -68,6 +102,8 @@ set(ASSDRAW_SOURCES
     src/engine.cpp
     src/library.cpp
     src/settings.cpp
+    src/shape_style.cpp
+    src/styled_ass.cpp
     src/wxAGG/AGGWindow.cpp
     src/xpm/res.cpp
 )
@@ -86,6 +122,9 @@ set(ASSDRAW_HEADERS
     src/library.hpp
     src/resource.h
     src/settings.hpp
+    src/drawing_history.hpp
+    src/shape_style.hpp
+    src/styled_ass.hpp
     src/wxAGG/AGGWindow.h
     src/wxAGG/PixelFormatConvertor.h
     src/xpm/res.h
@@ -127,9 +166,6 @@ target_link_libraries(
     PRIVATE
         assdraw_agg
         ${ASSDRAW_WX_LIBRARIES}
-        WebP::webp
-        WebP::webpdecoder
-        WebP::webpdemux
 )
 
 set_target_properties(
@@ -140,3 +176,26 @@ set_target_properties(
 )
 
 install(TARGETS assdraw RUNTIME DESTINATION .)
+
+if(BUILD_TESTING)
+    add_executable(assdraw-gui-tests tests/canvas_tests.cpp ${ASSDRAW_SOURCES} ${ASSDRAW_RESOURCES})
+    target_include_directories(assdraw-gui-tests PRIVATE src src/wxAGG src/xpm)
+    target_compile_definitions(assdraw-gui-tests PRIVATE ASSDRAW_NO_APP_MAIN NOMINMAX UNICODE _UNICODE)
+    target_link_libraries(assdraw-gui-tests PRIVATE assdraw_agg ${ASSDRAW_WX_LIBRARIES})
+    if(MSVC)
+        target_compile_options(assdraw-gui-tests PRIVATE /UNDEBUG)
+    else()
+        target_compile_options(assdraw-gui-tests PRIVATE -UNDEBUG)
+    endif()
+    if(UNIX AND NOT APPLE)
+        find_program(XVFB_RUN xvfb-run)
+        if(XVFB_RUN)
+            add_test(NAME assdraw-gui-tests COMMAND ${XVFB_RUN} -a $<TARGET_FILE:assdraw-gui-tests>)
+        endif()
+    else()
+        add_test(NAME assdraw-gui-tests COMMAND assdraw-gui-tests)
+    endif()
+    if(TEST assdraw-gui-tests)
+        set_tests_properties(assdraw-gui-tests PROPERTIES TIMEOUT 90)
+    endif()
+endif()
