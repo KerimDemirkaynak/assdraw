@@ -18,6 +18,17 @@ jobs:
       run: cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
     - name: Build editor and tests
       run: cmake --build build-linux --parallel 2
+    - name: Package Linux build
+      run: |
+        install -Dm755 build-linux/assdraw3 package/ASSDraw3-Linux-x64/assdraw3
+        cp LICENSE NOTICE.md README.md README.tr.md package/ASSDraw3-Linux-x64/
+        tar -C package -czf ASSDraw3-Linux-x64.tar.gz ASSDraw3-Linux-x64
+    - name: Upload Linux build
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw3-Linux-x64
+        path: ASSDraw3-Linux-x64.tar.gz
+        if-no-files-found: error
     - name: Run regression tests
       run: ctest --test-dir build-linux --output-on-failure
 
@@ -59,6 +70,26 @@ jobs:
       run: .\build\build-win-vcpkg.ps1 -Fresh
       shell: pwsh
 
+    - name: Package Windows build
+      run: |
+        $package = 'package\ASSDraw3-Windows-x64'
+        New-Item -ItemType Directory -Path $package -Force | Out-Null
+        Copy-Item 'build-dir\Release\assdraw3.exe' $package
+        Get-ChildItem 'build-dir\Release' -Filter '*.dll' | Copy-Item -Destination $package
+        Copy-Item 'docs\ASSDraw3.chm', 'LICENSE', 'NOTICE.md', 'README.md', 'README.tr.md' $package
+        if (Test-Path 'build-dir\Release\locale') {
+          Copy-Item 'build-dir\Release\locale' $package -Recurse
+        }
+        Compress-Archive -Path "$package\*" -DestinationPath 'ASSDraw3-Windows-x64.zip' -Force
+      shell: pwsh
+
+    - name: Upload Windows build
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw3-Windows-x64
+        path: ASSDraw3-Windows-x64.zip
+        if-no-files-found: error
+
     - name: Build and run regression tests
       run: |
         cmake --build build-dir --config Release --target assdraw-core-tests assdraw-gui-tests --parallel
@@ -75,3 +106,4 @@ jobs:
       with:
         name: ASSDraw3-Windows-Setup
         path: installer\ASSDraw3_Setup.exe
+        if-no-files-found: error

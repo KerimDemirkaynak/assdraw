@@ -49,7 +49,7 @@ This repository uses **GitHub Actions** for automated builds and packaging.
 
 * **Triggers**: Builds run on pull requests to `master` or `main`, or manually from the Actions tab.
 * **Process**: The workflow checks out the repository (with an automated fallback for the AGG submodule), restores `vcpkg` caches, compiles the application using the PowerShell build script, and creates an executable installer using Inno Setup.
-* **Artifacts**: The compiled Windows installer (`ASSDraw3_Setup.exe`) is uploaded as an artifact, which you can easily download directly from the Actions run page.
+* **Artifacts**: `ASSDraw3-Linux-x64` contains the Linux executable in a `.tar.gz` that preserves its executable permission. `ASSDraw3-Windows-x64` contains the Windows executable, required DLLs, and documentation. Both are uploaded immediately after compilation, before regression tests and installer packaging. `ASSDraw3-Windows-Setup` contains the Windows installer after packaging succeeds. Download them from the Actions run page. The Linux binary targets Ubuntu 24.04 x64 and requires the wxWidgets 3.2 GTK runtime.
 
 ---
 

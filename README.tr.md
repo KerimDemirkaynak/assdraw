@@ -51,7 +51,7 @@ Bu depo, otomatik derleme ve paketleme işlemleri için **GitHub Actions** kulla
 
 * **Tetikleyiciler**: Derlemeler, `master` veya `main` dallarına açılan pull request (çekme isteği) işlemlerinde çalışır. Ayrıca Actions sekmesinden manuel olarak tetikleyebilirsiniz.
 * **Süreç**: İş akışı repoyu klonlar (AGG alt modülü için otomatik bir yedekleme adımı içerir), `vcpkg` önbelleklerini geri yükler, PowerShell derleme betiğini kullanarak uygulamayı derler ve Inno Setup ile çalıştırılabilir bir kurulum dosyası (installer) oluşturur.
-* **Çıktılar (Artifacts)**: Derlenen Windows kurulum dosyası (`ASSDraw3_Setup.exe`), doğrudan Actions çalışma sayfasından kolayca indirebileceğiniz bir artifact olarak yüklenir.
+* **Çıktılar (Artifacts)**: `ASSDraw3-Linux-x64`, çalıştırma iznini koruyan `.tar.gz` içinde Linux uygulamasını içerir. `ASSDraw3-Windows-x64`, Windows uygulamasını, gerekli DLL'leri ve belgeleri içerir. Bu iki paket derleme tamamlanınca, testlerden ve kurulum paketi hazırlanmadan önce yüklenir. `ASSDraw3-Windows-Setup` ise paketleme başarılı olduğunda Windows kurulum dosyasını içerir. Paketleri Actions çalışma sayfasından indirebilirsiniz. Linux uygulaması Ubuntu 24.04 x64 içindir ve wxWidgets 3.2 GTK çalışma zamanı gerektirir.
 
 ---
 
