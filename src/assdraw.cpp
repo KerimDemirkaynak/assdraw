@@ -426,6 +426,13 @@ bool ASSDrawFrame::ApplyLanguage(const wxString& code)
 	wxAuiPaneInfo layouts[3];
 	for (int i = 0; i < 3; ++i) {
 		layouts[i] = m_mgr.GetPane(old_bars[i]);
+		if (layouts[i].frame) {
+			layouts[i].floating_pos = layouts[i].frame->GetPosition();
+			layouts[i].floating_size = layouts[i].frame->GetSize();
+		}
+		// DetachPane disposes of the old floating container. Never copy its
+		// owning frame pointer into the new pane; AUI creates a fresh one.
+		layouts[i].frame = nullptr;
 		m_mgr.DetachPane(old_bars[i]);
 		old_bars[i]->Destroy();
 	}
@@ -580,6 +587,7 @@ void ASSDrawFrame::_ToggleSettings()
 void ASSDrawFrame::_ResetPerspective()
 {
 	m_mgr.LoadPerspective(default_perspective, false);
+	UpdatePaneTranslations();
 	ApplyDpiLayout();
 	UpdateFrameUI();
 	DRAGMODE bck = m_canvas->GetDragMode();

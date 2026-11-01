@@ -117,6 +117,9 @@ int main(int argc, char** argv)
     const wxString document = canvas->GenerateASS();
     const wxString typed_commands = frame->srctxtctrl->GetValue();
     const wxString numeric_locale = wxString::FromUTF8(std::setlocale(LC_NUMERIC, nullptr));
+    frame->m_mgr.GetPane(frame->bgimgtbar).Float().FloatingPosition(40, 40).FloatingSize(450, 90);
+    frame->m_mgr.Update();
+    wxTheApp->Yield(true);
     const std::pair<const char*, const char*> languages[] = {
         {"tr", u8"Dil"}, {"fr", "Langue"}, {"de", "Sprache"},
         {"es", "Idioma"}, {"zh_TW", u8"語言"}, {"vi", u8"Ngôn ngữ"}, {"en", "Language"}
@@ -126,6 +129,8 @@ int main(int argc, char** argv)
             assert(frame->ApplyLanguage(wxString::FromUTF8(language.first)));
             wxTheApp->Yield(true);
             assert(frame->GetMenuBar()->GetMenuLabelText(5) == wxString::FromUTF8(language.second));
+            assert(frame->m_mgr.GetPane(frame->bgimgtbar).IsFloating());
+            assert(frame->m_mgr.GetPane(frame->bgimgtbar).frame != nullptr);
             assert(canvas->GenerateASS() == document);
             assert(frame->srctxtctrl->GetValue() == typed_commands);
             assert(canvas->GetBackgroundInfo(width, height, after, after_scale));
@@ -139,6 +144,8 @@ int main(int argc, char** argv)
     assert(frame->ApplyLanguage("tr"));
     assert(frame->bgimgtbar->FindById(DRAG_BGIMG)->GetLabel() == wxString::FromUTF8(u8"Arka planı kaydır"));
     assert(frame->settingsdlg->colors_canvas_bg_pgid->GetLabel() == "Tuval");
+    frame->_ResetPerspective();
+    assert(frame->m_mgr.GetPane(frame->commandpanel).caption == wxString::FromUTF8(u8"Çizim komutları"));
     assert(AssdrawI18n::AboutHtml().Contains(wxString::FromUTF8(u8"Bu sürüm Kerim Demirkaynak tarafından oluşturuldu.")));
     frame->transformdlg = new ASSDrawTransformDlg(frame);
     assert(frame->transformdlg->combo_templates->GetString(1) == wxString::FromUTF8(u8"5 birim aşağı taşı"));
