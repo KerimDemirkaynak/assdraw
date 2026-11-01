@@ -75,7 +75,7 @@ public:
 	wxSize transform_bitmap_logical_size;
 	EightDouble xformvals;
 
-	static wxString combo_templatesStrings[];
+	static const char* const combo_templatesStrings[];
 	static int combo_templatesCount;
 	static EightDouble combo_templatesValues[];
 

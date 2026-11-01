@@ -79,6 +79,7 @@ public:
 	virtual void DeleteChecked(wxCommandEvent& WXUNUSED(event));
 	virtual void UpdatePreviewDisplays();
 	virtual void UpdateDpiLayout();
+	void UpdateTranslations();
 	virtual std::vector< ASSDrawShapePreview *> GetShapePreviews();
 	virtual void LoadToCanvas(ASSDrawShapePreview *preview);
 	

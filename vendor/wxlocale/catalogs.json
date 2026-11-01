@@ -1,0 +1,30 @@
+{
+  "upstream": "https://github.com/wxWidgets/wxWidgets/tree/v3.3.1/locale",
+  "version": "3.3.1",
+  "catalogs": {
+    "tr": {
+      "source_sha256": "0e4a6ff575c7969cb8fb1995b528f7b1ee227c70c16c7deee49924a8d6e0bc7f",
+      "mo_sha256": "afe1c97e1f5f22446a8e140efa17d9edea02855d05a0d08ceb0583854a422faf"
+    },
+    "fr": {
+      "source_sha256": "13ca23efc80faaf54fb0e5848242d718020730fb3d175bd22ac4ef3751d4911f",
+      "mo_sha256": "f949a1d011acbe8146ffe3a66053c64feadc307990d478c0cda851fadcd8790e"
+    },
+    "de": {
+      "source_sha256": "7c731e0d2e36165cedd5ae8addf57538a488c248f90167fe137ebf41178ba530",
+      "mo_sha256": "d45267ded749ea0a713cab9a535e5f34728aaa60c30d869cf6498ecadfa17999"
+    },
+    "es": {
+      "source_sha256": "98ef7491468ec767339cf256c26e4166b3e32c7834b0062f90116b8f6255f5bb",
+      "mo_sha256": "ad61a4a2f95bcfb5b0aa74dfb4211aa7460037ca705016bd09836d36a420b9b6"
+    },
+    "zh_TW": {
+      "source_sha256": "e999f6c2562e999102336ce9114004eb2a8e807ae0b0461116e9fd23f2cff0be",
+      "mo_sha256": "6f4cf6a70290247c9e13b84f932c8ee191ef84d4c74ff5b0541e90a15d95a6f8"
+    },
+    "vi": {
+      "source_sha256": "a2fbe3cf1a202cb25d5bb7c0db86253235ba313e8cd1a04bf7c28c15eb971e61",
+      "mo_sha256": "bb1fe1f3a47c3946c2ce95fd587b96794249e03e7ac586aad586c0974c0e3504"
+    }
+  }
+}

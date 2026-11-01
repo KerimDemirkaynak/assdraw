@@ -50,9 +50,10 @@
 #include "settings.hpp" // settings property grid
 #include "library.hpp" // shape library
 #include "shape_style.hpp"
+#include "localization.hpp"
 
 //#define BETAVERSION 2
-#define VERSION _T("3.0 final")
+#define VERSION _T("3.1")
 
 // this header file declares the following classes
 class ASSDrawApp;
@@ -99,6 +100,8 @@ public:
 	void OnDPIChanged(wxDPIChangedEvent& event);
 	void OnSelect_CopyCommands(wxCommandEvent& WXUNUSED(event));
 	void OnClose(wxCloseEvent &event);
+	void OnChooseLanguage(wxCommandEvent& event);
+	bool ApplyLanguage(const wxString& code);
 
 	void UpdateASSCommandStringToSrcTxtCtrl(wxString cmds);
 	void UpdateASSCommandStringFromSrcTxtCtrl(wxString cmds);
@@ -126,6 +129,7 @@ public:
 	wxString default_perspective;
 	ASSDrawSrcTxtCtrl* srctxtctrl;
 	wxPanel* commandpanel;
+	wxButton* copy_button;
 
 	// config
 	wxString configfile;
@@ -149,6 +153,7 @@ public:
     wxMenu *bgimgMenu;
     wxMenu *viewMenu;
     wxMenu *tbarMenu;
+	wxMenu *languageMenu;
 #endif
 
 	// dialogs
@@ -210,6 +215,7 @@ protected:
 	virtual void SetToolBars();
 	virtual void SetMenus();
 	virtual void SetPanes();
+	void UpdatePaneTranslations();
 	DECLARE_EVENT_TABLE()
 	
 	wxHelpController helpcontroller;

@@ -226,7 +226,7 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 	// cursor = crosshair
 	SetCursor( *wxCROSS_CURSOR );
 
-	bgimg.alpha_dlg = new wxDialog(this, wxID_ANY, wxString(_T("Background image opacity")));
+	bgimg.alpha_dlg = new wxDialog(this, wxID_ANY, wxString(_("Background image opacity")));
 	bgimg.alpha_slider = new wxSlider(bgimg.alpha_dlg, TB_BGALPHA_SLIDER, 50, 0, 100, __DPDS__ , wxSL_LABELS);
 	bgimg.alpha_slider->SetMinSize(wxSize(FromDIP(280), -1));
 	bgimg.alpha_dlg->Fit();
@@ -246,7 +246,6 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 ASSDrawCanvas::~ASSDrawCanvas()
 {
 	ASSDrawEngine::ResetEngine(false);
-	if (pointsys) delete pointsys;
 	if (bgimg.bgbmp) delete bgimg.bgbmp;
 	if (bgimg.bgimg) delete bgimg.bgimg;
 }
@@ -254,7 +253,7 @@ ASSDrawCanvas::~ASSDrawCanvas()
 void ASSDrawCanvas::ParseASS(wxString str, bool addundo)
 {
 	if (addundo)
-		AddUndo(_T("Modify drawing commands"));
+		AddUndo(wxTRANSLATE("Modify drawing commands"));
 
 	const std::string source(str.mb_str(wxConvUTF8));
 	const StyledAssImport imported = ImportStyledAss(source, shape_style);
@@ -351,6 +350,12 @@ void ASSDrawCanvas::ApplyShapeStyle()
 	rgba_shape_normal = ToAggColor(shape_style.fill_color,
 		shape_style.fill_enabled ? shape_style.fill_opacity : 0);
 	rgba_shape = rgba_shape_normal;
+}
+
+void ASSDrawCanvas::UpdateTranslations()
+{
+	bgimg.alpha_dlg->SetTitle(_("Background image opacity"));
+	RefreshDisplay();
 }
 
 void ASSDrawCanvas::ResetEngine(bool addM)
@@ -756,9 +761,9 @@ void ASSDrawCanvas::SelectColoringTarget(const wxPoint& position)
 	coloring_target_shape = FindSubshapeAtScreenPosition(position);
 	coloring_target_selected = coloring_target_shape != NULL;
 	if (coloring_target_selected)
-		m_frame->SetStatusText(_T("Shape selected. Double-click to choose its fill color."), 1);
+		m_frame->SetStatusText(_("Shape selected. Double-click to choose its fill color."), 1);
 	else
-		m_frame->SetStatusText(_T("Click a filled part of the shape (not a hole)."), 1);
+		m_frame->SetStatusText(_("Click a filled part of the shape (not a hole)."), 1);
 	RefreshDisplay();
 }
 
@@ -772,12 +777,12 @@ void ASSDrawCanvas::ShowColorSelector()
 	color_data.SetColour(wxColour(selected_style.fill_color.red, selected_style.fill_color.green,
 		selected_style.fill_color.blue));
 	wxColourDialog dialog(m_frame, &color_data);
-	dialog.SetTitle(_T("Choose fill color"));
+	dialog.SetTitle(_("Choose fill color"));
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
 	const wxColour color = dialog.GetColourData().GetColour();
-	AddUndo(_T("Change sub-shape color"));
+	AddUndo(wxTRANSLATE("Change sub-shape color"));
 	ShapeStyle style = selected_style;
 	style.fill_enabled = true;
 	style.fill_color = { color.Red(), color.Green(), color.Blue() };
@@ -812,7 +817,7 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 						rectbound2[rectbound2upd].x += diff.x, rectbound2[rectbound2upd].y += diff.y;
 						rectbound2[rectbound2upd2].x += diff.x, rectbound2[rectbound2upd2].y += diff.y;
 					}
-					undodesc = _T("Bilinear transform");
+					undodesc = wxTRANSLATE("Bilinear transform");
 					*dragAnchor_left = mouse_point;
 					break;
 				case MODE_SCALEROTATE:
@@ -901,7 +906,7 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 						}
 					}
 					UpdateTranformModeRectCenter();
-					undodesc = _T("Scale");
+					undodesc = wxTRANSLATE("Scale");
 					break;
 				}
 
@@ -933,9 +938,9 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 					if (undodesc == _T(""))
 					{
 						if (mousedownAt_point->type == MP)
-							undodesc = _T("Drag point");
+							undodesc = wxTRANSLATE("Drag point");
 						else
-							undodesc = _T("Drag control point");
+							undodesc = wxTRANSLATE("Drag control point");
 					}
 				}
 			}
@@ -949,7 +954,7 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 					pointsys->originx = wxp.x;
 					pointsys->originy = wxp.y;
 					RefreshDisplay();
-					undodesc = _T("Move origin");
+					undodesc = wxTRANSLATE("Move origin");
 				}
 			}
 			else if (dragAnchor_left != NULL)
@@ -995,7 +1000,7 @@ void ASSDrawCanvas::OnMouseMove(wxMouseEvent &event)
 					}
 					UpdateNonUniformTransformation();
 					RefreshDisplay();
-					undodesc = _T("Rotate");
+					undodesc = wxTRANSLATE("Rotate");
 				}
 			}
 			else if (CanMove())
@@ -1137,11 +1142,11 @@ void ASSDrawCanvas::ProcessOnMouseLeftUp()
 		switch (newcommand->type)
 		{
 		case M:
-			undodesc = _T("Add a new M"); break;
+			undodesc = wxTRANSLATE("Add a new M"); break;
 		case L:
-			undodesc = _T("Add a new L"); break;
+			undodesc = wxTRANSLATE("Add a new L"); break;
 		case B:
-			undodesc = _T("Add a new B"); break;
+			undodesc = wxTRANSLATE("Add a new B"); break;
 		}
 		newcommand = NULL;
 		// we need to manually refresh the GUI to draw the new control points
@@ -1166,19 +1171,19 @@ void ASSDrawCanvas::ProcessOnMouseLeftUp()
 			switch (t)
 			{
 			case M:
-				undodesc = _T("Delete a M"); break;
+				undodesc = wxTRANSLATE("Delete a M"); break;
 			case L:
-				undodesc = _T("Delete a L"); break;
+				undodesc = wxTRANSLATE("Delete a L"); break;
 			case B:
-				undodesc = _T("Delete a B"); break;
+				undodesc = wxTRANSLATE("Delete a B"); break;
 			}
 		}
 		else
 		{
 			RefreshDisplay(); // redraw before showing the error box
 			wxMessageDialog msgb(m_frame,
-			_T("You must delete that command/point last"),
-			_T("Error"), wxOK | wxICON_EXCLAMATION );
+			_("You must delete that command/point last"),
+			_("Error"), wxOK | wxICON_EXCLAMATION );
 			msgb.ShowModal();
 		}
 	}
@@ -1408,14 +1413,14 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 		switch (dblclicked_point_right->cmd_main->type)
 		{
 			case L:
-				menu->Append(MENU_DRC_LNTOBEZ, _T("Convert to Bezier curve (B command)"));
+				menu->Append(MENU_DRC_LNTOBEZ, _("Convert to Bezier curve (B command)"));
 				break;
 			case B:
 				if (dblclicked_point_right->type != MP) break;
-				menu->AppendCheckItem(MENU_DRC_BEZTOLN, _T("Convert to line (L command)"));
+				menu->AppendCheckItem(MENU_DRC_BEZTOLN, _("Convert to line (L command)"));
 				if (dblclicked_point_right->cmd_next && dblclicked_point_right->cmd_next->type == B)
 				{
-					menu->AppendCheckItem(MENU_DRC_C1CONTBEZ, _T("Smooth connection"));
+					menu->AppendCheckItem(MENU_DRC_C1CONTBEZ, _("Smooth connection"));
 					if (static_cast<DrawCmd_B*>(dblclicked_point_right->cmd_main)->C1Cont)
 						menu->Check(MENU_DRC_C1CONTBEZ, true);
 				}
@@ -1425,13 +1430,16 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 	}
 	else
 	{
-		menu->Append(MENU_DRC_MOVE00, _T("Move [0,0] here"));
+		menu->Append(MENU_DRC_MOVE00, _("Move [0,0] here"));
 		menu->AppendSeparator();
-		menu->AppendRadioItem(MODE_ARR, _T("Mode: D&rag"));
-		menu->AppendRadioItem(MODE_M, _T("Mode: Draw &M"));
-		menu->AppendRadioItem(MODE_L, _T("Mode: Draw &L"));
-		menu->AppendRadioItem(MODE_B, _T("Mode: Draw &B"));
-		menu->AppendRadioItem(MODE_DEL, _T("Mode: &Delete"));
+		menu->AppendRadioItem(MODE_ARR, _("Mode: D&rag"));
+		menu->AppendRadioItem(MODE_M, _("Mode: Draw &M"));
+		menu->AppendRadioItem(MODE_L, _("Mode: Draw &L"));
+		menu->AppendRadioItem(MODE_B, _("Mode: Draw &B"));
+		menu->AppendRadioItem(MODE_DEL, _("Mode: &Delete"));
+		menu->AppendRadioItem(MODE_SCALEROTATE, _("Mode: Scale/Rotate"));
+		menu->AppendRadioItem(MODE_NUT_BILINEAR, _("Mode: Bilinear transformation"));
+		menu->AppendRadioItem(MODE_COLOR, _("Mode: Coloring"));
 		menu->Check(GetDrawMode(), true);
 	}
 
@@ -1580,7 +1588,7 @@ void ASSDrawCanvas::MoveCanvasBackground(double xamount, double yamount)
 void ASSDrawCanvas::OnSelect_ConvertLineToBezier(wxCommandEvent&)
 {
 	if (!dblclicked_point_right) return;
-	AddUndo( _T("Convert Line to Bezier") );
+	AddUndo( wxTRANSLATE("Convert Line to Bezier") );
 	DrawCmd_B *newB = new DrawCmd_B(dblclicked_point_right->x(), dblclicked_point_right->y(),
 		pointsys, dblclicked_point_right->cmd_main);
 	InsertCmd ( newB, dblclicked_point_right->cmd_main );
@@ -1596,7 +1604,7 @@ void ASSDrawCanvas::OnSelect_ConvertLineToBezier(wxCommandEvent&)
 void ASSDrawCanvas::OnSelect_ConvertBezierToLine(wxCommandEvent&)
 {
 	if (!dblclicked_point_right) return;
-	AddUndo( _T("Convert Bezier to Line") );
+	AddUndo( wxTRANSLATE("Convert Bezier to Line") );
 	DrawCmd_L *newL = new DrawCmd_L(dblclicked_point_right->x(), dblclicked_point_right->y(), pointsys, dblclicked_point_right->cmd_main);
 	InsertCmd ( newL, dblclicked_point_right->cmd_main );
 	ClearPointsSelection();
@@ -1612,14 +1620,14 @@ void ASSDrawCanvas::OnSelect_C1ContinuityBezier(wxCommandEvent&)
 {
 	if (!dblclicked_point_right) return;
 	DrawCmd_B *cmdb = static_cast<DrawCmd_B*>(dblclicked_point_right->cmd_main);
-	AddUndo( cmdb->C1Cont? _T("Unset continuous"):_T("Set continuous") );
+	AddUndo( cmdb->C1Cont? wxTRANSLATE("Unset continuous"):wxTRANSLATE("Set continuous") );
 	cmdb->C1Cont = !cmdb->C1Cont;
 	RefreshUndocmds();
 }
 
 void ASSDrawCanvas::OnSelect_Move00Here(wxCommandEvent&)
 {
-	AddUndo( _T("Move origin") );
+	AddUndo( wxTRANSLATE("Move origin") );
 	int wx, wy;
 	pointsys->FromWxPoint(mouse_point, wx, wy);
 	wxPoint wxp = pointsys->ToWxPoint(wx, wy);
@@ -1679,8 +1687,11 @@ void ASSDrawCanvas::AddUndo( wxString desc )
 
 bool ASSDrawCanvas::UndoOrRedo(bool isundo)
 {
+	if (isundo ? !history.CanUndo() : !history.CanRedo())
+		return false;
+	const wxString description = isundo ? history.TopUndo().desc : history.TopRedo().desc;
 	UndoRedo current;
-	PrepareUndoRedo(current, true, GenerateASS(), _T(""));
+	PrepareUndoRedo(current, true, GenerateASS(), description);
 	UndoRedo restored;
 	const bool changed = isundo ? history.Undo(current, restored) : history.Redo(current, restored);
 	if (!changed)
@@ -1712,7 +1723,7 @@ wxString ASSDrawCanvas::GetTopUndo()
 	if (!history.CanUndo())
 		return _T("");
 	else
-		return history.TopUndo().desc;
+		return wxGetTranslation(history.TopUndo().desc);
 }
 
 wxString ASSDrawCanvas::GetTopRedo()
@@ -1720,7 +1731,7 @@ wxString ASSDrawCanvas::GetTopRedo()
 	if (!history.CanRedo())
 		return _T("");
 	else
-		return history.TopRedo().desc;
+		return wxGetTranslation(history.TopRedo().desc);
 }
 
 void ASSDrawCanvas::RefreshUndocmds()
@@ -2165,14 +2176,14 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 void ASSDrawCanvas::ReceiveBackgroundImageFileDropEvent(const wxString& filename)
 {
 	const wxChar *shortfname = wxFileName::FileName(filename).GetFullName().c_str();
-	m_frame->SetStatusText(wxString::Format(_T("Loading '%s' as canvas background ..."), shortfname), 1);
+	m_frame->SetStatusText(wxString::Format(_("Loading '%s' as canvas background ..."), shortfname), 1);
 	wxImage img;
 	img.LoadFile(filename);
 	if (img.IsOk())
 	{
 		SetBackgroundImage(img, filename);
 	}
-	m_frame->SetStatusText(_T("Canvas background loaded"), 1);
+	m_frame->SetStatusText(_("Canvas background loaded"), 1);
 }
 
 void ASSDrawCanvas::RemoveBackgroundImage()

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(assdraw VERSION 3.0.0 LANGUAGES CXX)
+project(assdraw VERSION 3.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(CTest)
 option(ASSDRAW_BUILD_APP "Build the graphical editor" ON)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 if(BUILD_TESTING)
     add_executable(assdraw-core-tests
@@ -26,6 +27,8 @@ if(BUILD_TESTING)
     if(Python3_Interpreter_FOUND)
         add_test(NAME assdraw-pan-drag-tests
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/pan_drag_wiring_tests.py)
+        add_test(NAME assdraw-translations-check
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/translations.py --check)
     endif()
 endif()
 
@@ -104,6 +107,7 @@ set(ASSDRAW_SOURCES
     src/settings.cpp
     src/shape_style.cpp
     src/styled_ass.cpp
+    src/localization.cpp
     src/wxAGG/AGGWindow.cpp
     src/xpm/res.cpp
 )
@@ -125,6 +129,7 @@ set(ASSDRAW_HEADERS
     src/drawing_history.hpp
     src/shape_style.hpp
     src/styled_ass.hpp
+    src/localization.hpp
     src/wxAGG/AGGWindow.h
     src/wxAGG/PixelFormatConvertor.h
     src/xpm/res.h
@@ -177,6 +182,26 @@ set_target_properties(
 
 install(TARGETS assdraw RUNTIME DESTINATION .)
 
+set(ASSDRAW_LANGUAGES tr fr de es zh_TW vi)
+set(ASSDRAW_MO_FILES)
+foreach(language IN LISTS ASSDRAW_LANGUAGES)
+    set(mo "${CMAKE_CURRENT_BINARY_DIR}/locale/${language}/LC_MESSAGES/assdraw.mo")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/vendor/wxlocale/${language}/LC_MESSAGES/wxstd.mo"
+        "${CMAKE_CURRENT_BINARY_DIR}/locale/${language}/LC_MESSAGES/wxstd.mo" COPYONLY)
+    add_custom_command(OUTPUT "${mo}"
+        COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/tools/translations.py"
+            --compile-one "${CMAKE_CURRENT_SOURCE_DIR}/po/${language}.po" "${mo}"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/po/${language}.po"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/translations.py"
+        VERBATIM)
+    list(APPEND ASSDRAW_MO_FILES "${mo}")
+endforeach()
+add_custom_target(assdraw-translations ALL DEPENDS ${ASSDRAW_MO_FILES})
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/locale" DESTINATION .)
+install(FILES docs/ASSDraw3.chm LICENSE NOTICE.md README.md README.tr.md DESTINATION .)
+install(FILES vendor/wxlocale/LICENSE.wxWidgets.txt vendor/wxlocale/COPYING.LIB.txt DESTINATION .)
+install(DIRECTORY docs/help DESTINATION .)
+
 if(BUILD_TESTING)
     add_executable(assdraw-gui-tests tests/canvas_tests.cpp ${ASSDRAW_SOURCES} ${ASSDRAW_RESOURCES})
     target_include_directories(assdraw-gui-tests PRIVATE src src/wxAGG src/xpm)
@@ -199,3 +224,27 @@ if(BUILD_TESTING)
         set_tests_properties(assdraw-gui-tests PROPERTIES TIMEOUT 90)
     endif()
 endif()
+
+foreach(app_target assdraw assdraw-gui-tests)
+    if(TARGET ${app_target})
+        add_dependencies(${app_target} assdraw-translations)
+        if(MSVC)
+            target_compile_options(${app_target} PRIVATE /utf-8)
+        endif()
+        foreach(language IN LISTS ASSDRAW_LANGUAGES)
+            add_custom_command(TARGET ${app_target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${app_target}>/locale/${language}/LC_MESSAGES"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_BINARY_DIR}/locale/${language}/LC_MESSAGES/assdraw.mo"
+                    "$<TARGET_FILE_DIR:${app_target}>/locale/${language}/LC_MESSAGES/assdraw.mo"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_BINARY_DIR}/locale/${language}/LC_MESSAGES/wxstd.mo"
+                    "$<TARGET_FILE_DIR:${app_target}>/locale/${language}/LC_MESSAGES/wxstd.mo"
+                VERBATIM)
+        endforeach()
+        add_custom_command(TARGET ${app_target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/docs/ASSDraw3.chm" "$<TARGET_FILE_DIR:${app_target}>/ASSDraw3.chm"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/docs/help" "$<TARGET_FILE_DIR:${app_target}>/help"
+            VERBATIM)
+    endif()
+endforeach()

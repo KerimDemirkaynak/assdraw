@@ -1,0 +1,685 @@
+# ASSDraw3 application translations. English is the source language.
+msgid ""
+msgstr "Project-Id-Version: ASSDraw3 3.1\nReport-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\nLanguage: vi\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\nPO-Revision-Date: 2026-11-02 00:00+0300\nLast-Translator: ASSDraw contributors\nLanguage-Team: vi\n"
+
+msgid "&About"
+msgstr "&Giới thiệu"
+
+msgid "&Background"
+msgstr "&Nền"
+
+msgid "&Bilinear transformation\tF7"
+msgstr "Biến đổi &song tuyến tính\tF7"
+
+msgid "&Cancel"
+msgstr "&Hủy"
+
+msgid "&Canvas"
+msgstr "&Khung vẽ"
+
+msgid "&Center\tCtrl+5"
+msgstr "&Giữa\tCtrl+5"
+
+msgid "&Center\tCtrl+Shift+5"
+msgstr "&Giữa\tCtrl+Shift+5"
+
+msgid "&Clear\tCtrl+N"
+msgstr "&Xóa sạch\tCtrl+N"
+
+msgid "&Coloring"
+msgstr "&Tô màu"
+
+msgid "&Delete\tF5"
+msgstr "&Xóa\tF5"
+
+msgid "&Help"
+msgstr "&Trợ giúp"
+
+msgid "&Language"
+msgstr "&Ngôn ngữ"
+
+msgid "&Library"
+msgstr "&Thư viện"
+
+msgid "&Manual"
+msgstr "&Hướng dẫn"
+
+msgid "&Mode"
+msgstr "&Chế độ"
+
+msgid "&No"
+msgstr "&Không"
+
+msgid "&OK"
+msgstr "Đồ&ng ý"
+
+msgid "&Paste\tCtrl+V"
+msgstr "&Dán\tCtrl+V"
+
+msgid "&Preview\tCtrl+P"
+msgstr "&Xem trước\tCtrl+P"
+
+msgid "&Redo\tCtrl+Y"
+msgstr "&Làm lại\tCtrl+Y"
+
+msgid "&Reset workspace"
+msgstr "Đặt &lại không gian làm việc"
+
+msgid "&Scale/Rotate\tF6"
+msgstr "&Co giãn/Xoay\tF6"
+
+msgid "&Settings"
+msgstr "&Cài đặt"
+
+msgid "&Toolbars"
+msgstr "&Thanh công cụ"
+
+msgid "&Transform"
+msgstr "&Biến đổi"
+
+msgid "&Undo\tCtrl+Z"
+msgstr "&Hoàn tác\tCtrl+Z"
+
+msgid "&Workspace"
+msgstr "&Không gian làm việc"
+
+msgid "&Yes"
+msgstr "&Có"
+
+msgid "<Select>"
+msgstr "<Chọn>"
+
+msgid "ASS drawing copied to clipboard."
+msgstr "Đã sao chép hình vẽ ASS vào bộ nhớ tạm."
+
+msgid "ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."
+msgstr "ASSDraw3 là công cụ thiết kế hình dạng vector cho tệp phụ đề ASS."
+
+msgid "Acknowledgements"
+msgstr "Lời cảm ơn"
+
+msgid "Add a new B"
+msgstr "Thêm lệnh B mới"
+
+msgid "Add a new L"
+msgstr "Thêm lệnh L mới"
+
+msgid "Add a new M"
+msgstr "Thêm lệnh M mới"
+
+msgid "Add to custom colours"
+msgstr "Thêm vào màu tùy chỉnh"
+
+msgid "Appearance"
+msgstr "Giao diện"
+
+msgid "Apply"
+msgstr "Áp dụng"
+
+msgid "Ask for image opacity"
+msgstr "Hỏi độ đục của ảnh"
+
+msgid "Background"
+msgstr "Nền"
+
+msgid "Background image opacity"
+msgstr "Độ đục của ảnh nền"
+
+msgid "Basic colours"
+msgstr "Màu cơ bản"
+
+msgid "Behaviors"
+msgstr "Hành vi"
+
+msgid "Bezier"
+msgstr "Bézier"
+
+msgid "Bilinear"
+msgstr "Song tuyến tính"
+
+msgid "Bilinear transform"
+msgstr "Biến đổi song tuyến tính"
+
+msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
+msgstr "Chế độ song tuyến tính: kéo các đỉnh để làm biến dạng hình; kéo một cạnh sẽ di chuyển hai đỉnh kề nhau"
+
+msgid "Bottom left\tCtrl+1"
+msgstr "Dưới bên trái\tCtrl+1"
+
+msgid "Bottom left\tCtrl+Shift+1"
+msgstr "Dưới bên trái\tCtrl+Shift+1"
+
+msgid "Bottom right\tCtrl+3"
+msgstr "Dưới bên phải\tCtrl+3"
+
+msgid "Bottom right\tCtrl+Shift+3"
+msgstr "Dưới bên phải\tCtrl+Shift+3"
+
+msgid "Cancel"
+msgstr "Hủy"
+
+msgid "Canvas"
+msgstr "Khung vẽ"
+
+msgid "Canvas background loaded"
+msgstr "Đã tải nền khung vẽ"
+
+msgid "Capitalize commands"
+msgstr "Viết hoa lệnh"
+
+msgid "Change sub-shape color"
+msgstr "Đổi màu hình con"
+
+msgid "Choose fill color"
+msgstr "Chọn màu tô"
+
+msgid "Clear"
+msgstr "Xóa sạch"
+
+msgid "Clear canvas"
+msgstr "Xóa sạch khung vẽ"
+
+msgid "Clear the canvas and create a new drawing"
+msgstr "Xóa sạch khung vẽ và tạo hình vẽ mới"
+
+msgid "Clear the canvas and create a new drawing?"
+msgstr "Xóa sạch khung vẽ và tạo hình vẽ mới?"
+
+msgid "Click a filled part of the shape (not a hole)."
+msgstr "Nhấp vào phần được tô của hình, không phải vùng rỗng."
+
+msgid "Click a filled shape to select it; double-click to choose its fill color"
+msgstr "Nhấp vào hình được tô để chọn; nhấp đúp để chọn màu tô"
+
+msgid "Close"
+msgstr "Đóng"
+
+msgid "Coloring"
+msgstr "Tô màu"
+
+msgid "Confirm delete?"
+msgstr "Xác nhận xóa?"
+
+msgid "Confirm quit"
+msgstr "Xác nhận thoát"
+
+msgid "Confirmation"
+msgstr "Xác nhận"
+
+msgid "Control lines"
+msgstr "Đường điều khiển"
+
+msgid "Control lines @"
+msgstr "Độ đục của đường điều khiển"
+
+msgid "Control points"
+msgstr "Điểm điều khiển"
+
+msgid "Control points @"
+msgstr "Độ đục của điểm điều khiển"
+
+msgid "Convert Bezier to Line"
+msgstr "Đổi đường Bézier thành đường thẳng"
+
+msgid "Convert Line to Bezier"
+msgstr "Đổi đường thẳng thành đường Bézier"
+
+msgid "Convert to Bezier curve (B command)"
+msgstr "Đổi thành đường Bézier (lệnh B)"
+
+msgid "Convert to line (L command)"
+msgstr "Đổi thành đường thẳng (lệnh L)"
+
+msgid "Copy ASS"
+msgstr "Sao chép ASS"
+
+msgid "Copy commands to clipboard"
+msgstr "Sao chép lệnh vào bộ nhớ tạm"
+
+msgid "Copy the command text, including ASS style tags"
+msgstr "Sao chép văn bản lệnh cùng thẻ kiểu ASS"
+
+msgid "Could not save the language preference."
+msgstr "Không thể lưu tùy chọn ngôn ngữ."
+
+msgid "Custom"
+msgstr "Tùy chỉnh"
+
+msgid "Custom colour"
+msgstr "Màu tùy chỉnh"
+
+msgid "Custom colours"
+msgstr "Màu tùy chỉnh"
+
+msgid "D&rag\tF1"
+msgstr "&Kéo\tF1"
+
+msgid "Default image opacity (0-255)"
+msgstr "Độ đục ảnh mặc định (0-255)"
+
+msgid "Delete"
+msgstr "Xóa"
+
+msgid "Delete a B"
+msgstr "Xóa lệnh B"
+
+msgid "Delete a L"
+msgstr "Xóa lệnh L"
+
+msgid "Delete a M"
+msgstr "Xóa lệnh M"
+
+msgid "Delete from library"
+msgstr "Xóa khỏi thư viện"
+
+msgid "Delete mode"
+msgstr "Chế độ xóa"
+
+msgid "Delete selected"
+msgstr "Xóa mục đã chọn"
+
+msgid "Depending on what's in the clipboard, import as drawing commands or background"
+msgstr "Nhập lệnh vẽ hoặc nền tùy theo nội dung bộ nhớ tạm"
+
+msgid "Do you want to close ASSDraw3 now?"
+msgstr "Đóng ASSDraw3 ngay bây giờ?"
+
+msgid "Dock all"
+msgstr "Gắn tất cả"
+
+msgid "Drag"
+msgstr "Kéo"
+
+msgid "Drag an image onto the canvas to use it as a tracing background."
+msgstr "Kéo ảnh vào khung vẽ để dùng làm nền đồ hình."
+
+msgid "Drag control point"
+msgstr "Kéo điểm điều khiển"
+
+msgid "Drag mode"
+msgstr "Chế độ kéo"
+
+msgid "Drag point"
+msgstr "Kéo điểm"
+
+msgid "Draw &B\tF4"
+msgstr "Vẽ &B\tF4"
+
+msgid "Draw &L\tF3"
+msgstr "Vẽ &L\tF3"
+
+msgid "Draw &M\tF2"
+msgstr "Vẽ &M\tF2"
+
+msgid "Draw B mode (Cubic Bezier curve)"
+msgstr "Chế độ vẽ B (đường Bézier bậc ba)"
+
+msgid "Draw C mode (Close the last spline)"
+msgstr "Chế độ vẽ C (khép kín đường spline cuối)"
+
+msgid "Draw L mode (Straight line)"
+msgstr "Chế độ vẽ L (đường thẳng)"
+
+msgid "Draw M mode (Close current shape and move the virtual pen to a new point)"
+msgstr "Chế độ vẽ M (khép hình hiện tại và chuyển bút ảo tới điểm mới)"
+
+msgid "Draw N mode (Same as M but doesn't close the shape)"
+msgstr "Chế độ vẽ N (như M nhưng không khép hình)"
+
+msgid "Draw P mode (Extends a spline with another point)"
+msgstr "Chế độ vẽ P (nối dài đường spline bằng điểm mới)"
+
+msgid "Draw S mode (Spline)"
+msgstr "Chế độ vẽ S (đường spline)"
+
+msgid "Draw the shapes without enlarged points and control points"
+msgstr "Vẽ hình mà không phóng to điểm và điểm điều khiển"
+
+msgid "Drawing"
+msgstr "Hình vẽ"
+
+msgid "Drawing @"
+msgstr "Độ đục của hình vẽ"
+
+msgid "Drawing commands"
+msgstr "Lệnh vẽ"
+
+msgid "Drawing mode"
+msgstr "Chế độ vẽ"
+
+msgid "Edit the source"
+msgstr "Sửa mã nguồn"
+
+msgid "Error"
+msgstr "Lỗi"
+
+msgid "Exit"
+msgstr "Thoát"
+
+msgid "Flip horizontally at X = 4"
+msgstr "Lật ngang qua X = 4"
+
+msgid "Flip vertically at Y = 3"
+msgstr "Lật dọc qua Y = 3"
+
+msgid "H ruler"
+msgstr "Thước ngang"
+
+msgid "Help! Help!"
+msgstr "Trợ giúp!"
+
+msgid "Hide all"
+msgstr "Ẩn tất cả"
+
+msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
+msgstr "Trong chế độ Tô màu, chọn hình con được tô rồi nhấp đúp để chọn màu. Sao chép ASS sẽ sao chép hình vẽ kèm kiểu."
+
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+msgid "Library"
+msgstr "Thư viện"
+
+msgid "Library shapes"
+msgstr "Hình trong thư viện"
+
+msgid "Line"
+msgstr "Đường thẳng"
+
+msgid "Load shape from library"
+msgstr "Tải hình từ thư viện"
+
+msgid "Load to canvas"
+msgstr "Tải vào khung vẽ"
+
+#, c-format
+msgid "Loading '%s' as canvas background ..."
+msgstr "Đang tải '%s' làm nền khung vẽ..."
+
+msgid "Manual"
+msgstr "Hướng dẫn"
+
+msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
+msgstr "Maxim Shemanarev: Anti-Grain Geometry. Nhóm wxWidgets: bộ công cụ giao diện. Adrian Secord: wxAGG."
+
+msgid "Mode: &Delete"
+msgstr "Chế độ: &Xóa"
+
+msgid "Mode: Bilinear transformation"
+msgstr "Chế độ: Biến đổi song tuyến tính"
+
+msgid "Mode: Coloring"
+msgstr "Chế độ: Tô màu"
+
+msgid "Mode: D&rag"
+msgstr "Chế độ: &Kéo"
+
+msgid "Mode: Draw &B"
+msgstr "Chế độ: Vẽ &B"
+
+msgid "Mode: Draw &L"
+msgstr "Chế độ: Vẽ &L"
+
+msgid "Mode: Draw &M"
+msgstr "Chế độ: Vẽ &M"
+
+msgid "Mode: Scale/Rotate"
+msgstr "Chế độ: Co giãn/Xoay"
+
+msgid "Modify drawing commands"
+msgstr "Sửa lệnh vẽ"
+
+msgid "Move"
+msgstr "Di chuyển"
+
+msgid "Move 5 units down"
+msgstr "Di chuyển xuống 5 đơn vị"
+
+msgid "Move 5 units right"
+msgstr "Di chuyển sang phải 5 đơn vị"
+
+msgid "Move [0,0] here"
+msgstr "Chuyển [0,0] tới đây"
+
+msgid "Move origin"
+msgstr "Di chuyển gốc tọa độ"
+
+msgid "No"
+msgstr "Không"
+
+msgid "No splash screen"
+msgstr "Không hiện màn hình chào"
+
+msgid "OK"
+msgstr "Đồng ý"
+
+msgid "One or more values entered are not real numbers.\nPlease fix."
+msgstr "Một hoặc nhiều giá trị nhập vào không phải số thực.\nVui lòng sửa lại."
+
+msgid "Origin"
+msgstr "Gốc tọa độ"
+
+msgid "Origin cross size"
+msgstr "Kích thước dấu gốc tọa độ"
+
+msgid "Original application: ai-chan (2006-2007)."
+msgstr "Ứng dụng gốc: ai-chan (2006-2007)."
+
+msgid "Outline"
+msgstr "Viền"
+
+msgid "Outline @"
+msgstr "Độ đục của viền"
+
+msgid "Pan background"
+msgstr "Dịch chuyển nền"
+
+msgid "Pan drawing"
+msgstr "Dịch chuyển hình vẽ"
+
+msgid "Pan/Zoom &Drawing\tShift+F1"
+msgstr "Dịch chuyển/thu phóng &hình vẽ\tShift+F1"
+
+msgid "Pan/Zoom Back&ground\tShift+F2"
+msgstr "Dịch chuyển/thu phóng &nền\tShift+F2"
+
+msgid "Parse S/P/C"
+msgstr "Phân tích lệnh S/P/C"
+
+msgid "Points"
+msgstr "Điểm"
+
+msgid "Points @"
+msgstr "Độ đục của điểm"
+
+msgid "Preview"
+msgstr "Xem trước"
+
+msgid "Preview @"
+msgstr "Độ đục khi xem trước"
+
+msgid "Redo\tCtrl+Y"
+msgstr "Làm lại\tCtrl+Y"
+
+msgid "Redo last undo"
+msgstr "Làm lại thao tác vừa hoàn tác"
+
+#, c-format
+msgid "Redo: %s\tCtrl+Y"
+msgstr "Làm lại: %s\tCtrl+Y"
+
+msgid "Remove background\tShift+Del"
+msgstr "Gỡ nền\tShift+Del"
+
+msgid "Reposition [&0, 0]"
+msgstr "Đặt lại vị trí [&0, 0]"
+
+msgid "Revert"
+msgstr "Khôi phục"
+
+msgid "Right-double-click opens a context menu. Hold Shift to temporarily switch to Drag mode."
+msgstr "Nhấp đúp chuột phải để mở trình đơn ngữ cảnh. Giữ Shift để tạm chuyển sang chế độ Kéo."
+
+msgid "Right-dragging pans background, mousewheel zooms in/out background"
+msgstr "Kéo chuột phải để dịch chuyển nền; lăn chuột để thu phóng nền"
+
+msgid "Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background"
+msgstr "Kéo chuột phải để dịch chuyển hình vẽ và nền; lăn chuột để thu phóng cả hai"
+
+msgid "Right-dragging pans drawing, mousewheel zooms in/out drawing"
+msgstr "Kéo chuột phải để dịch chuyển hình vẽ; lăn chuột để thu phóng hình vẽ"
+
+msgid "Rotate"
+msgstr "Xoay"
+
+msgid "Rotate 180° at (0, 0)"
+msgstr "Xoay 180° quanh (0, 0)"
+
+msgid "Rotate 90° clockwise at (1, 2)"
+msgstr "Xoay 90° theo chiều kim đồng hồ quanh (1, 2)"
+
+msgid "Rotate 90° counterclockwise at (-1, 2)"
+msgstr "Xoay 90° ngược chiều kim đồng hồ quanh (-1, 2)"
+
+msgid "Save canvas"
+msgstr "Lưu khung vẽ"
+
+msgid "Save canvas here"
+msgstr "Lưu khung vẽ tại đây"
+
+msgid "Scale"
+msgstr "Co giãn"
+
+msgid "Scale up horizontally by a factor of 2"
+msgstr "Phóng ngang gấp 2 lần"
+
+msgid "Scale up vertically by a factor of 3"
+msgstr "Phóng dọc gấp 3 lần"
+
+msgid "Scale/Rotate"
+msgstr "Co giãn/Xoay"
+
+msgid "Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate"
+msgstr "Chế độ Co giãn/Xoay: kéo đỉnh hoặc cạnh để đổi kích thước; kéo chuột phải để xoay"
+
+msgid "Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."
+msgstr "Chọn công cụ vẽ rồi nhấp hoặc kéo để thêm đường thẳng và đường cong. Kéo các điểm và tay nắm điều khiển để sửa hình."
+
+msgid "Select a shape, then double-click it to choose its fill color"
+msgstr "Chọn hình rồi nhấp đúp để chọn màu tô"
+
+msgid "Select all"
+msgstr "Chọn tất cả"
+
+msgid "Select none"
+msgstr "Bỏ chọn tất cả"
+
+msgid "Selected points"
+msgstr "Điểm đã chọn"
+
+msgid "Selected points @"
+msgstr "Độ đục của điểm đã chọn"
+
+msgid "Set background image opacity"
+msgstr "Đặt độ đục của ảnh nền"
+
+msgid "Set continuous"
+msgstr "Bật tính liên tục"
+
+msgid "Settings"
+msgstr "Cài đặt"
+
+msgid "Shape selected. Double-click to choose its fill color."
+msgstr "Đã chọn hình. Nhấp đúp để chọn màu tô."
+
+msgid "Shapes Library"
+msgstr "Thư viện hình"
+
+msgid "Shapes library"
+msgstr "Thư viện hình"
+
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+msgid "Smooth connection"
+msgstr "Nối mượt"
+
+msgid "System Default"
+msgstr "Mặc định hệ thống"
+
+msgid "Templates"
+msgstr "Mẫu"
+
+msgid "Thanks to jfs, ArchMageZeratul, RoRo, and the Aegisub community for their suggestions and support."
+msgstr "Cảm ơn jfs, ArchMageZeratul, RoRo và cộng đồng Aegisub vì các đề xuất và sự hỗ trợ."
+
+msgid "The manual is missing. Please reinstall ASSDraw3."
+msgstr "Không tìm thấy hướng dẫn. Vui lòng cài lại ASSDraw3."
+
+msgid "The selected language could not be loaded. Please reinstall ASSDraw3."
+msgstr "Không thể tải ngôn ngữ đã chọn. Vui lòng cài lại ASSDraw3."
+
+msgid "This version was created by Kerim Demirkaynak."
+msgstr "Phiên bản này do Kerim Demirkaynak tạo."
+
+msgid "Tips and shortcuts"
+msgstr "Mẹo và phím tắt"
+
+msgid "Top left\tCtrl+7"
+msgstr "Trên bên trái\tCtrl+7"
+
+msgid "Top left\tCtrl+Shift+7"
+msgstr "Trên bên trái\tCtrl+Shift+7"
+
+msgid "Top right\tCtrl+9"
+msgstr "Trên bên phải\tCtrl+9"
+
+msgid "Top right\tCtrl+Shift+9"
+msgstr "Trên bên phải\tCtrl+Shift+9"
+
+msgid "Transform"
+msgstr "Biến đổi"
+
+msgid "Transform the drawing using matrix transformation"
+msgstr "Biến đổi hình vẽ bằng ma trận"
+
+msgid "Undo\tCtrl+Z"
+msgstr "Hoàn tác\tCtrl+Z"
+
+msgid "Undo last action"
+msgstr "Hoàn tác thao tác cuối"
+
+#, c-format
+msgid "Undo: %s\tCtrl+Z"
+msgstr "Hoàn tác: %s\tCtrl+Z"
+
+msgid "Undock all"
+msgstr "Tách tất cả"
+
+msgid "Unset continuous"
+msgstr "Tắt tính liên tục"
+
+msgid "Use the Shapes Library to store drawings. Ctrl+Z undoes a drawing edit; Ctrl+Y redoes it."
+msgstr "Dùng Thư viện hình để lưu hình vẽ. Ctrl+Z hoàn tác chỉnh sửa; Ctrl+Y làm lại."
+
+msgid "Use the mouse wheel or PageUp/PageDown to zoom. Right-drag pans the enabled drawing or background layer."
+msgstr "Dùng bánh xe chuột hoặc PageUp/PageDown để thu phóng. Kéo chuột phải để dịch chuyển lớp hình vẽ hoặc nền đang bật."
+
+msgid "V ruler"
+msgstr "Thước dọc"
+
+msgid "Value error"
+msgstr "Giá trị không hợp lệ"
+
+#, c-format
+msgid "Version: %s"
+msgstr "Phiên bản: %s"
+
+msgid "Yes"
+msgstr "Có"
+
+msgid "You must delete that command/point last"
+msgstr "Bạn phải xóa lệnh hoặc điểm này sau cùng"
+
+msgid "Zoom"
+msgstr "Thu phóng"

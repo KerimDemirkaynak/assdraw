@@ -10,6 +10,31 @@
 
 ---
 
+## Dil desteği ve 3.1 sürümü
+
+Dil menüsünde English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt
+bulunur. Dil değişimi anında uygulanır; menü başlığı, araç çubukları, ipuçları,
+ayarlar, geri alma açıklamaları ve dönüşüm şablonları da yenilenir. Çizim, arka
+plan, görünüm ve henüz uygulanmamış komut metni korunur. Dil tercihi bir sonraki
+açılış için kaydedilir. İngilizce kaynak metinleri kullandığı için `po/en.po` yoktur.
+
+`po/` altında altı tam UTF-8 çeviri dosyası, `assdraw.pot` içinde İngilizce kaynak
+şablonu bulunur. Derleme, Python 3'ün standart kütüphanesiyle MO dosyalarını
+oluşturup uygulamayla paketler. İşletim sistemine ek yerel ayar kurulması veya
+sayı biçiminin değiştirilmesi gerekmez. Hakkında penceresinde orijinal katkılar
+ve “Bu sürüm Kerim Demirkaynak tarafından oluşturuldu.” bilgisi yer alır.
+Uygulama, Windows dosya bilgisi ve kurulum sürümü 3.1 olarak güncellenmiştir.
+
+Orijinal `ASSDraw3.chm` ile taşınabilir HTML hızlı kılavuz pakete dahildir.
+Kılavuz, çalışma klasöründen bağımsız olarak uygulamanın bulunduğu yerde aranır.
+Windows kurulumu uygulamayı, DLL'leri, dilleri ve kılavuzları `bin` klasöründe
+tutar; taşınabilir paketler kendi klasörlerinden çalışır.
+
+Çevirileri denetlemek için `python i18n_setup.py --check` kullanın. GNU gettext
+kuruluysa `--update` kaynak metinleri çıkarıp mevcut çevirilerle birleştirir;
+C++ kaynaklarını, menüleri, CMake veya kurulum dosyalarını yeniden yazmaz.
+CI, pakette dil dosyaları ve kılavuzların bulunduğunu da doğrular.
+
 ## Çizim araçları
 
 - **Coloring (Renklendirme)**: Dolu bir alt şekli seçip çift tıklayarak rengini
@@ -131,5 +156,5 @@ Bu projenin hayata geçmesine yardımcı olan katkıda bulunanlara özel teşekk
 
 ## Lisans
 
-Bu depodaki tüm kaynak dosyalar **3 maddeli BSD lisansı** ile lisanslanmıştır.  
+Uygulama kaynakları **3 maddeli BSD lisansı** ile lisanslanmıştır. Standart wxWidgets çevirilerinin kendi lisansları `vendor/wxlocale` altında korunur.
 Daha fazla bilgi için [LICENSE](LICENSE) dosyasına bakınız.

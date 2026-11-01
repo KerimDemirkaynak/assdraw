@@ -36,46 +36,46 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // tooltips
-const wxString TIPS_CLEAR = wxT("Clear the canvas and create a new drawing");
-const wxString TIPS_EDITSRC = wxT("Edit the source");
-const wxString TIPS_PREVIEW = wxT("Draw the shapes without enlarged points and control points");
-const wxString TIPS_TRANSFORM = wxT("Transform the drawing using matrix transformation");
-const wxString TIPS_LIBRARY = wxT("Shapes library");
-const wxString TIPS_HELP = wxT("Help! Help!");
-const wxString TIPS_PASTE = wxT("Depending on what's in the clipboard, import as drawing commands or background");
-const wxString TIPS_UNDO = wxT("Undo last action");
-const wxString TIPS_REDO = wxT("Redo last undo");
-const wxString TIPS_ARR = wxT("Drag mode");
-const wxString TIPS_M = wxT("Draw M mode (Close current shape and move the virtual pen to a new point)");
-const wxString TIPS_N = wxT("Draw N mode (Same as M but doesn't close the shape)");
-const wxString TIPS_L = wxT("Draw L mode (Straight line)");
-const wxString TIPS_B = wxT("Draw B mode (Cubic Bezier curve)");
-const wxString TIPS_S = wxT("Draw S mode (Spline)");
-const wxString TIPS_P = wxT("Draw P mode (Extends a spline with another point)");
-const wxString TIPS_C = wxT("Draw C mode (Close the last spline)");
-const wxString TIPS_DEL = wxT("Delete mode");
-const wxString TIPS_NUTB = wxT("Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together");
-const wxString TIPS_SCALEROTATE = wxT("Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate");
-const wxString TIPS_DWG = wxT("Right-dragging pans drawing, mousewheel zooms in/out drawing");
-const wxString TIPS_BGIMG = wxT("Right-dragging pans background, mousewheel zooms in/out background");
-const wxString TIPS_BOTH = wxT("Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background");
+const char* const TIPS_CLEAR = wxTRANSLATE("Clear the canvas and create a new drawing");
+const char* const TIPS_EDITSRC = wxTRANSLATE("Edit the source");
+const char* const TIPS_PREVIEW = wxTRANSLATE("Draw the shapes without enlarged points and control points");
+const char* const TIPS_TRANSFORM = wxTRANSLATE("Transform the drawing using matrix transformation");
+const char* const TIPS_LIBRARY = wxTRANSLATE("Shapes library");
+const char* const TIPS_HELP = wxTRANSLATE("Help! Help!");
+const char* const TIPS_PASTE = wxTRANSLATE("Depending on what's in the clipboard, import as drawing commands or background");
+const char* const TIPS_UNDO = wxTRANSLATE("Undo last action");
+const char* const TIPS_REDO = wxTRANSLATE("Redo last undo");
+const char* const TIPS_ARR = wxTRANSLATE("Drag mode");
+const char* const TIPS_M = wxTRANSLATE("Draw M mode (Close current shape and move the virtual pen to a new point)");
+const char* const TIPS_N = wxTRANSLATE("Draw N mode (Same as M but doesn't close the shape)");
+const char* const TIPS_L = wxTRANSLATE("Draw L mode (Straight line)");
+const char* const TIPS_B = wxTRANSLATE("Draw B mode (Cubic Bezier curve)");
+const char* const TIPS_S = wxTRANSLATE("Draw S mode (Spline)");
+const char* const TIPS_P = wxTRANSLATE("Draw P mode (Extends a spline with another point)");
+const char* const TIPS_C = wxTRANSLATE("Draw C mode (Close the last spline)");
+const char* const TIPS_DEL = wxTRANSLATE("Delete mode");
+const char* const TIPS_NUTB = wxTRANSLATE("Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together");
+const char* const TIPS_SCALEROTATE = wxTRANSLATE("Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate");
+const char* const TIPS_DWG = wxTRANSLATE("Right-dragging pans drawing, mousewheel zooms in/out drawing");
+const char* const TIPS_BGIMG = wxTRANSLATE("Right-dragging pans background, mousewheel zooms in/out background");
+const char* const TIPS_BOTH = wxTRANSLATE("Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background");
 
-const wxString TBNAME_DRAW = wxT("Canvas");
-const wxString TBNAME_MODE = wxT("Drawing mode");
-const wxString TBNAME_BGIMG = wxT("Background");
-const wxString TBNAME_ZOOM = wxT("Zoom");
+const char* const TBNAME_DRAW = wxTRANSLATE("Canvas");
+const char* const TBNAME_MODE = wxTRANSLATE("Drawing mode");
+const char* const TBNAME_BGIMG = wxTRANSLATE("Background");
+const char* const TBNAME_ZOOM = wxTRANSLATE("Zoom");
 
-wxString ASSDrawTransformDlg::combo_templatesStrings[] = {
-	_("<Select>"),
-	_("Move 5 units down"),
-	_("Move 5 units right"),
-	_("Rotate 90\370 clockwise at (1, 2)"),
-	_("Rotate 90\370 counterclockwise at (-1, 2)"),
-	_("Rotate 180\370 at (0, 0)"),
-	_("Flip horizontally at X = 4"),
-	_("Flip vertically at Y = 3"),
-	_("Scale up horizontally by a factor of 2"),
-	_("Scale up vertically by a factor of 3")
+const char* const ASSDrawTransformDlg::combo_templatesStrings[] = {
+	wxTRANSLATE("<Select>"),
+	wxTRANSLATE("Move 5 units down"),
+	wxTRANSLATE("Move 5 units right"),
+	wxTRANSLATE("Rotate 90° clockwise at (1, 2)"),
+	wxTRANSLATE("Rotate 90° counterclockwise at (-1, 2)"),
+	wxTRANSLATE("Rotate 180° at (0, 0)"),
+	wxTRANSLATE("Flip horizontally at X = 4"),
+	wxTRANSLATE("Flip vertically at Y = 3"),
+	wxTRANSLATE("Scale up horizontally by a factor of 2"),
+	wxTRANSLATE("Scale up vertically by a factor of 3")
 };
 
 int ASSDrawTransformDlg::combo_templatesCount = 10;

@@ -104,6 +104,7 @@ public:
 	virtual void SetShapeStyle(const ShapeStyle& new_style);
 	virtual const ShapeStyle& GetShapeStyle() const { return shape_style; }
 	virtual void ApplyShapeStyle();
+	void UpdateTranslations();
 
 	virtual void SetDrawMode( MODE mode );
 	virtual MODE GetDrawMode() { return draw_mode; }

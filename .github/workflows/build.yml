@@ -13,15 +13,15 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libwxgtk3.2-dev ninja-build xvfb
+        sudo apt-get install -y libwxgtk3.2-dev ninja-build xvfb gettext
     - name: Configure
       run: cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
     - name: Build editor and tests
       run: cmake --build build-linux --parallel 2
     - name: Package Linux build
       run: |
-        install -Dm755 build-linux/assdraw3 package/ASSDraw3-Linux-x64/assdraw3
-        cp LICENSE NOTICE.md README.md README.tr.md package/ASSDraw3-Linux-x64/
+        cmake --install build-linux --prefix package/ASSDraw3-Linux-x64
+        python3 tools/translations.py --check-package package/ASSDraw3-Linux-x64
         tar -C package -czf ASSDraw3-Linux-x64.tar.gz ASSDraw3-Linux-x64
     - name: Upload Linux build
       uses: actions/upload-artifact@v4
@@ -73,13 +73,11 @@ jobs:
     - name: Package Windows build
       run: |
         $package = 'package\ASSDraw3-Windows-x64'
-        New-Item -ItemType Directory -Path $package -Force | Out-Null
-        Copy-Item 'build-dir\Release\assdraw3.exe' $package
+        cmake --install build-dir --config Release --prefix $package
+        if ($LASTEXITCODE -ne 0) { throw 'Application staging failed.' }
         Get-ChildItem 'build-dir\Release' -Filter '*.dll' | Copy-Item -Destination $package
-        Copy-Item 'docs\ASSDraw3.chm', 'LICENSE', 'NOTICE.md', 'README.md', 'README.tr.md' $package
-        if (Test-Path 'build-dir\Release\locale') {
-          Copy-Item 'build-dir\Release\locale' $package -Recurse
-        }
+        python tools/translations.py --check-package $package
+        if ($LASTEXITCODE -ne 0) { throw 'Language or manual files are missing.' }
         Compress-Archive -Path "$package\*" -DestinationPath 'ASSDraw3-Windows-x64.zip' -Force
       shell: pwsh
 

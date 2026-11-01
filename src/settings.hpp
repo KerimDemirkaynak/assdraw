@@ -50,6 +50,11 @@ public:
 	virtual void OnSettingsApplyButtonClicked(wxCommandEvent &event);
 	virtual void OnSettingsRevertButtonClicked(wxCommandEvent &event);
 	virtual void RefreshSettingsDisplay();
+	void UpdateTranslations();
+	wxPGId appearance_category;
+	wxPGId behavior_category;
+	wxButton* apply_button;
+	wxButton* revert_button;
 
 	wxPGId colors_canvas_bg_pgid;
 	wxPGId colors_canvas_shape_normal_pgid;

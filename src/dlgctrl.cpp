@@ -40,7 +40,7 @@
 static wxBitmapBundle LoadAboutBannerBitmapBundle()
 {
 #if defined(__WXMSW__)
-	wxBitmapBundle bundle = wxBitmapBundle::FromResources(wxT("ASSDRAW3_"));
+	wxBitmapBundle bundle = wxBitmapBundle::FromResources(_T("ASSDRAW3_"));
 	if (bundle.IsOk())
 		return bundle;
 #endif
@@ -80,7 +80,7 @@ void ASSDrawSrcTxtCtrl::CustomOnChar(wxKeyEvent &event)
 	case WXK_TAB:
 		break; //do nothing
 	default:
-		//m_frame->SetTitle(wxString::Format(_T("Key: %d"), event.GetKeyCode()));
+		//m_frame->SetTitle(wxString::Format(_("Key: %d"), event.GetKeyCode()));
 		event.Skip(true);
 	}
 
@@ -97,7 +97,7 @@ void ASSDrawSrcTxtCtrl::CustomOnText(wxCommandEvent &event)
 // ----------------------------------------------------------------------------
 
 ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
- : wxDialog(parent, -1, wxString(_T("Transform")))
+ : wxDialog(parent, -1, wxString(_("Transform")))
 {
 	m_frame = parent;
 	transform_bitmap = NULL;
@@ -115,7 +115,10 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
     sizer_templates->Add(new wxStaticText( this, -1, _("Templates"), __DPDS__ , 0 ),
 						0, wxALIGN_CENTER_VERTICAL|wxALL, border);
 
-    combo_templates = new wxComboBox( this, -1, combo_templatesStrings[0], __DPDS__ , 10, combo_templatesStrings, wxCB_READONLY );
+    wxArrayString templates;
+    for (int i = 0; i < combo_templatesCount; ++i)
+        templates.Add(wxGetTranslation(wxString::FromUTF8(combo_templatesStrings[i])));
+    combo_templates = new wxComboBox(this, -1, templates[0], __DPDS__, templates, wxCB_READONLY);
     sizer_templates->Add(combo_templates, 0, wxALIGN_CENTER_VERTICAL|wxALL, border);
 
     wxFlexGridSizer* sizer_fields = new wxFlexGridSizer(4, 4, 0, 0);
@@ -124,49 +127,49 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
 	int flag_txtctrl = wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL;
 	int flag_statictxt = wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL;
 
-	sizer_fields->Add(new wxStaticText( this, -1, _("m11"), __DPDS__ , 0 ),
+	sizer_fields->Add(new wxStaticText( this, -1, _T("m11"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_m11 = new wxTextCtrl( this, -1, _T("1.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_m11, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("m12"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("m12"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_m12 = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_m12, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("m21"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("m21"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_m21 = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_m21, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("m22"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("m22"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_m22 = new wxTextCtrl( this, -1, _T("1.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_m22, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("mx"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("mx"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_mx = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_mx, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("my"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("my"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_my = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_my, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("nx"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("nx"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_nx = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_nx, 0, flag_txtctrl, border);
 
-    sizer_fields->Add(new wxStaticText( this, -1, _("ny"), __DPDS__ , 0 ),
+    sizer_fields->Add(new wxStaticText( this, -1, _T("ny"), __DPDS__ , 0 ),
 						0, flag_statictxt, border);
 
     txtctrl_ny = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
@@ -211,14 +214,9 @@ void ASSDrawTransformDlg::OnDPIChanged(wxDPIChangedEvent &event)
 
 void ASSDrawTransformDlg::OnTemplatesCombo(wxCommandEvent &event)
 {
-	int pos = -1;
-	for (int i = 0; i < combo_templatesCount; i++)
-		if (combo_templatesStrings[i].IsSameAs(((wxComboBox *) event.GetEventObject())->GetValue()))
-		{
-			pos = i;
-			break;
-		}
-	if (pos == -1)
+	// The translated label is presentation only; the index selects the matrix.
+	const int pos = combo_templates->GetSelection();
+	if (pos < 0 || pos >= combo_templatesCount)
 		return;
 
 	txtctrl_m11->SetValue( wxString::Format(_T("%.1f"), combo_templatesValues[pos].f1) );
@@ -253,7 +251,7 @@ void ASSDrawTransformDlg::EndModal(int retCode)
 	if (ok)
 		wxDialog::EndModal(wxID_OK);
 	else
-	    wxMessageBox(_T("One or more values entered are not real numbers.\nPlease fix."), _T("Value error"), wxOK | wxICON_INFORMATION, m_frame);
+	    wxMessageBox(_("One or more values entered are not real numbers.\nPlease fix."), _("Value error"), wxOK | wxICON_INFORMATION, m_frame);
 
 }
 
@@ -264,34 +262,7 @@ ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	SetBackgroundColour(*wxWHITE);
 	html_logical_size = wxSize(396, 200);
 	htmlwin = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, FromDIP(html_logical_size), wxHW_DEFAULT_STYLE | wxSIMPLE_BORDER);
-	htmlwin->SetPage(
-_T("<html><body> \
-<p>ASSDraw3 is a tool for designing shapes to be used in ASS subtitle file. \
-<p>To add lines or curves, initiate the draw mode by clicking on the drawing tools. \
-Then, either click on empty space or drag from an existing point to add the new lines/curves. \
-Control points for Bezier curves are generated once you release the mouse button. \
-<p>To modify shapes, drag their points (squares) and control points (circles) in the drag mode. \
-<p><b>Some tips & tricks:</b> \
-<ul> \
-<li> Set background image by dragging image file from explorer onto the canvas \
-<li> Use the Shapes Library to store your drawings \
-<li> Ctrl-Z for undo, Ctrl-Y for redo \
-<li> Use your mousewheel to zoom in/out (PageUp/PageDown keys work too) \
-<li> Dragging with right mouse button moves the drawing and/or background image around. \
-<li> Double clicking with right mouse button for popup menus. \
-<li> Holding shift key while in the draw mode temporarily switches to the drag mode \
-<li> The shapes origin (coordinate [0, 0] depicted by the small cross) is draggable \
-</ul> \
-<p><b>Acknowledgements:</b> \
-<ul> \
-<li> Maxim Shemanarev <a href=\"http://www.antigrain.com\">http://www.antigrain.com</a> for his Anti-Grain Geometry (AGG) graphic toolkit. \
-<li> wxWidgets Project <a href=\"http://www.wxwidgets.org\">http://www.wxwidgets.org</a> for the ultracool GUI toolkit. \
-<li> Adrian Secord <a href=\"http://mrl.nyu.edu/~ajsecord/index.html\">http://mrl.nyu.edu/~ajsecord/index.html</a> for wxAGG, that combines AGG and wxWidgets\
-<li> jfs, ArchMageZeratul, RoRo and everyone at Aegisub's forum <a href=\"http://malakith.net/aegisub\">http://malakith.net/aegisub</a> for all suggestions and supports. \
-</ul> \
-<p>ai-chan recommends Aegisub for all your subtitle and typesetting needs! \
-</body></html>")
-	);
+	htmlwin->SetPage(AssdrawI18n::AboutHtml());
 	htmlwin->Connect(wxEVT_COMMAND_HTML_LINK_CLICKED, wxHtmlLinkEventHandler(ASSDrawAboutDlg::OnURL), NULL, this);
 
 	wxFlexGridSizer *sizer = new wxFlexGridSizer(1);
@@ -300,8 +271,8 @@ Control points for Bezier curves are generated once you release the mouse button
 
 	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), *wxWHITE, this), 1, wxEXPAND);
 	sizer->Add(htmlwin, 1, wxLEFT | wxRIGHT, FromDIP(2));
-	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_T("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
-	sizer->Add(new wxButton(this, wxID_OK), 0, wxALIGN_CENTER | wxBOTTOM, FromDIP(10));
+	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
+	sizer->Add(new wxButton(this, wxID_OK, _("OK")), 0, wxALIGN_CENTER | wxBOTTOM, FromDIP(10));
 	SetSizer(sizer);
 	sizer->Layout();
 	sizer->Fit(this);
@@ -330,7 +301,7 @@ int ASSDrawAboutDlg::ShowModal()
 void ASSDrawAboutDlg::OnURL(wxHtmlLinkEvent &event)
 {
 	wxString URL(event.GetLinkInfo().GetHref());
-	if (URL.StartsWith(_T("http://")))
+		if (URL.StartsWith(_T("http://")) || URL.StartsWith(_T("https://")))
 		::wxLaunchDefaultBrowser(URL);
 	else
 		event.Skip(true);

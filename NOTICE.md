@@ -18,3 +18,7 @@ The existing CMake/vcpkg Windows installer, bitmap bundles, DPI handling,
 internationalization automation, and shape library are retained. The historical
 GPL-marked custom spline sources present in the reference forks were not added;
 this repository continues to use the pinned external AGG 2.6 spline code.
+
+Standard widget translations in `vendor/wxlocale` come from wxWidgets v3.3.1.
+Their original source files, contributor notices, wxWindows license, and LGPL
+text are retained there. They are separate from the application catalogs in `po`.

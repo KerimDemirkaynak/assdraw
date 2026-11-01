@@ -55,6 +55,7 @@ IMPLEMENT_APP(ASSDrawApp)
 #endif
 
 BEGIN_EVENT_TABLE(ASSDrawFrame, wxFrame)
+    EVT_MENU_RANGE(6000, 6007, ASSDrawFrame::OnChooseLanguage)
     EVT_TOOL(TB_CLEAR, ASSDrawFrame::OnSelect_Clear)
     EVT_TOOL(TB_PREVIEW, ASSDrawFrame::OnSelect_Preview)
     EVT_TOOL(TB_TRANSFORM, ASSDrawFrame::OnSelect_Transform)
@@ -94,6 +95,8 @@ END_EVENT_TABLE()
 bool ASSDrawApp::OnInit()
 {
 	SetAppName(TITLE);
+	if (!AssdrawI18n::SetLanguage(AssdrawI18n::ReadLanguagePreference()))
+		AssdrawI18n::SetLanguage("en");
     // create the main application window
     ASSDrawFrame * assdrawframe = new ASSDrawFrame( this, TITLE, wxDefaultPosition, wxDefaultSize );
 	SetTopWindow(assdrawframe);
@@ -132,7 +135,7 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 	InitializeDefaultSettings();
 
 	// load config
-	configfile = wxFileName(wxStandardPaths::Get().GetUserDataDir(), _T("ASSDraw3.cfg")).GetFullPath();
+	configfile = AssdrawI18n::ConfigPath();
 
 	bool firsttime = !::wxFileExists(configfile);
 	if (firsttime) {
@@ -160,9 +163,9 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 	// Source text control and a direct clipboard action for generated ASS.
 	commandpanel = new wxPanel(this, wxID_ANY);
 	srctxtctrl = new ASSDrawSrcTxtCtrl(commandpanel, this);
-	wxButton* copy_button = new wxButton(commandpanel, wxID_COPY, _T("Copy ASS"));
+	copy_button = new wxButton(commandpanel, wxID_COPY, _("Copy ASS"));
 	copy_button->SetMinSize(FromDIP(wxSize(128, -1)));
-	copy_button->SetToolTip(_T("Copy the command text, including ASS style tags"));
+	copy_button->SetToolTip(_("Copy the command text, including ASS style tags"));
 	copy_button->Bind(wxEVT_BUTTON, &ASSDrawFrame::OnSelect_CopyCommands, this);
 	wxBoxSizer* command_sizer = new wxBoxSizer(wxHORIZONTAL);
 	command_sizer->Add(srctxtctrl, 1, wxEXPAND | wxALL, 3);
@@ -189,6 +192,7 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 	wxString perspective;
 	if (config->Read(_T("perspective"), &perspective) && version == VERSION) m_mgr.LoadPerspective(perspective, false);
 	config->SetPath(_T(".."));
+	UpdatePaneTranslations();
 
 	config->SetPath(_T("library"));
 	int n = 0;
@@ -220,19 +224,18 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 		_About(3);
 
 	helpcontroller.SetParentWindow(this);
-	helpcontroller.Initialize(wxFileName(::wxGetCwd(), _T("ASSDraw3.chm")).GetFullPath());
 }
 
 void ASSDrawFrame::SetToolBars()
 {
     drawtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
 	drawtbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
-	drawtbar->AddTool(TB_CLEAR, _T("Clear"), ASSDRAW_BITMAP_BUNDLE(new_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), TIPS_CLEAR);
-    //tbar->AddTool(TB_EDITSRC, _T("Source"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), TIPS_EDITSRC);
-    drawtbar->AddCheckTool(TB_PREVIEW, _T("Preview"), ASSDRAW_BITMAP_BUNDLE(preview_), wxBitmapBundle(), _T(""), TIPS_PREVIEW);
-    //drawtbar->AddTool(TB_TRANSFORM, _T("Transform"), ASSDRAW_BITMAP_BUNDLE(rot_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), TIPS_TRANSFORM);
+	drawtbar->AddTool(TB_CLEAR, _("Clear"), ASSDRAW_BITMAP_BUNDLE(new_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_CLEAR));
+    //tbar->AddTool(TB_EDITSRC, _("Source"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_EDITSRC));
+    drawtbar->AddCheckTool(TB_PREVIEW, _("Preview"), ASSDRAW_BITMAP_BUNDLE(preview_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_PREVIEW));
+    //drawtbar->AddTool(TB_TRANSFORM, _("Transform"), ASSDRAW_BITMAP_BUNDLE(rot_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_TRANSFORM));
 	drawtbar->AddCheckTool(MODE_COLOR, _("Coloring"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), _T(""),
-		_T("Select a shape, then double-click it to choose its fill color"));
+		_("Select a shape, then double-click it to choose its fill color"));
 	zoomslider = new wxSlider(drawtbar, TB_ZOOMSLIDER, 1000, 100, 5000, wxDefaultPosition, FromDIP(wxSize(140, -1)));
 	//zoomslider->SetSize(280, zoomslider->GetSize().y);
 	zoomslider->Connect(wxEVT_SCROLL_LINEUP, wxScrollEventHandler(ASSDrawFrame::OnZoomSliderChanged), NULL, this);
@@ -244,38 +247,38 @@ void ASSDrawFrame::SetToolBars()
 	drawtbar->AddControl(zoomslider);
     drawtbar->Realize();
 
-    m_mgr.AddPane(drawtbar, wxAuiPaneInfo().Name(_T("drawtbar")).Caption(TBNAME_DRAW).
+    m_mgr.AddPane(drawtbar, wxAuiPaneInfo().Name(_T("drawtbar")).Caption(wxGetTranslation(TBNAME_DRAW)).
                   ToolbarPane().Top().Position(0).Dockable(true).LeftDockable(false).RightDockable(false));
 
     modetbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
 	modetbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
-    modetbar->AddRadioTool(MODE_ARR, _T("Drag"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), TIPS_ARR);
-    modetbar->AddRadioTool(MODE_M, _T("Move"), ASSDRAW_BITMAP_BUNDLE(m_), wxBitmapBundle(), _T(""), TIPS_M);
-    //modetbar->AddRadioTool(MODE_N, _T("Move*"), ASSDRAW_BITMAP_BUNDLE(n_), wxBitmapBundle(), _T(""), TIPS_N);
-    modetbar->AddRadioTool(MODE_L, _T("Line"), ASSDRAW_BITMAP_BUNDLE(l_), wxBitmapBundle(), _T(""), TIPS_L);
-    modetbar->AddRadioTool(MODE_B, _T("Bezier"), ASSDRAW_BITMAP_BUNDLE(b_), wxBitmapBundle(), _T(""), TIPS_B);
-    //modetbar->AddRadioTool(MODE_S, _T("Spline"), ASSDRAW_BITMAP_BUNDLE(s_), wxBitmapBundle(), _T(""), TIPS_S);
-    //modetbar->AddRadioTool(MODE_P, _T("Extend"), ASSDRAW_BITMAP_BUNDLE(p_), wxBitmapBundle(), _T(""), TIPS_P);
-    //modetbar->AddRadioTool(MODE_C, _T("Close"), ASSDRAW_BITMAP_BUNDLE(c_), wxBitmapBundle(), _T(""), TIPS_C);
-    modetbar->AddRadioTool(MODE_DEL, _T("Delete"), ASSDRAW_BITMAP_BUNDLE(del_), wxBitmapBundle(), _T(""), TIPS_DEL);
-    modetbar->AddRadioTool(MODE_SCALEROTATE, _T("Scale/Rotate"), ASSDRAW_BITMAP_BUNDLE(sc_rot_), wxBitmapBundle(), _T(""), TIPS_SCALEROTATE);
-    modetbar->AddRadioTool(MODE_NUT_BILINEAR, _T("Bilinear"), ASSDRAW_BITMAP_BUNDLE(nut_), wxBitmapBundle(), _T(""), TIPS_NUTB);
-    //modetbar->AddRadioTool(MODE_NUT_PERSPECTIVE, _T("NUT:P"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), _T(""));
+    modetbar->AddRadioTool(MODE_ARR, _("Drag"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_ARR));
+    modetbar->AddRadioTool(MODE_M, _("Move"), ASSDRAW_BITMAP_BUNDLE(m_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_M));
+    //modetbar->AddRadioTool(MODE_N, _("Move*"), ASSDRAW_BITMAP_BUNDLE(n_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_N));
+    modetbar->AddRadioTool(MODE_L, _("Line"), ASSDRAW_BITMAP_BUNDLE(l_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_L));
+    modetbar->AddRadioTool(MODE_B, _("Bezier"), ASSDRAW_BITMAP_BUNDLE(b_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_B));
+    //modetbar->AddRadioTool(MODE_S, _("Spline"), ASSDRAW_BITMAP_BUNDLE(s_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_S));
+    //modetbar->AddRadioTool(MODE_P, _("Extend"), ASSDRAW_BITMAP_BUNDLE(p_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_P));
+    //modetbar->AddRadioTool(MODE_C, _("Close"), ASSDRAW_BITMAP_BUNDLE(c_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_C));
+    modetbar->AddRadioTool(MODE_DEL, _("Delete"), ASSDRAW_BITMAP_BUNDLE(del_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DEL));
+    modetbar->AddRadioTool(MODE_SCALEROTATE, _("Scale/Rotate"), ASSDRAW_BITMAP_BUNDLE(sc_rot_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_SCALEROTATE));
+    modetbar->AddRadioTool(MODE_NUT_BILINEAR, _("Bilinear"), ASSDRAW_BITMAP_BUNDLE(nut_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_NUTB));
+    //modetbar->AddRadioTool(MODE_NUT_PERSPECTIVE, _("NUT:P"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), _T(""));
 	modetbar->AddRadioTool(MODE_COLOR, _("Coloring"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), _T(""),
-		_T("Click a filled shape to select it; double-click to choose its fill color"));
+		_("Click a filled shape to select it; double-click to choose its fill color"));
     modetbar->Realize();
 
-    m_mgr.AddPane(modetbar, wxAuiPaneInfo().Name(_T("modetbar")).Caption(TBNAME_MODE).
+    m_mgr.AddPane(modetbar, wxAuiPaneInfo().Name(_T("modetbar")).Caption(wxGetTranslation(TBNAME_MODE)).
                   ToolbarPane().Top().Position(1).Dockable(true).LeftDockable(false).RightDockable(false));
 
     bgimgtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
 	bgimgtbar->SetToolBitmapSize(FromDIP(wxSize(24, 15)));
-    bgimgtbar->AddCheckTool(DRAG_DWG, _T("Pan drawing"), ASSDRAW_BITMAP_BUNDLE(pan_shp), wxBitmapBundle(), _T(""), TIPS_DWG);
-    bgimgtbar->AddCheckTool(DRAG_BGIMG, _T("Pan background"), ASSDRAW_BITMAP_BUNDLE(pan_bg), wxBitmapBundle(), _T(""), TIPS_BGIMG);
-    //bgimgtbar->AddRadioTool(DRAG_BOTH, _T("Pan both"), ASSDRAW_BITMAP_BUNDLE(pan_both), wxBitmapBundle(), _T(""), TIPS_BOTH);
+    bgimgtbar->AddCheckTool(DRAG_DWG, _("Pan drawing"), ASSDRAW_BITMAP_BUNDLE(pan_shp), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DWG));
+    bgimgtbar->AddCheckTool(DRAG_BGIMG, _("Pan background"), ASSDRAW_BITMAP_BUNDLE(pan_bg), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_BGIMG));
+    //bgimgtbar->AddRadioTool(DRAG_BOTH, _("Pan both"), ASSDRAW_BITMAP_BUNDLE(pan_both), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_BOTH));
     bgimgtbar->Realize();
 
-    m_mgr.AddPane(bgimgtbar, wxAuiPaneInfo().Name(_T("bgimgtbar")).Caption(TBNAME_BGIMG).
+    m_mgr.AddPane(bgimgtbar, wxAuiPaneInfo().Name(_T("bgimgtbar")).Caption(wxGetTranslation(TBNAME_BGIMG)).
                   ToolbarPane().Top().Position(2).Dockable(true).LeftDockable(false).RightDockable(false));
 
 }
@@ -283,77 +286,89 @@ void ASSDrawFrame::SetToolBars()
 void ASSDrawFrame::SetMenus()
 {
 	drawMenu = new wxMenu;
-	drawMenu->Append(MENU_CLEAR, _T("&Clear\tCtrl+N"), TIPS_CLEAR);
-	//drawMenu->Append(MENU_EDITSRC, _T("&Source"), TIPS_EDITSRC);
-	drawMenu->Append(MENU_PREVIEW, _T("&Preview\tCtrl+P"), TIPS_PREVIEW, wxITEM_CHECK);
-	drawMenu->Append(MENU_TRANSFORM, _T("&Transform"), TIPS_TRANSFORM);
-	drawMenu->Append(MENU_PASTE, _T("&Paste\tCtrl+V"), TIPS_PASTE);
+	drawMenu->Append(MENU_CLEAR, _("&Clear\tCtrl+N"), wxGetTranslation(TIPS_CLEAR));
+	//drawMenu->Append(MENU_EDITSRC, _("&Source"), wxGetTranslation(TIPS_EDITSRC));
+	drawMenu->Append(MENU_PREVIEW, _("&Preview\tCtrl+P"), wxGetTranslation(TIPS_PREVIEW), wxITEM_CHECK);
+	drawMenu->Append(MENU_TRANSFORM, _("&Transform"), wxGetTranslation(TIPS_TRANSFORM));
+	drawMenu->Append(MENU_PASTE, _("&Paste\tCtrl+V"), wxGetTranslation(TIPS_PASTE));
 	drawMenu->AppendSeparator();
-	drawMenu->Append(MENU_UNDO, _T("&Undo\tCtrl+Z"), TIPS_UNDO);
-	drawMenu->Append(MENU_REDO, _T("&Redo\tCtrl+Y"), TIPS_REDO);
+	drawMenu->Append(MENU_UNDO, _("&Undo\tCtrl+Z"), wxGetTranslation(TIPS_UNDO));
+	drawMenu->Append(MENU_REDO, _("&Redo\tCtrl+Y"), wxGetTranslation(TIPS_REDO));
 	drawMenu->Enable(MENU_UNDO, false);
 	drawMenu->Enable(MENU_REDO, false);
 
 	modeMenu = new wxMenu;
-	modeMenu->Append(MODE_ARR, _T("D&rag\tF1"), TIPS_ARR, wxITEM_RADIO);
-	modeMenu->Append(MODE_M, _T("Draw &M\tF2"), TIPS_M, wxITEM_RADIO);
-	modeMenu->Append(MODE_L, _T("Draw &L\tF3"), TIPS_L, wxITEM_RADIO);
-	modeMenu->Append(MODE_B, _T("Draw &B\tF4"), TIPS_B, wxITEM_RADIO);
-	modeMenu->Append(MODE_DEL, _T("&Delete\tF5"), TIPS_DEL, wxITEM_RADIO);
-	modeMenu->Append(MODE_SCALEROTATE, _T("&Scale/Rotate\tF6"), TIPS_NUTB, wxITEM_RADIO);
-	modeMenu->Append(MODE_NUT_BILINEAR, _T("&Bilinear transformation\tF7"), TIPS_SCALEROTATE, wxITEM_RADIO);
-	modeMenu->Append(MODE_COLOR, _T("&Coloring"), _T("Click a filled shape to select it; double-click to choose its fill color"), wxITEM_RADIO);
+	modeMenu->Append(MODE_ARR, _("D&rag\tF1"), wxGetTranslation(TIPS_ARR), wxITEM_RADIO);
+	modeMenu->Append(MODE_M, _("Draw &M\tF2"), wxGetTranslation(TIPS_M), wxITEM_RADIO);
+	modeMenu->Append(MODE_L, _("Draw &L\tF3"), wxGetTranslation(TIPS_L), wxITEM_RADIO);
+	modeMenu->Append(MODE_B, _("Draw &B\tF4"), wxGetTranslation(TIPS_B), wxITEM_RADIO);
+	modeMenu->Append(MODE_DEL, _("&Delete\tF5"), wxGetTranslation(TIPS_DEL), wxITEM_RADIO);
+	modeMenu->Append(MODE_SCALEROTATE, _("&Scale/Rotate\tF6"), wxGetTranslation(TIPS_SCALEROTATE), wxITEM_RADIO);
+	modeMenu->Append(MODE_NUT_BILINEAR, _("&Bilinear transformation\tF7"), wxGetTranslation(TIPS_NUTB), wxITEM_RADIO);
+	modeMenu->Append(MODE_COLOR, _("&Coloring"), _("Click a filled shape to select it; double-click to choose its fill color"), wxITEM_RADIO);
 
 	bgimgMenu = new wxMenu;
-	bgimgMenu->Append(DRAG_DWG, _T("Pan/Zoom &Drawing\tShift+F1"), TIPS_DWG, wxITEM_CHECK);
-	bgimgMenu->Append(DRAG_BGIMG, _T("Pan/Zoom Back&ground\tShift+F2"), TIPS_BGIMG, wxITEM_CHECK);
+	bgimgMenu->Append(DRAG_DWG, _("Pan/Zoom &Drawing\tShift+F1"), wxGetTranslation(TIPS_DWG), wxITEM_CHECK);
+	bgimgMenu->Append(DRAG_BGIMG, _("Pan/Zoom Back&ground\tShift+F2"), wxGetTranslation(TIPS_BGIMG), wxITEM_CHECK);
 	bgimgMenu->AppendSeparator();
-	bgimgMenu->Append(MENU_BGIMG_ALPHA, _T("Set background image opacity"), _T(""));
+	bgimgMenu->Append(MENU_BGIMG_ALPHA, _("Set background image opacity"), _T(""));
 	wxMenu* reposbgMenu = new wxMenu;
-	reposbgMenu->Append( MENU_REPOS_BGTOPLEFT, _T("Top left\tCtrl+Shift+7") );
-	reposbgMenu->Append( MENU_REPOS_BGTOPRIGHT, _T("Top right\tCtrl+Shift+9") );
-	reposbgMenu->Append( MENU_REPOS_BGCENTER, _T("&Center\tCtrl+Shift+5") );
-	reposbgMenu->Append( MENU_REPOS_BGBOTLEFT, _T("Bottom left\tCtrl+Shift+1") );
-	reposbgMenu->Append( MENU_REPOS_BGBOTRIGHT, _T("Bottom right\tCtrl+Shift+3") );
-	bgimgMenu->Append(MENU_BGIMG_RECENTER, _T("Reposition [&0, 0]"), reposbgMenu);
-	bgimgMenu->Append(MENU_BGIMG_REMOVE, _T("Remove background\tShift+Del"), _T(""));
+	reposbgMenu->Append( MENU_REPOS_BGTOPLEFT, _("Top left\tCtrl+Shift+7") );
+	reposbgMenu->Append( MENU_REPOS_BGTOPRIGHT, _("Top right\tCtrl+Shift+9") );
+	reposbgMenu->Append( MENU_REPOS_BGCENTER, _("&Center\tCtrl+Shift+5") );
+	reposbgMenu->Append( MENU_REPOS_BGBOTLEFT, _("Bottom left\tCtrl+Shift+1") );
+	reposbgMenu->Append( MENU_REPOS_BGBOTRIGHT, _("Bottom right\tCtrl+Shift+3") );
+	bgimgMenu->Append(MENU_BGIMG_RECENTER, _("Reposition [&0, 0]"), reposbgMenu);
+	bgimgMenu->Append(MENU_BGIMG_REMOVE, _("Remove background\tShift+Del"), _T(""));
 
 	wxMenu* reposMenu = new wxMenu;
-	reposMenu->Append( MENU_REPOS_TOPLEFT, _T("Top left\tCtrl+7") );
-	reposMenu->Append( MENU_REPOS_TOPRIGHT, _T("Top right\tCtrl+9") );
-	reposMenu->Append( MENU_REPOS_CENTER, _T("&Center\tCtrl+5") );
-	reposMenu->Append( MENU_REPOS_BOTLEFT, _T("Bottom left\tCtrl+1") );
-	reposMenu->Append( MENU_REPOS_BOTRIGHT, _T("Bottom right\tCtrl+3") );
+	reposMenu->Append( MENU_REPOS_TOPLEFT, _("Top left\tCtrl+7") );
+	reposMenu->Append( MENU_REPOS_TOPRIGHT, _("Top right\tCtrl+9") );
+	reposMenu->Append( MENU_REPOS_CENTER, _("&Center\tCtrl+5") );
+	reposMenu->Append( MENU_REPOS_BOTLEFT, _("Bottom left\tCtrl+1") );
+	reposMenu->Append( MENU_REPOS_BOTRIGHT, _("Bottom right\tCtrl+3") );
 
 	tbarMenu = new wxMenu;
-	tbarMenu->AppendCheckItem(MENU_TB_DRAW, TBNAME_DRAW);
-	tbarMenu->AppendCheckItem(MENU_TB_MODE, TBNAME_MODE);
-	tbarMenu->AppendCheckItem(MENU_TB_BGIMG, TBNAME_BGIMG);
+	tbarMenu->AppendCheckItem(MENU_TB_DRAW, wxGetTranslation(TBNAME_DRAW));
+	tbarMenu->AppendCheckItem(MENU_TB_MODE, wxGetTranslation(TBNAME_MODE));
+	tbarMenu->AppendCheckItem(MENU_TB_BGIMG, wxGetTranslation(TBNAME_BGIMG));
 	tbarMenu->AppendSeparator();
-	tbarMenu->Append(MENU_TB_ALL, _T("Show all"));
-	tbarMenu->Append(MENU_TB_NONE, _T("Hide all"));
-	tbarMenu->Append(MENU_TB_DOCK, _T("Dock all"));
-	tbarMenu->Append(MENU_TB_UNDOCK, _T("Undock all"));
+	tbarMenu->Append(MENU_TB_ALL, _("Show all"));
+	tbarMenu->Append(MENU_TB_NONE, _("Hide all"));
+	tbarMenu->Append(MENU_TB_DOCK, _("Dock all"));
+	tbarMenu->Append(MENU_TB_UNDOCK, _("Undock all"));
 
 	viewMenu = new wxMenu;
-	viewMenu->Append(MENU_LIBRARY, _T("&Library"), TIPS_LIBRARY, wxITEM_CHECK);
+	viewMenu->Append(MENU_LIBRARY, _("&Library"), wxGetTranslation(TIPS_LIBRARY), wxITEM_CHECK);
 	if (settingsdlg)
-		viewMenu->Append(MENU_SETTINGS, _T("&Settings"), _T(""), wxITEM_CHECK);
-	viewMenu->Append(MENU_TBAR, _T("&Toolbars"), tbarMenu);
-	viewMenu->Append(MENU_RECENTER, _T("Reposition [&0, 0]"), reposMenu);
+		viewMenu->Append(MENU_SETTINGS, _("&Settings"), _T(""), wxITEM_CHECK);
+	viewMenu->Append(MENU_TBAR, _("&Toolbars"), tbarMenu);
+	viewMenu->Append(MENU_RECENTER, _("Reposition [&0, 0]"), reposMenu);
 	viewMenu->AppendSeparator();
-	viewMenu->Append(MENU_RESETPERSPECTIVE, _T("&Reset workspace"));
+	viewMenu->Append(MENU_RESETPERSPECTIVE, _("&Reset workspace"));
 
 	wxMenu* helpMenu = new wxMenu;
-	helpMenu->Append(MENU_HELP, _T("&Manual"));
-	helpMenu->Append(wxID_ABOUT, _T("&About"));
+	helpMenu->Append(MENU_HELP, _("&Manual"));
+	helpMenu->Append(wxID_ABOUT, _("&About"));
 
 	wxMenuBar *menuBar = new wxMenuBar();
-	menuBar->Append(drawMenu, _T("&Canvas"));
-	menuBar->Append(modeMenu, _T("&Mode"));
-	menuBar->Append(bgimgMenu, _T("&Background"));
-	menuBar->Append(viewMenu, _T("&Workspace"));
-	menuBar->Append(helpMenu, _T("&Help"));
+	menuBar->Append(drawMenu, _("&Canvas"));
+	menuBar->Append(modeMenu, _("&Mode"));
+	menuBar->Append(bgimgMenu, _("&Background"));
+	menuBar->Append(viewMenu, _("&Workspace"));
+	menuBar->Append(helpMenu, _("&Help"));
+	languageMenu = new wxMenu;
+	languageMenu->AppendRadioItem(6000, _("System Default"));
+	int language_id = 6001;
+	for (const auto& language : AssdrawI18n::Languages()) {
+		languageMenu->AppendRadioItem(language_id, wxString::FromUTF8(language.native_name));
+		if (AssdrawI18n::RequestedLanguage() == language.code)
+			languageMenu->Check(language_id, true);
+		++language_id;
+	}
+	if (AssdrawI18n::RequestedLanguage() == "auto")
+		languageMenu->Check(6000, true);
+	menuBar->Append(languageMenu, _("&Language"));
 
 
 	SetMenuBar(menuBar);
@@ -361,17 +376,83 @@ void ASSDrawFrame::SetMenus()
 
 void ASSDrawFrame::SetPanes()
 {
-	m_mgr.AddPane(shapelib, wxAuiPaneInfo().Name(_T("library")).Caption(_T("Shapes Library")).
+	m_mgr.AddPane(shapelib, wxAuiPaneInfo().Name(_T("library")).Caption(_("Shapes Library")).
                   Right().Layer(2).Position(0).CloseButton(true).BestSize(FromDIP(wxSize(120, 480))).MinSize(FromDIP(wxSize(100, 200))));
 
 	m_mgr.AddPane(m_canvas, wxAuiPaneInfo().Name(_T("canvas")).CenterPane());
 
-	m_mgr.AddPane(commandpanel, wxAuiPaneInfo().Name(_T("commands")).Caption(_T("Drawing commands")).
+	m_mgr.AddPane(commandpanel, wxAuiPaneInfo().Name(_T("commands")).Caption(_("Drawing commands")).
 			  Bottom().Layer(1).CloseButton(false).BestSize(FromDIP(wxSize(420, 58))));
 
 	if (settingsdlg)
-		m_mgr.AddPane(settingsdlg, wxAuiPaneInfo().Name(_T("settings")).Caption(_T("Settings")).
+		m_mgr.AddPane(settingsdlg, wxAuiPaneInfo().Name(_T("settings")).Caption(_("Settings")).
                   Right().Layer(3).Position(0).CloseButton(true).BestSize(FromDIP(wxSize(240, 480))).MinSize(FromDIP(wxSize(200, 200))).Show(false));
+}
+
+void ASSDrawFrame::UpdatePaneTranslations()
+{
+	m_mgr.GetPane(shapelib).Caption(_("Shapes Library"));
+	m_mgr.GetPane(commandpanel).Caption(_("Drawing commands"));
+	m_mgr.GetPane(settingsdlg).Caption(_("Settings"));
+	m_mgr.GetPane(drawtbar).Caption(wxGetTranslation(TBNAME_DRAW));
+	m_mgr.GetPane(modetbar).Caption(wxGetTranslation(TBNAME_MODE));
+	m_mgr.GetPane(bgimgtbar).Caption(wxGetTranslation(TBNAME_BGIMG));
+}
+
+void ASSDrawFrame::OnChooseLanguage(wxCommandEvent& event)
+{
+	const int selection = event.GetId() - 6000;
+	if (selection < 0 || selection > static_cast<int>(AssdrawI18n::Languages().size()))
+		return;
+	const wxString code = selection == 0 ? wxString("auto") :
+		wxString::FromUTF8(AssdrawI18n::Languages()[selection - 1].code);
+	// Defer rebuilding until the menu event has finished using its menu items.
+	CallAfter([this, code] { ApplyLanguage(code); });
+}
+
+bool ASSDrawFrame::ApplyLanguage(const wxString& code)
+{
+	if (!AssdrawI18n::SetLanguage(code)) {
+		wxMessageBox(_("The selected language could not be loaded. Please reinstall ASSDraw3."),
+			_("Language"), wxOK | wxICON_ERROR, this);
+		return false;
+	}
+	Freeze();
+	wxMenuBar* old_menu = GetMenuBar();
+	SetMenuBar(nullptr);
+	delete old_menu;
+	SetMenus();
+	wxToolBar* old_bars[] = {drawtbar, modetbar, bgimgtbar};
+	wxAuiPaneInfo layouts[3];
+	for (int i = 0; i < 3; ++i) {
+		layouts[i] = m_mgr.GetPane(old_bars[i]);
+		m_mgr.DetachPane(old_bars[i]);
+		old_bars[i]->Destroy();
+	}
+	SetToolBars();
+	wxToolBar* new_bars[] = {drawtbar, modetbar, bgimgtbar};
+	for (int i = 0; i < 3; ++i)
+		m_mgr.GetPane(new_bars[i]) = layouts[i].Window(new_bars[i]);
+	UpdatePaneTranslations();
+	copy_button->SetLabel(_("Copy ASS"));
+	copy_button->SetToolTip(_("Copy the command text, including ASS style tags"));
+	settingsdlg->UpdateTranslations();
+	shapelib->UpdateTranslations();
+	m_canvas->UpdateTranslations();
+	if (transformdlg) {
+		transformdlg->Destroy();
+		transformdlg = nullptr;
+	}
+	UpdateUndoRedoMenu();
+	UpdateFrameUI();
+	ApplyDpiLayout();
+	SetStatusText(wxEmptyString, 1);
+	Thaw();
+	config->Write("/ui/language", code);
+	SaveSettings();
+	if (!AssdrawI18n::SaveConfig(*config, configfile))
+		wxMessageBox(_("Could not save the language preference."), _("Error"), wxOK | wxICON_ERROR, this);
+	return true;
 }
 
 void ASSDrawFrame::ApplyDpiLayout()
@@ -449,8 +530,7 @@ ASSDrawFrame::~ASSDrawFrame()
 		config->Write(wxString::Format(_T("%d"),i), shapes[i]->GenerateASS());
 	config->SetPath(_T(".."));
 
-	wxFileOutputStream cfgf(configfile);
-	config->Save(cfgf);
+	AssdrawI18n::SaveConfig(*config, configfile);
 	delete config;
 
 	if (settingsdlg) settingsdlg->Destroy(); // we need this since wxPropertyGrid must be Clear()ed before deleting
@@ -460,12 +540,12 @@ ASSDrawFrame::~ASSDrawFrame()
 
 void ASSDrawFrame::_Clear()
 {
-	wxMessageDialog msgb(this, _T("Clear the canvas and create a new drawing?"),
-                  _T("Confirmation"), wxOK | wxCANCEL | wxICON_QUESTION );
+	wxMessageDialog msgb(this, _("Clear the canvas and create a new drawing?"),
+                  _("Confirmation"), wxOK | wxCANCEL | wxICON_QUESTION );
 	if (msgb.ShowModal() == wxID_OK)
 	{
 		m_canvas->RefreshUndocmds();
-		m_canvas->AddUndo(_T("Clear canvas"));
+		m_canvas->AddUndo(wxTRANSLATE("Clear canvas"));
 		m_canvas->ResetEngine(true);
 	    wxSize siz = m_canvas->GetClientSize();
 		m_canvas->ChangeZoomLevelTo(DEFAULT_SCALE, wxPoint(siz.x / 2, siz.y / 2));
@@ -527,7 +607,7 @@ void ASSDrawFrame::_Transform()
 			transformdlg->xformvals.f6,
 			transformdlg->xformvals.f7,
 			transformdlg->xformvals.f8 );
-		m_canvas->AddUndo(_T("Transform"));
+		m_canvas->AddUndo(wxTRANSLATE("Transform"));
 		m_canvas->RefreshDisplay();
 		UpdateUndoRedoMenu();
 	}
@@ -600,7 +680,19 @@ void ASSDrawFrame::OnChoose_RecenterToBG(wxCommandEvent& event)
 
 void ASSDrawFrame::_Help()
 {
-	helpcontroller.DisplayContents();
+	const wxString manual = AssdrawI18n::ManualPath();
+	if (manual.empty()) {
+		wxMessageBox(_("The manual is missing. Please reinstall ASSDraw3."), _("Manual"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+#ifdef __WXMSW__
+	if (manual.EndsWith(".chm")) {
+		helpcontroller.Initialize(manual);
+		helpcontroller.DisplayContents();
+		return;
+	}
+#endif
+	wxLaunchDefaultBrowser(wxFileName::FileNameToURL(wxFileName(manual)));
 }
 
 void ASSDrawFrame::_About(unsigned timeout)
@@ -745,23 +837,23 @@ void ASSDrawFrame::UpdateUndoRedoMenu()
 	wxString nextUndo = m_canvas->GetTopUndo();
 	if (nextUndo.IsSameAs(_T("")))
 	{
-		drawMenu->SetLabel(MENU_UNDO, _T("Undo\tCtrl+Z"));
+		drawMenu->SetLabel(MENU_UNDO, _("Undo\tCtrl+Z"));
 		drawMenu->Enable(MENU_UNDO, false);
 	}
 	else
 	{
-		drawMenu->SetLabel(MENU_UNDO, wxString::Format(_T("Undo: %s\tCtrl+Z"), nextUndo.c_str()));
+		drawMenu->SetLabel(MENU_UNDO, wxString::Format(_("Undo: %s\tCtrl+Z"), nextUndo.c_str()));
 		drawMenu->Enable(MENU_UNDO, true);
 	}
 	wxString nextRedo = m_canvas->GetTopRedo();
 	if (nextRedo.IsSameAs(_T("")))
 	{
-		drawMenu->SetLabel(MENU_REDO, _T("Redo\tCtrl+Y"));
+		drawMenu->SetLabel(MENU_REDO, _("Redo\tCtrl+Y"));
 		drawMenu->Enable(MENU_REDO, false);
 	}
 	else
 	{
-		drawMenu->SetLabel(MENU_REDO, wxString::Format(_T("Redo: %s\tCtrl+Y"), nextRedo.c_str()));
+		drawMenu->SetLabel(MENU_REDO, wxString::Format(_("Redo: %s\tCtrl+Y"), nextRedo.c_str()));
 		drawMenu->Enable(MENU_REDO, true);
 	}
 }
