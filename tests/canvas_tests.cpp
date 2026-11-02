@@ -45,6 +45,10 @@ static void CheckReferencePixels(ASSDrawCanvas* canvas, const wxImage& source,
 {
     static unsigned check_number = 0;
     ++check_number;
+    // Ruler labels can cover these pixels at platform-specific font metrics
+    // and DPI. Isolate the tracing image without changing its pixel data.
+    const agg::rgba ruler_h = canvas->rgba_ruler_h, ruler_v = canvas->rgba_ruler_v;
+    canvas->rgba_ruler_h.a = canvas->rgba_ruler_v.a = 0;
     const std::array<wxPoint, 4> samples = {wxPoint(20, 20), wxPoint(100, 20),
         wxPoint(20, 60), wxPoint(100, 60)};
     wxImage actual;
@@ -76,6 +80,9 @@ static void CheckReferencePixels(ASSDrawCanvas* canvas, const wxImage& source,
         if (matches) break;
         wxMilliSleep(10);
     } while (elapsed.Time() < 2000);
+    canvas->rgba_ruler_h = ruler_h;
+    canvas->rgba_ruler_v = ruler_v;
+    canvas->Refresh(false);
     if (!matches) {
         unsigned width = 0, height = 0;
         wxRealPoint displacement;
