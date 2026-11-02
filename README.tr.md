@@ -1,65 +1,66 @@
+<div align="center">
+
+<img src="https://kerimdemirkaynak.github.io/resimler/assdraw.svg" alt="ASSDraw3 logosu" width="128" height="128">
+
 # ASSDraw3
 
-[![Lisans](https://img.shields.io/badge/LİSANS-bsd_3_clause-bsd.svg?color=97CA01&logoColor=blue&style=for-the-badge)](https://opensource.org/license/bsd-3-clause/)
-[![GitHub Sürümü](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Sürüm)](https://github.com/KerimDemirkaynak/assdraw/releases)
-[![Web Sitesi](https://img.shields.io/badge/Website-kerimdemirkaynak.github.io/assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
+**ASS (Advanced SubStation Alpha) altyazıları için vektör şekil tasarım aracı.**
 
-**ASSDraw3**, ASS (Advanced SubStation Alpha) altyazı dosyalarında kullanılmak üzere vektör şekiller tasarlamaya yarayan bir araçtır.
+[![Lisans](https://img.shields.io/badge/Lisans-BSD_3--Clause-97CA01?style=for-the-badge)](LICENSE)
+[![Sürüm](https://img.shields.io/github/v/release/KerimDemirkaynak/assdraw?style=for-the-badge&color=8DDFCB&label=Sürüm)](https://github.com/KerimDemirkaynak/assdraw/releases)
+[![Web Sitesi](https://img.shields.io/badge/Web_Sitesi-assdraw-00215E?style=for-the-badge)](https://kerimdemirkaynak.github.io/assdraw/)
 
-[**English**](README.md) | [**Türkçe**](README.tr.md)
+[**English**](README.md) · [**Türkçe**](README.tr.md)
+
+</div>
 
 ---
 
-## Dil desteği ve 3.1 sürümü
+## Özellikler
 
-Dil menüsünde English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt
-bulunur. Dil değişimi anında uygulanır; menü başlığı, araç çubukları, ipuçları,
-ayarlar, geri alma açıklamaları ve dönüşüm şablonları da yenilenir. Çizim, arka
-plan, görünüm ve henüz uygulanmamış komut metni korunur. Dil tercihi bir sonraki
-açılış için kaydedilir. İngilizce kaynak metinleri kullandığı için `po/en.po` yoktur.
+- **Şekil bazlı renklendirme** – dolu bir alt şekle çift tıklayarak rengini belirleyin. İç boşluklar dış kontura bağlı kalır; renkler geri alma, kitaplığa kaydetme ve ayar değişikliklerinde korunur.
+- **ASS kopyala** – komut alanını dolgu, kenarlık ve alfa etiketleriyle, standart ASS BGR biçiminde tek satır olarak kopyalar.
+- **Güvenilir düzenleme** – geri alma/yineleme, arka plan görselini ve kaydırma/yakınlaştırma durumunu değiştirmez; çok satırlı yapıştırmalarda komutlar birbirine karışmaz.
+- **Yüksek DPI uyumu** – noktalar ve tutamaçlar uzaklaştırıldığında kullanılabilir kalır, ekran DPI değerine göre ölçeklenir.
+- **Ayarlanabilir arka plan** – varsayılan opaklık 0–255 aralığında belirlenebilir.
+- **Dönüşümler** – ölçekleme/döndürme ve bilineer dönüşüm; wxGTK çizim düzeltmeleri.
+- **Yerleşik yardım** – resimli kılavuzun tamamı (çevrimdışı HTML ve orijinal CHM) her platformda açılır.
 
-`po/` altında altı tam UTF-8 çeviri dosyası, `assdraw.pot` içinde İngilizce kaynak
-şablonu bulunur. Derleme, Python 3'ün standart kütüphanesiyle MO dosyalarını
-oluşturup uygulamayla paketler. İşletim sistemine ek yerel ayar kurulması veya
-sayı biçiminin değiştirilmesi gerekmez. Hakkında penceresinde orijinal katkılar
-ve “Bu sürüm Kerim Demirkaynak tarafından oluşturuldu.” bilgisi yer alır.
-Uygulama, Windows dosya bilgisi ve kurulum sürümü 3.1 olarak güncellenmiştir.
+## Diller
 
-Orijinal `ASSDraw3.chm`, 22 konu ve 14 görsel içeren tam HTML sürümü ve 3.1
-hızlı kılavuzu pakete dahildir. Kılavuz menüsü her platformda çevrimdışı HTML
-sürümünü açar; böylece Windows'un indirilen CHM dosyalarını engellemesinden
-kaynaklanan boş sayfa oluşmaz. Kılavuz, çalışma klasöründen bağımsız olarak
-uygulamanın bulunduğu yerde aranır.
-Windows kurulumu uygulamayı, DLL'leri, dilleri ve kılavuzları `bin` klasöründe
-tutar; taşınabilir paketler kendi klasörlerinden çalışır.
+English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt. Dil, **Dil** menüsünden çizim kaybolmadan anında değiştirilebilir ve bir sonraki açılış için kaydedilir.
 
-Çevirileri denetlemek için `python i18n_setup.py --check` kullanın. GNU gettext
-kuruluysa `--update` kaynak metinleri çıkarıp mevcut çevirilerle birleştirir;
-C++ kaynaklarını, menüleri, CMake veya kurulum dosyalarını yeniden yazmaz.
-CI, pakette dil dosyaları ve kılavuzların bulunduğunu da doğrular.
+## İndirme
 
-## Çizim araçları
+En güncel sürümü [Releases](https://github.com/KerimDemirkaynak/assdraw/releases) sayfasından indirebilirsiniz.
 
-- **Coloring (Renklendirme)**: Dolu bir alt şekli seçip çift tıklayarak rengini
-  belirleyebilirsiniz. İç boşluklar dış kontura bağlı kalır. Renkler, genel
-  ayarlar uygulanırken, kitaplığa kaydederken ve geri alırken korunur.
-- **Copy ASS (ASS kopyala)**: Komut alanını dolgu, kenarlık ve alfa etiketleriyle
-  tek satır olarak kopyalar. Renkler standart ASS BGR biçiminde yazılır.
-  Enter komutları uygular; çok satırlı yapıştırmada komutlar birbirine karışmaz.
-- Farklı renkteki çizim parçaları dışa aktarılıp tekrar içe alındığında
-  ortak çizim alanındaki konumları korunur.
-- Çizimi geri almak veya yinelemek, arka plan görselini ve görünümün kaydırma/
-  yakınlaştırma durumunu değiştirmez.
-- Noktalar ve tutamaçlar uzaklaştırıldığında kullanılabilir boyutta kalır;
-  ekranın DPI değerine uyum sağlar. Arka plan için varsayılan opaklık
-  ayarlanabilir (0–255).
-- Ölçekleme/döndürme, bilineer dönüşüm, kaydırma düğmeleri ve Linux çizim
-  yenilemesi için düzeltmeler eklendi. Kaynaklar: [NOTICE.md](NOTICE.md).
+| Platform | Paket |
+| --- | --- |
+| Windows x64 | `ASSDraw3-Windows-x64-Setup.exe` (kurulum) veya `ASSDraw3-Windows-x64-Portable.zip` (taşınabilir) |
+| Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04; wxWidgets 3.2 GTK çalışma zamanı gerekir) |
 
-## Linux ve testler
+## Derleme
 
-CMake 3.25+, C++17 derleyicisi ve Git gereklidir. Ubuntu üzerinde
-`libwxgtk3.2-dev ninja-build xvfb` paketlerini kurduktan sonra:
+### Windows (CMake + vcpkg)
+
+Gereksinimler: Visual Studio 2022 veya üzeri (MSVC), [vcpkg](https://github.com/microsoft/vcpkg) ve Git.
+
+```powershell
+git submodule update --init --recursive vendor/agg
+$env:VCPKG_ROOT = 'F:\vcpkg'
+.\build\build-win-vcpkg.ps1 -Fresh
+```
+
+Alternatif olarak `release-x64`, `debug-x64` veya `debug-x86` preset'lerini kullanabilirsiniz:
+
+```powershell
+cmake --preset release-x64
+cmake --build --preset release-x64 --config Release
+```
+
+### Linux
+
+Gereksinimler: CMake 3.25+, C++17 derleyicisi, Git, Ninja ve wxWidgets geliştirme paketleri (Ubuntu: `libwxgtk3.2-dev ninja-build xvfb`).
 
 ```sh
 cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -67,97 +68,39 @@ cmake --build build-linux
 ctest --test-dir build-linux --output-on-failure
 ```
 
-Arayüz testleri, varsa Xvfb üzerinden çalışır. Yalnızca temel renk/geçmiş
-testleri için `-DASSDRAW_BUILD_APP=OFF` kullanabilirsiniz; wxWidgets ve AGG
-gerekmez. Yerel AGG kopyası yoksa sabitlenmiş sürüm otomatik indirilir.
-Çevrimdışı derleme için `ASSDRAW_AGG_ROOT` ile mevcut `agg-src` klasörünü
-belirtebilirsiniz.
-
-## Otomatik Derlemeler (CI/CD)
-
-Bu depo, otomatik derleme ve paketleme işlemleri için **GitHub Actions** kullanmaktadır.
-
-* **Tetikleyiciler**: Derlemeler, `master` veya `main` dallarına açılan pull request (çekme isteği) işlemlerinde çalışır. Ayrıca Actions sekmesinden manuel olarak tetikleyebilirsiniz.
-* **Süreç**: İş akışı repoyu klonlar (AGG alt modülü için otomatik bir yedekleme adımı içerir), `vcpkg` önbelleklerini geri yükler, PowerShell derleme betiğini kullanarak uygulamayı derler ve Inno Setup ile çalıştırılabilir bir kurulum dosyası (installer) oluşturur.
-* **Çıktılar (Artifacts)**: `ASSDraw3-Windows-x64-Setup.exe`, Inno Setup kurulum dosyasıdır. `ASSDraw3-Windows-x64-Portable.zip`, uygulamayı, DLL'leri, dilleri ve kılavuzları içerir. `ASSDraw3-Linux-x64.tar.gz`, Linux çalıştırma iznini korur. Dosyalar ek bir GitHub ZIP arşivi olmadan doğrudan yüklenir. Elle başlatılan derlemelerde Windows için `both` (ikisi, varsayılan), `inno-setup` (kurulum) ve `portable` (taşınabilir) seçenekleri bulunur. CI, kurulum dosyasını geçici bir klasöre sessizce kurup içeriğini de denetler. Paketleri Actions çalışma sayfasından indirebilirsiniz. Linux uygulaması Ubuntu 24.04 x64 içindir ve wxWidgets 3.2 GTK çalışma zamanı gerektirir.
-
----
-
-## ASSDraw3'ü Derleme
-
-ASSDraw3 artık Windows üzerinde **CMake + vcpkg** sistemiyle derlenmektedir. Eski `autotools`, Visual C++ 2008 `.vcproj` ve Dev-C++ makefile yapıları terk edilmiştir.
+Arayüz testleri varsa Xvfb üzerinde çalışır. Yalnızca çekirdek testler için `-DASSDRAW_BUILD_APP=OFF` kullanın (wxWidgets ve AGG gerekmez). Çevrimdışı derlemede `ASSDRAW_AGG_ROOT` ile mevcut `agg-src` klasörünü belirtin.
 
 ### Bağımlılıklar
-- `wxWidgets` kütüphanesi 2.8.x sürümünden **3.3.1** sürümüne (vcpkg üzerinden) yükseltildi.
-- `wxWidgets` dinamik olarak (DLL) derlenip bağlanırken, diğer üçüncü taraf kütüphaneler statik olarak kalmaktadır.
-- `AGG` kütüphanesi eski 2.5 sürümünden **2.6** sabitlenmiş sürümüne yükseltilmiş ve `vendor/agg` git submodule’ü olarak eklenmiştir.
 
-vcpkg manifest dosyası, Aegisub wangqr fork’unun kullandığı baseline ile aynı tutulmuştur.
+- wxWidgets 3.3.1 (vcpkg üzerinden, dinamik bağlama)
+- AGG 2.6, `vendor/agg` submodule'ü olarak sabitlenmiştir ([ghaerr/agg-2.6](https://github.com/ghaerr/agg-2.6), commit `c4f36b4`)
 
-### Gereksinimler
-- Visual Studio 2022 veya daha yeni MSVC derleme araçları
-- `vcpkg` klonu (önerilen konum: `F:\vcpkg`)
-  - Alternatif olarak `VCPKG_ROOT` ortam değişkenini kendi vcpkg klasörünüze göre ayarlayabilirsiniz.
-- Git submodule’lerin güncellenmesi
+## Çeviri
 
-```powershell
-git submodule update --init --recursive vendor/agg
+Çeviriler `po/` altındaki UTF-8 gettext dosyalarıdır ve `assdraw.pot` şablonuna dayanır. MO dosyaları derleme sırasında Python 3 (yalnızca standart kütüphane) ile otomatik oluşturulur.
+
+```sh
+python i18n_setup.py --check    # çevirileri ve yer tutucuları doğrula
+python i18n_setup.py --update   # metinleri çıkar ve birleştir (GNU gettext gerekir)
 ```
 
-### Derleme
+## Sürekli Entegrasyon
 
-#### 1. PowerShell Betiği (Önerilen)
-
-```powershell
-$env:VCPKG_ROOT = 'F:\vcpkg'
-.\build\build-win-vcpkg.ps1 -Fresh
-```
-
-**Kullanışlı komutlar:**
-
-```powershell
-# Debug x64
-.\build\build-win-vcpkg.ps1 -Triplet x64-windows -Configuration Debug -BuildDir build-debug-x64 -Fresh
-
-# Debug x86
-.\build\build-win-vcpkg.ps1 -Triplet x86-windows -Configuration Debug -Fresh
-```
-
-#### 2. CMake Presets ile Derleme
-
-```powershell
-$env:VCPKG_ROOT = 'F:\vcpkg'
-
-cmake --preset release-x64
-cmake --build --preset release-x64 --config Release
-```
-
-**Kullanılabilir preset’ler:**
-- `release-x64` (önerilen)
-- `debug-x64`
-- `debug-x86`
-
-### AGG Submodule
-
-CMake yalnızca `vendor/agg` submodule’ündeki sabitlenmiş sürümü kullanır:
-
-- Depo: https://github.com/ghaerr/agg-2.6.git
-- Commit: `c4f36b4432142f22c0bf82c6fbdb41567a236be2`
-
-Sadece `CMakeLists.txt` dosyasında belirtilen kaynak dosyalar derlenmektedir.
-
----
+GitHub Actions; `master`/`main` dallarına açılan pull request'lerde veya elle başlatıldığında Windows kurulum dosyasını, taşınabilir paketi ve Linux arşivini derler. Dil dosyaları ve kılavuzlar her çalıştırmada doğrulanır.
 
 ## Katkıda Bulunanlar
 
-Bu projenin hayata geçmesine yardımcı olan katkıda bulunanlara özel teşekkürler:
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/tgoyne"><img src="https://avatars.githubusercontent.com/u/408944?v=4" width="80" alt="Thomas Goyne"><br><sub><b>Thomas Goyne</b></sub></a></td>
+    <td align="center"><a href="https://github.com/MIRIMIRIM"><img src="https://avatars.githubusercontent.com/u/59959583?v=4" width="80" alt="MIRIMIRIM"><br><sub><b>MIRIMIRIM</b></sub></a></td>
+    <td align="center"><a href="https://github.com/biki-desu"><img src="https://avatars.githubusercontent.com/u/6241180?v=4" width="80" alt="biki-desu"><br><sub><b>biki-desu</b></sub></a></td>
+    <td align="center"><a href="https://github.com/amanosatosi"><img src="https://github.com/amanosatosi.png?size=160" width="80" alt="amanosatosi"><br><sub><b>amanosatosi</b></sub></a></td>
+  </tr>
+</table>
 
-| [<img src="https://avatars.githubusercontent.com/u/408944?v=4" width="80" style="border-radius:50%;"/><br><sub><b>Thomas Goyne</b></sub>](https://github.com/tgoyne) | [<img src="https://avatars.githubusercontent.com/u/59959583?v=4" width="80" style="border-radius:50%;"/><br><sub><b>MIRIMIRIM</b></sub>](https://github.com/MIRIMIRIM) | [<img src="https://avatars.githubusercontent.com/u/6241180?v=4" width="80" style="border-radius:50%;"/><br><sub><b>biki-desu</b></sub>](https://github.com/biki-desu) | [<img src="https://github.com/amanosatosi.png?size=160" width="80" style="border-radius:50%;"/><br><sub><b>amanosatosi</b></sub>](https://github.com/amanosatosi) |
-| :---: | :---: | :---: | :---: |
-
----
+Diğer fork'lardan alınan düzeltmelerin kaynakları için [NOTICE.md](NOTICE.md) dosyasına bakın.
 
 ## Lisans
 
-Uygulama kaynakları **3 maddeli BSD lisansı** ile lisanslanmıştır. Standart wxWidgets çevirilerinin kendi lisansları `vendor/wxlocale` altında korunur.
-Daha fazla bilgi için [LICENSE](LICENSE) dosyasına bakınız.
+[BSD 3 Maddeli Lisans](LICENSE) ile lisanslanmıştır. Standart wxWidgets çeviri dosyaları kendi lisanslarıyla `vendor/wxlocale` altında korunur.
