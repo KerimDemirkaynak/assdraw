@@ -261,7 +261,7 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 
 void ASSDrawFrame::SetToolBars()
 {
-    drawtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
+    drawtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL | wxTB_NOALIGN);
 	drawtbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
 	drawtbar->AddTool(TB_CLEAR, _("Clear"), ASSDRAW_ICON(Clear), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_CLEAR));
     drawtbar->AddCheckTool(TB_PREVIEW, _("Preview"), ASSDRAW_ICON(Preview), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_PREVIEW));
@@ -281,7 +281,7 @@ void ASSDrawFrame::SetToolBars()
     m_mgr.AddPane(drawtbar, wxAuiPaneInfo().Name(_T("drawtbar")).Caption(wxGetTranslation(TBNAME_DRAW)).
                   ToolbarPane().Top().Position(0).Dockable(true).LeftDockable(false).RightDockable(false));
 
-    modetbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
+    modetbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL | wxTB_NOALIGN);
 	modetbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
     modetbar->AddRadioTool(MODE_ARR, _("Drag"), ASSDRAW_ICON(Drag), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_ARR));
     modetbar->AddRadioTool(MODE_M, _("Move"), ASSDRAW_ICON(Move), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_M));
@@ -297,7 +297,7 @@ void ASSDrawFrame::SetToolBars()
     m_mgr.AddPane(modetbar, wxAuiPaneInfo().Name(_T("modetbar")).Caption(wxGetTranslation(TBNAME_MODE)).
                   ToolbarPane().Top().Position(1).Dockable(true).LeftDockable(false).RightDockable(false));
 
-    bgimgtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
+    bgimgtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL | wxTB_NOALIGN);
 	bgimgtbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
     bgimgtbar->AddCheckTool(DRAG_DWG, _("Pan drawing"), ASSDRAW_ICON(PanDrawing), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DWG));
     bgimgtbar->AddCheckTool(DRAG_BGIMG, _("Pan background"), ASSDRAW_ICON(PanBackground), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_BGIMG));

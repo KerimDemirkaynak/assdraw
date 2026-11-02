@@ -107,7 +107,7 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 	//sizer = NULL;
 	layout = VERTICAL;
 
-	toolbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_HORIZONTAL | wxNO_BORDER | wxTB_FLAT | wxTB_NODIVIDER);
+	toolbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_HORIZONTAL | wxNO_BORDER | wxTB_FLAT | wxTB_NODIVIDER | wxTB_NOALIGN);
 	toolbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
 	toolbar->SetMargins(0, FromDIP(3));
 	toolbar->AddTool(TOOL_SAVE, _("Save canvas"), ASSDRAW_ICON(Save));

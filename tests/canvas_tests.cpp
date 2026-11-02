@@ -13,6 +13,7 @@
 #include <wx/utils.h>
 #include <wx/settings.h>
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <clocale>
@@ -103,6 +104,22 @@ static void CheckVectorIcons()
                 image.SaveFile(wxString::Format("theme-icon-%d-%d.png", icon, size), wxBITMAP_TYPE_PNG);
             }
             assert(ink > 5);
+        }
+    }
+}
+
+static void CheckToolbarPositions(ASSDrawFrame* frame)
+{
+    const std::array<wxToolBar*, 3> bars = {frame->drawtbar, frame->modetbar, frame->bgimgtbar};
+    for (size_t i = 0; i < bars.size(); ++i) {
+        if (!bars[i]->IsShownOnScreen()) continue;
+        const wxRect first = bars[i]->GetScreenRect();
+        for (size_t j = i + 1; j < bars.size(); ++j) {
+            if (!bars[j]->IsShownOnScreen()) continue;
+            const wxRect second = bars[j]->GetScreenRect();
+            if (first.Intersects(second))
+                std::cerr << "Overlapping toolbars " << i << " and " << j << std::endl;
+            assert(!first.Intersects(second));
         }
     }
 }
@@ -375,6 +392,7 @@ int main(int argc, char** argv)
     for (int repeat = 0; repeat < 3; ++repeat) {
         assert(frame->ApplyTheme("dark"));
         settle_theme(true);
+        CheckToolbarPositions(frame);
         assert(frame->themeMenu->IsChecked(6102));
         assert(AssdrawTheme::ReadPreference() == "dark");
         assert(frame->colors.canvas_bg.Red() < 100);
@@ -408,6 +426,7 @@ int main(int argc, char** argv)
         CheckVectorIcons();
         assert(frame->ApplyTheme("light"));
         settle_theme(false);
+        CheckToolbarPositions(frame);
         CheckVectorIcons();
         assert(frame->themeMenu->IsChecked(6101));
         assert(frame->colors.canvas_bg == light_canvas);
