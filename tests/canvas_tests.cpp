@@ -43,6 +43,8 @@ static wxImage CaptureWindow(wxWindow* window)
 static void CheckReferencePixels(ASSDrawCanvas* canvas, const wxImage& source,
     const wxColour& background, int opacity, int dx = 0, int dy = 0, double scale = 1.0)
 {
+    static unsigned check_number = 0;
+    ++check_number;
     const std::array<wxPoint, 4> samples = {wxPoint(20, 20), wxPoint(100, 20),
         wxPoint(20, 60), wxPoint(100, 60)};
     wxImage actual;
@@ -74,7 +76,30 @@ static void CheckReferencePixels(ASSDrawCanvas* canvas, const wxImage& source,
         if (matches) break;
         wxMilliSleep(10);
     } while (elapsed.Time() < 2000);
-    if (!matches) actual.SaveFile("reference-image-failure.png", wxBITMAP_TYPE_PNG);
+    if (!matches) {
+        unsigned width = 0, height = 0;
+        wxRealPoint displacement;
+        double image_scale = 0;
+        const bool has_image = canvas->GetBackgroundInfo(width, height, displacement, image_scale);
+        std::cerr << "Reference pixels failed at check " << check_number
+            << ", opacity=" << opacity << ", canvas=" << canvas->GetClientSize().x
+            << "x" << canvas->GetClientSize().y << ", dpi=" << canvas->GetDPIScaleFactor()
+            << ", image=" << has_image << " " << width << "x" << height
+            << ", position=" << displacement.x << "," << displacement.y
+            << ", scale=" << image_scale << ", background="
+            << background.GetAsString(wxC2S_CSS_SYNTAX).ToStdString() << '\n';
+        for (const auto& point : samples) {
+            const int x = dx + int(point.x * scale), y = dy + int(point.y * scale);
+            std::cerr << "  pixel " << x << "," << y << ": actual="
+                << int(actual.GetRed(x, y)) << "," << int(actual.GetGreen(x, y))
+                << "," << int(actual.GetBlue(x, y)) << "; source="
+                << int(source.GetRed(point.x, point.y)) << ","
+                << int(source.GetGreen(point.x, point.y)) << ","
+                << int(source.GetBlue(point.x, point.y)) << "; alpha="
+                << (source.HasAlpha() ? int(source.GetAlpha(point.x, point.y)) : 255) << '\n';
+        }
+        actual.SaveFile("reference-image-failure.png", wxBITMAP_TYPE_PNG);
+    }
     assert(matches);
 }
 
