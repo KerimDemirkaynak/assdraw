@@ -32,7 +32,8 @@ English, Türkçe, Français, Deutsch, Español, 繁體中文, and Tiếng Việ
 
 ## Download
 
-Get the latest build from the [Releases](https://github.com/KerimDemirkaynak/assdraw/releases) page.
+- **Stable** – tested releases are published on the [Releases](https://github.com/KerimDemirkaynak/assdraw/releases) page.
+- **Latest (development)** – the newest builds are available from the [Actions](https://github.com/KerimDemirkaynak/assdraw/actions) page. Open a successful workflow run and download the packages from its artifacts. These builds may be unstable.
 
 | Platform | Package |
 | --- | --- |
