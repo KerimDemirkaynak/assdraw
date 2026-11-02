@@ -449,6 +449,10 @@ void ASSDrawFrame::OnChooseLanguage(wxCommandEvent& event)
 
 bool ASSDrawFrame::ApplyLanguage(const wxString& code)
 {
+	// Parse an active colour-name editor using its old language before
+	// replacing the catalogs. Unapplied settings remain in the property grid.
+	if (!settingsdlg->propgrid->CommitChangesFromEditor())
+		return false;
 	if (!AssdrawI18n::SetLanguage(code)) {
 		wxMessageBox(_("The selected language could not be loaded. Please reinstall ASSDraw3."),
 			_("Language"), wxOK | wxICON_ERROR, this);

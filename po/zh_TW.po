@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 07:36+0300\n"
+"POT-Creation-Date: 2026-11-02 13:47+0300\n"
 "PO-Revision-Date: 2026-11-02 00:00+0300\n"
 "Last-Translator: ASSDraw contributors\n"
 "Language-Team: zh_TW\n"
@@ -153,7 +153,7 @@ msgstr "新增 L 指令"
 msgid "Add a new M"
 msgstr "新增 M 指令"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:80
 msgid "Add to custom colours"
 msgstr "新增至自訂色彩"
 
@@ -164,6 +164,10 @@ msgstr "外觀"
 #: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
 msgstr "套用"
+
+#: src/colour.cpp:23
+msgid "Aqua"
+msgstr "水藍色"
 
 #: src/settings.cpp:102 src/settings.cpp:275
 msgid "Ask for image opacity"
@@ -177,7 +181,7 @@ msgstr "背景"
 msgid "Background image opacity"
 msgstr "背景影像不透明度"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:74
 msgid "Basic colours"
 msgstr "基本色彩"
 
@@ -201,6 +205,14 @@ msgstr "雙線性變換"
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "雙線性變換模式：拖曳頂點以扭曲圖形；拖曳邊線會同時移動兩個相鄰頂點"
 
+#: src/colour.cpp:18
+msgid "Black"
+msgstr "黑色"
+
+#: src/colour.cpp:21 src/colour.cpp:83
+msgid "Blue"
+msgstr "藍色"
+
 #: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr "左下\tCtrl+1"
@@ -217,7 +229,11 @@ msgstr "右下\tCtrl+3"
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "右下\tCtrl+Shift+3"
 
-#: src/assdraw.cpp:957
+#: src/colour.cpp:20
+msgid "Brown"
+msgstr "梡色"
+
+#: src/assdraw.cpp:957 src/colour.cpp:77
 msgid "Cancel"
 msgstr "取消"
 
@@ -272,6 +288,10 @@ msgstr "關閉"
 #: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
 msgstr "著色"
+
+#: src/colour.cpp:66 src/colour.cpp:87
+msgid "Colour"
+msgstr "顏色"
 
 #: src/library.cpp:261
 msgid "Confirm delete?"
@@ -337,7 +357,7 @@ msgstr "無法儲存語言偏好設定。"
 msgid "Could not save the theme preference."
 msgstr "無法儲存佈景主題偏好設定。"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:17 src/colour.cpp:107
 msgid "Custom"
 msgstr "自訂"
 
@@ -345,7 +365,7 @@ msgstr "自訂"
 msgid "Custom colour"
 msgstr "自訂顏色"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:75
 msgid "Custom colours"
 msgstr "自訂色彩"
 
@@ -360,6 +380,10 @@ msgstr "深色"
 #: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
 msgstr "預設影像不透明度（0-255）"
+
+#: src/colour.cpp:79
+msgid "Define custom colours"
+msgstr "定義自訂顏色"
 
 #: src/assdraw.cpp:295
 msgid "Delete"
@@ -505,9 +529,25 @@ msgstr "以 X = 4 水平翻轉"
 msgid "Flip vertically at Y = 3"
 msgstr "以 Y = 3 垂直翻轉"
 
+#: src/colour.cpp:21
+msgid "Fuchsia"
+msgstr "紫紅色"
+
+#: src/colour.cpp:19
+msgid "Gray"
+msgstr "灰色"
+
+#: src/colour.cpp:20 src/colour.cpp:82
+msgid "Green"
+msgstr "綠色"
+
 #: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
 msgstr "水平尺規"
+
+#: src/colour.cpp:78
+msgid "Help"
+msgstr "說明"
 
 #: src/include_once.hpp:44
 msgid "Help! Help!"
@@ -516,6 +556,10 @@ msgstr "說明！"
 #: src/assdraw.cpp:369
 msgid "Hide all"
 msgstr "全部隱藏"
+
+#: src/colour.cpp:84
+msgid "Hue:"
+msgstr "色相："
 
 #: src/localization.cpp:164
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
@@ -537,6 +581,10 @@ msgstr "圖庫圖形"
 msgid "Light"
 msgstr "淺色"
 
+#: src/colour.cpp:22
+msgid "Lime"
+msgstr "青檸色"
+
 #: src/assdraw.cpp:290
 msgid "Line"
 msgstr "直線"
@@ -554,9 +602,17 @@ msgstr "載入至畫布"
 msgid "Loading '%s' as canvas background ..."
 msgstr "正在將「%s」載入為畫布背景…"
 
+#: src/colour.cpp:86
+msgid "Lum:"
+msgstr "亮度："
+
 #: src/assdraw.cpp:734
 msgid "Manual"
 msgstr "使用手冊"
+
+#: src/colour.cpp:18
+msgid "Maroon"
+msgstr "栗子色"
 
 #: src/localization.cpp:166
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
@@ -618,6 +674,10 @@ msgstr "將 [0,0] 移至此處"
 msgid "Move origin"
 msgstr "移動原點"
 
+#: src/colour.cpp:18
+msgid "Navy"
+msgstr "海軍藍"
+
 #: src/localization.cpp:16
 msgid "No"
 msgstr "否"
@@ -626,9 +686,13 @@ msgstr "否"
 msgid "No splash screen"
 msgstr "不顯示啟動畫面"
 
-#: src/dlgctrl.cpp:275
+#: src/dlgctrl.cpp:275 src/colour.cpp:76
 msgid "OK"
 msgstr "確定"
+
+#: src/colour.cpp:20
+msgid "Olive"
+msgstr "橄欖色"
 
 #: src/dlgctrl.cpp:254
 msgid ""
@@ -637,6 +701,10 @@ msgid ""
 msgstr ""
 "輸入的值有一個或多個不是實數。\n"
 "請修正。"
+
+#: src/colour.cpp:22
+msgid "Orange"
+msgstr "橙色"
 
 #: src/settings.cpp:95 src/settings.cpp:270
 msgid "Origin"
@@ -694,6 +762,14 @@ msgstr "預覽"
 msgid "Preview @"
 msgstr "預覽不透明度"
 
+#: src/colour.cpp:19
+msgid "Purple"
+msgstr "紫色"
+
+#: src/colour.cpp:21 src/colour.cpp:81
+msgid "Red"
+msgstr "紅色"
+
 #: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr "重做\tCtrl+Y"
@@ -750,6 +826,10 @@ msgstr "以 (1, 2) 為中心順時針旋轉 90°"
 #: src/include_once.hpp:73
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "以 (-1, 2) 為中心逆時針旋轉 90°"
+
+#: src/colour.cpp:85
+msgid "Sat:"
+msgstr "飽和："
 
 #: src/library.cpp:113 src/library.cpp:366
 msgid "Save canvas"
@@ -831,13 +911,25 @@ msgstr "圖形庫"
 msgid "Show all"
 msgstr "全部顯示"
 
+#: src/colour.cpp:22
+msgid "Silver"
+msgstr "銀色"
+
 #: src/canvas.cpp:1423
 msgid "Smooth connection"
 msgstr "平滑連接"
 
+#: src/colour.cpp:88
+msgid "Solid"
+msgstr "純色"
+
 #: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
 msgstr "系統預設"
+
+#: src/colour.cpp:19
+msgid "Teal"
+msgstr "鴨綠色"
 
 #: src/dlgctrl.cpp:115
 msgid "Templates"
@@ -936,6 +1028,14 @@ msgstr "數值錯誤"
 #, c-format
 msgid "Version: %s"
 msgstr "版本：%s"
+
+#: src/colour.cpp:23
+msgid "White"
+msgstr "白色"
+
+#: src/colour.cpp:23
+msgid "Yellow"
+msgstr "黃色"
 
 #: src/localization.cpp:16
 msgid "Yes"

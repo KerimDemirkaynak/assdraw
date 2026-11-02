@@ -49,6 +49,7 @@
 #include <wx/colordlg.h>
 #include <wx/image.h>
 #include <wx/filename.h>
+#include "colour.hpp"
 
 namespace {
 constexpr double kEditorPointMinimumDiameter = 8.0;
@@ -774,7 +775,7 @@ void ASSDrawCanvas::ShowColorSelector()
 	color_data.SetChooseFull(true);
 	color_data.SetColour(wxColour(selected_style.fill_color.red, selected_style.fill_color.green,
 		selected_style.fill_color.blue));
-	wxColourDialog dialog(m_frame, &color_data);
+	AssdrawColourDialog dialog(m_frame, &color_data);
 	dialog.SetTitle(_("Choose fill color"));
 	if (dialog.ShowModal() != wxID_OK)
 		return;

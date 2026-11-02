@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 07:36+0300\n"
+"POT-Creation-Date: 2026-11-02 13:47+0300\n"
 "PO-Revision-Date: 2026-11-02 00:00+0300\n"
 "Last-Translator: ASSDraw contributors\n"
 "Language-Team: vi\n"
@@ -153,7 +153,7 @@ msgstr "Thêm lệnh L mới"
 msgid "Add a new M"
 msgstr "Thêm lệnh M mới"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:80
 msgid "Add to custom colours"
 msgstr "Thêm vào màu tùy chỉnh"
 
@@ -164,6 +164,10 @@ msgstr "Giao diện"
 #: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
 msgstr "Áp dụng"
+
+#: src/colour.cpp:23
+msgid "Aqua"
+msgstr "Xanh ngọc"
 
 #: src/settings.cpp:102 src/settings.cpp:275
 msgid "Ask for image opacity"
@@ -177,7 +181,7 @@ msgstr "Nền"
 msgid "Background image opacity"
 msgstr "Độ đục của ảnh nền"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:74
 msgid "Basic colours"
 msgstr "Màu cơ bản"
 
@@ -201,6 +205,14 @@ msgstr "Biến đổi song tuyến tính"
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "Chế độ song tuyến tính: kéo các đỉnh để làm biến dạng hình; kéo một cạnh sẽ di chuyển hai đỉnh kề nhau"
 
+#: src/colour.cpp:18
+msgid "Black"
+msgstr "Đen"
+
+#: src/colour.cpp:21 src/colour.cpp:83
+msgid "Blue"
+msgstr "Xanh lam"
+
 #: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr "Dưới bên trái\tCtrl+1"
@@ -217,7 +229,11 @@ msgstr "Dưới bên phải\tCtrl+3"
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "Dưới bên phải\tCtrl+Shift+3"
 
-#: src/assdraw.cpp:957
+#: src/colour.cpp:20
+msgid "Brown"
+msgstr "Nâu"
+
+#: src/assdraw.cpp:957 src/colour.cpp:77
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -272,6 +288,10 @@ msgstr "Đóng"
 #: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
 msgstr "Tô màu"
+
+#: src/colour.cpp:66 src/colour.cpp:87
+msgid "Colour"
+msgstr "Màu sắc"
 
 #: src/library.cpp:261
 msgid "Confirm delete?"
@@ -337,7 +357,7 @@ msgstr "Không thể lưu tùy chọn ngôn ngữ."
 msgid "Could not save the theme preference."
 msgstr "Không thể lưu tùy chọn giao diện."
 
-#: src/localization.cpp:17
+#: src/localization.cpp:17 src/colour.cpp:107
 msgid "Custom"
 msgstr "Tùy chỉnh"
 
@@ -345,7 +365,7 @@ msgstr "Tùy chỉnh"
 msgid "Custom colour"
 msgstr "Màu tùy chỉnh"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:75
 msgid "Custom colours"
 msgstr "Màu tùy chỉnh"
 
@@ -360,6 +380,10 @@ msgstr "Tối"
 #: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
 msgstr "Độ đục ảnh mặc định (0-255)"
+
+#: src/colour.cpp:79
+msgid "Define custom colours"
+msgstr "Xác định màu tùy chỉnh"
 
 #: src/assdraw.cpp:295
 msgid "Delete"
@@ -505,9 +529,25 @@ msgstr "Lật ngang qua X = 4"
 msgid "Flip vertically at Y = 3"
 msgstr "Lật dọc qua Y = 3"
 
+#: src/colour.cpp:21
+msgid "Fuchsia"
+msgstr "Hồng cánh sen"
+
+#: src/colour.cpp:19
+msgid "Gray"
+msgstr "Xám"
+
+#: src/colour.cpp:20 src/colour.cpp:82
+msgid "Green"
+msgstr "Xanh lá"
+
 #: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
 msgstr "Thước ngang"
+
+#: src/colour.cpp:78
+msgid "Help"
+msgstr "Trợ giúp"
 
 #: src/include_once.hpp:44
 msgid "Help! Help!"
@@ -516,6 +556,10 @@ msgstr "Trợ giúp!"
 #: src/assdraw.cpp:369
 msgid "Hide all"
 msgstr "Ẩn tất cả"
+
+#: src/colour.cpp:84
+msgid "Hue:"
+msgstr "Sắc:"
 
 #: src/localization.cpp:164
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
@@ -537,6 +581,10 @@ msgstr "Hình trong thư viện"
 msgid "Light"
 msgstr "Sáng"
 
+#: src/colour.cpp:22
+msgid "Lime"
+msgstr "Xanh chanh"
+
 #: src/assdraw.cpp:290
 msgid "Line"
 msgstr "Đường thẳng"
@@ -554,9 +602,17 @@ msgstr "Tải vào khung vẽ"
 msgid "Loading '%s' as canvas background ..."
 msgstr "Đang tải '%s' làm nền khung vẽ..."
 
+#: src/colour.cpp:86
+msgid "Lum:"
+msgstr "Đ.sáng:"
+
 #: src/assdraw.cpp:734
 msgid "Manual"
 msgstr "Hướng dẫn"
+
+#: src/colour.cpp:18
+msgid "Maroon"
+msgstr "Nâu đỏ"
 
 #: src/localization.cpp:166
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
@@ -618,6 +674,10 @@ msgstr "Chuyển [0,0] tới đây"
 msgid "Move origin"
 msgstr "Di chuyển gốc tọa độ"
 
+#: src/colour.cpp:18
+msgid "Navy"
+msgstr "Xanh hải quân"
+
 #: src/localization.cpp:16
 msgid "No"
 msgstr "Không"
@@ -626,9 +686,13 @@ msgstr "Không"
 msgid "No splash screen"
 msgstr "Không hiện màn hình chào"
 
-#: src/dlgctrl.cpp:275
+#: src/dlgctrl.cpp:275 src/colour.cpp:76
 msgid "OK"
 msgstr "Đồng ý"
+
+#: src/colour.cpp:20
+msgid "Olive"
+msgstr "Xanh ô liu"
 
 #: src/dlgctrl.cpp:254
 msgid ""
@@ -637,6 +701,10 @@ msgid ""
 msgstr ""
 "Một hoặc nhiều giá trị nhập vào không phải số thực.\n"
 "Vui lòng sửa lại."
+
+#: src/colour.cpp:22
+msgid "Orange"
+msgstr "Cam"
 
 #: src/settings.cpp:95 src/settings.cpp:270
 msgid "Origin"
@@ -694,6 +762,14 @@ msgstr "Xem trước"
 msgid "Preview @"
 msgstr "Độ đục khi xem trước"
 
+#: src/colour.cpp:19
+msgid "Purple"
+msgstr "Tím"
+
+#: src/colour.cpp:21 src/colour.cpp:81
+msgid "Red"
+msgstr "Đỏ"
+
 #: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr "Làm lại\tCtrl+Y"
@@ -750,6 +826,10 @@ msgstr "Xoay 90° theo chiều kim đồng hồ quanh (1, 2)"
 #: src/include_once.hpp:73
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "Xoay 90° ngược chiều kim đồng hồ quanh (-1, 2)"
+
+#: src/colour.cpp:85
+msgid "Sat:"
+msgstr "B.hòa:"
 
 #: src/library.cpp:113 src/library.cpp:366
 msgid "Save canvas"
@@ -831,13 +911,25 @@ msgstr "Thư viện hình"
 msgid "Show all"
 msgstr "Hiện tất cả"
 
+#: src/colour.cpp:22
+msgid "Silver"
+msgstr "Bạc"
+
 #: src/canvas.cpp:1423
 msgid "Smooth connection"
 msgstr "Nối mượt"
 
+#: src/colour.cpp:88
+msgid "Solid"
+msgstr "Đặc"
+
 #: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
 msgstr "Mặc định hệ thống"
+
+#: src/colour.cpp:19
+msgid "Teal"
+msgstr "Xanh mòng két"
 
 #: src/dlgctrl.cpp:115
 msgid "Templates"
@@ -936,6 +1028,14 @@ msgstr "Giá trị không hợp lệ"
 #, c-format
 msgid "Version: %s"
 msgstr "Phiên bản: %s"
+
+#: src/colour.cpp:23
+msgid "White"
+msgstr "Trắng"
+
+#: src/colour.cpp:23
+msgid "Yellow"
+msgstr "Vàng"
 
 #: src/localization.cpp:16
 msgid "Yes"

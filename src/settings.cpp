@@ -35,6 +35,7 @@
 
 #include "assdraw.hpp"
 #include "settings.hpp"
+#include "colour.hpp"
 
 wxDEFINE_EVENT(wxEVT_SETTINGS_CHANGED, wxCommandEvent);
 
@@ -65,7 +66,7 @@ void ASSDrawSettingsDialog::Init()
 		//wxSUNKEN_BORDER
 	);
 
-    #define APPENDCOLOURPROP(pgid, label, color) pgid = propgrid->Append(new wxColourProperty(label, wxPG_LABEL, color));
+    #define APPENDCOLOURPROP(pgid, label, color) pgid = propgrid->Append(new AssdrawColourProperty(label, wxPG_LABEL, color));
     #define APPENDUINTPROP(pgid, label, uint) \
 		pgid = propgrid->Append(new wxUIntProperty(label, wxPG_LABEL, uint) ); \
 		propgrid->SetPropertyValidator( pgid, validator );
@@ -248,6 +249,13 @@ void ASSDrawSettingsDialog::RefreshSettingsDisplay()
 
 void ASSDrawSettingsDialog::UpdateTranslations()
 {
+	for (wxPGId property : {colors_canvas_bg_pgid, colors_canvas_shape_normal_pgid,
+		colors_canvas_shape_preview_pgid, colors_canvas_shape_outline_pgid,
+		colors_canvas_shape_guideline_pgid, colors_canvas_shape_mainpoint_pgid,
+		colors_canvas_shape_controlpoint_pgid, colors_canvas_shape_selectpoint_pgid,
+		colors_library_libarea_pgid, colors_library_shape_pgid, colors_origin_pgid,
+		colors_ruler_h_pgid, colors_ruler_v_pgid})
+		static_cast<AssdrawColourProperty*>(property)->UpdateTranslations();
 	appearance_category->SetLabel(_("Appearance"));
 	behavior_category->SetLabel(_("Behaviors"));
 	colors_canvas_bg_pgid->SetLabel(_("Canvas"));

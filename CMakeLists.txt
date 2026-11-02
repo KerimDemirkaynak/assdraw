@@ -163,6 +163,7 @@ set(ASSDRAW_SOURCES
     src/shape_style.cpp
     src/styled_ass.cpp
     src/localization.cpp
+    src/colour.cpp
     src/theme.cpp
     src/frame_theme.cpp
     src/icons.cpp
@@ -188,6 +189,7 @@ set(ASSDRAW_HEADERS
     src/shape_style.hpp
     src/styled_ass.hpp
     src/localization.hpp
+    src/colour.hpp
     src/theme.hpp
     src/icons.hpp
     src/wxAGG/AGGWindow.h

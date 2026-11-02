@@ -1,6 +1,7 @@
 // Integration regressions for the imported drawing tools and existing library.
 #include "assdraw.hpp"
 #include "styled_ass.hpp"
+#include "colour.hpp"
 
 #include <wx/clipbrd.h>
 #include <wx/filename.h>
@@ -27,6 +28,105 @@
 
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
+#include <colordlg.h>
+#endif
+
+static void CheckColourPropertyLabels(ASSDrawSettingsDialog* settings)
+{
+    for (wxPGId property : {settings->colors_canvas_bg_pgid, settings->colors_canvas_shape_normal_pgid,
+        settings->colors_canvas_shape_preview_pgid, settings->colors_canvas_shape_outline_pgid,
+        settings->colors_canvas_shape_guideline_pgid, settings->colors_canvas_shape_mainpoint_pgid,
+        settings->colors_canvas_shape_controlpoint_pgid, settings->colors_canvas_shape_selectpoint_pgid,
+        settings->colors_library_libarea_pgid, settings->colors_library_shape_pgid, settings->colors_origin_pgid,
+        settings->colors_ruler_h_pgid, settings->colors_ruler_v_pgid}) {
+        const wxPGChoices& choices = property->GetChoices();
+        assert(choices.GetCount() == 19);
+        for (const auto& named : {std::pair<int, const char*>(0, "Black"), {9, "Blue"},
+            {11, "Red"}, {17, "White"}, {wxPG_COLOUR_CUSTOM, "Custom"}}) {
+            const int index = choices.Index(named.first);
+            assert(index >= 0 && choices.GetLabel(index) == wxGetTranslation(named.second));
+        }
+    }
+    // Constructor-time labels also use the current language rather than any
+    // palette cache retained from a property created in an earlier language.
+    AssdrawColourProperty fresh("Probe", "probe", wxColour(0, 0, 255));
+    assert(fresh.GetChoices().GetLabel(fresh.GetChoices().Index(9)) == wxGetTranslation("Blue"));
+}
+
+#ifdef __WXMSW__
+static wxString NativeControlText(HWND control)
+{
+    assert(control);
+    wchar_t text[512]{};
+    ::GetWindowTextW(control, text, 512);
+    return wxControl::RemoveMnemonics(wxString(text));
+}
+
+class CheckedColourDialog : public AssdrawColourDialog
+{
+public:
+    CheckedColourDialog(wxWindow* parent, const wxColourData* data, bool accept)
+        : AssdrawColourDialog(parent, data), accept_(accept) {}
+    bool checked = false;
+
+    void MSWOnInitDone(WXHWND handle) override
+    {
+        AssdrawColourDialog::MSWOnInitDone(handle);
+        HWND dialog = static_cast<HWND>(handle);
+        assert(NativeControlText(dialog) == wxGetTranslation("Colour"));
+        const std::pair<int, wxString> labels[] = {
+            {IDOK, wxGetTranslation("OK")}, {IDCANCEL, wxGetTranslation("Cancel")},
+            {COLOR_ADD, wxGetTranslation("Add to custom colours")},
+            {COLOR_MIX, wxGetTranslation("Define custom colours") + " >>"},
+            {COLOR_REDACCEL, wxGetTranslation("Red") + ":"},
+            {COLOR_GREENACCEL, wxGetTranslation("Green") + ":"},
+            {COLOR_BLUEACCEL, wxGetTranslation("Blue") + ":"},
+            {COLOR_HUEACCEL, wxGetTranslation("Hue:")},
+            {COLOR_SATACCEL, wxGetTranslation("Sat:")},
+            {COLOR_LUMACCEL, wxGetTranslation("Lum:")}
+        };
+        for (const auto& label : labels) {
+            const wxString actual = NativeControlText(::GetDlgItem(dialog, label.first));
+            if (actual != label.second)
+                std::cerr << "Native colour label " << label.first << ": " << actual.ToStdString()
+                    << ", expected " << label.second.ToStdString() << '\n';
+            assert(actual == label.second);
+        }
+        for (const auto& palette : {std::pair<int, const char*>(COLOR_BOX1, "Basic colours"),
+                                   {COLOR_CUSTOM1, "Custom colours"}}) {
+            const wxString expected = wxGetTranslation(palette.second) + ":";
+            HWND caption = nullptr;
+            for (HWND child = ::GetWindow(dialog, GW_CHILD); child;
+                 child = ::GetWindow(child, GW_HWNDNEXT))
+                if (NativeControlText(child) == expected) caption = child;
+            if (!caption)
+                std::cerr << "Missing native palette caption: " << expected.ToStdString() << '\n';
+            assert(caption);
+            RECT label_rect{}, palette_rect{};
+            ::GetWindowRect(caption, &label_rect);
+            ::GetWindowRect(::GetDlgItem(dialog, palette.first), &palette_rect);
+            assert(label_rect.bottom <= palette_rect.top);
+        }
+        checked = true;
+        // Exercise the real native modal dialog without manual interaction.
+        ::PostMessageW(dialog, WM_COMMAND, accept_ ? IDOK : IDCANCEL, 0);
+    }
+private:
+    bool accept_;
+};
+
+static void CheckNativeColourDialog(wxWindow* parent, bool accept = false)
+{
+    wxColourData data;
+    data.SetChooseFull(true);
+    data.SetColour(wxColour(17, 83, 149));
+    data.SetCustomColour(3, wxColour(73, 29, 221));
+    CheckedColourDialog dialog(parent, &data, accept);
+    assert(dialog.ShowModal() == (accept ? wxID_OK : wxID_CANCEL));
+    assert(dialog.checked);
+    assert(dialog.GetColourData().GetColour() == data.GetColour());
+    assert(dialog.GetColourData().GetCustomColour(3) == data.GetCustomColour(3));
+}
 #endif
 
 static wxImage CaptureWindow(wxWindow* window)
@@ -690,6 +790,15 @@ int main(int argc, char** argv)
     const wxString document = canvas->GenerateASS();
     const wxString typed_commands = frame->srctxtctrl->GetValue();
     const wxString numeric_locale = wxString::FromUTF8(std::setlocale(LC_NUMERIC, nullptr));
+    auto* colour_grid = frame->settingsdlg->propgrid;
+    auto* pending_blue = frame->settingsdlg->colors_canvas_bg_pgid;
+    auto* pending_custom = frame->settingsdlg->colors_origin_pgid;
+    wxColour custom_colour(31, 89, 147), standard_blue(0, 0, 255);
+    colour_grid->SetPropertyValue(pending_blue, standard_blue);
+    colour_grid->SetPropertyValue(pending_custom, custom_colour);
+    pending_blue->SetModifiedStatus(true);
+    pending_custom->SetModifiedStatus(true);
+    colour_grid->SelectProperty(pending_blue);
     frame->m_mgr.GetPane(frame->bgimgtbar).Float().FloatingPosition(40, 40).FloatingSize(450, 90);
     frame->m_mgr.Update();
     wxTheApp->Yield(true);
@@ -702,6 +811,16 @@ int main(int argc, char** argv)
             assert(frame->ApplyLanguage(wxString::FromUTF8(language.first)));
             wxTheApp->Yield(true);
             assert(frame->GetMenuBar()->GetMenuLabelText(5) == wxString::FromUTF8(language.second));
+            CheckColourPropertyLabels(frame->settingsdlg);
+            assert(pending_blue->GetValueAsString() == wxGetTranslation("Blue"));
+            wxColour selected_custom;
+            selected_custom << pending_custom->GetValue();
+            assert(selected_custom == custom_colour);
+            assert(pending_blue->HasFlag(wxPGFlags::Modified));
+            assert(pending_custom->HasFlag(wxPGFlags::Modified));
+#ifdef __WXMSW__
+            if (repeat == 0) CheckNativeColourDialog(frame);
+#endif
             assert(frame->m_mgr.GetPane(frame->bgimgtbar).IsFloating());
             assert(frame->m_mgr.GetPane(frame->bgimgtbar).frame != nullptr);
             assert(canvas->GenerateASS() == document);
@@ -717,6 +836,7 @@ int main(int argc, char** argv)
     assert(frame->ApplyLanguage("tr"));
     assert(frame->bgimgtbar->FindById(DRAG_BGIMG)->GetLabel() == wxString::FromUTF8(u8"Arka planı kaydır"));
     assert(frame->settingsdlg->colors_canvas_bg_pgid->GetLabel() == "Tuval");
+    assert(pending_blue->GetValueAsString() == wxString::FromUTF8(u8"Mavi"));
     frame->_ResetPerspective();
     assert(frame->m_mgr.GetPane(frame->commandpanel).caption == wxString::FromUTF8(u8"Çizim komutları"));
     assert(AssdrawI18n::AboutHtml().Contains(wxString::FromUTF8(u8"Bu sürüm Kerim Demirkaynak tarafından oluşturuldu.")));
@@ -729,12 +849,25 @@ int main(int argc, char** argv)
     assert(frame->transformdlg->txtctrl_ny->GetValue() == "5.0");
 
     // Exercise the actual deferred menu event and verify Turkish -> English.
+    colour_grid->SelectProperty(pending_blue);
+    auto* colour_editor = wxDynamicCast(colour_grid->GetEditorControl(), wxTextCtrl);
+    assert(colour_editor);
+    colour_editor->SetValue(wxString::FromUTF8(u8"Kırmızı"));
     wxCommandEvent english(wxEVT_MENU, 6001);
     frame->GetEventHandler()->ProcessEvent(english);
     wxTheApp->Yield(true);
     assert(AssdrawI18n::EffectiveLanguage() == "en");
     assert(frame->GetMenuBar()->GetMenuLabelText(5) == "Language");
     assert(frame->bgimgtbar->FindById(DRAG_BGIMG)->GetLabel() == "Pan background");
+    CheckColourPropertyLabels(frame->settingsdlg);
+    assert(pending_blue->GetValueAsString() == "Red");
+    wxColour pending_red;
+    pending_red << pending_blue->GetValue();
+    assert(pending_red == wxColour(255, 0, 0));
+    assert(pending_blue->HasFlag(wxPGFlags::Modified));
+#ifdef __WXMSW__
+    CheckNativeColourDialog(frame, true);
+#endif
     assert(frame->transformdlg == nullptr);
     assert(AssdrawI18n::AboutHtml().Contains("This version was created by Kerim Demirkaynak."));
     assert(!AssdrawI18n::SetLanguage("unsupported-language"));
