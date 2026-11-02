@@ -22,7 +22,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libwxgtk3.2-dev ninja-build xvfb gettext
+        sudo apt-get install -y libgtk-3-dev pkg-config ninja-build xvfb gettext
     - name: Configure
       run: cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
     - name: Build editor and tests
@@ -40,13 +40,6 @@ jobs:
         if-no-files-found: error
     - name: Run regression tests
       run: ctest --test-dir build-linux --output-on-failure
-    - name: Upload Linux GUI failure image
-      if: failure()
-      uses: actions/upload-artifact@v7
-      with:
-        name: GUI-test-diagnostics-Linux
-        path: build-linux/preview-*.png
-        if-no-files-found: ignore
 
   build-windows:
     runs-on: windows-latest
@@ -70,30 +63,9 @@ jobs:
         }
       shell: pwsh
 
-    - name: Cache vcpkg archives
-      id: vcpkg-cache
-      uses: actions/cache/restore@v4
-      with:
-        path: ~\AppData\Local\vcpkg\archives
-        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
-        restore-keys: |
-          ${{ runner.os }}-vcpkg-
-
-    - name: Set VCPKG_ROOT
-      run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
-      shell: pwsh
-
     - name: Build with PowerShell helper
       run: .\build\build-win-vcpkg.ps1 -Fresh
       shell: pwsh
-
-    - name: Save compiled dependencies
-      if: steps.vcpkg-cache.outputs.cache-hit != 'true'
-      continue-on-error: true
-      uses: actions/cache/save@v4
-      with:
-        path: ~\AppData\Local\vcpkg\archives
-        key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
 
     - name: Package Windows build
       run: |
@@ -151,11 +123,3 @@ jobs:
         ctest --test-dir build-dir -C Release --output-on-failure
         if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed.' }
       shell: pwsh
-
-    - name: Upload Windows GUI failure image
-      if: failure()
-      uses: actions/upload-artifact@v7
-      with:
-        name: GUI-test-diagnostics-Windows
-        path: build-dir/preview-*.png
-        if-no-files-found: ignore

@@ -12,36 +12,26 @@
       "generator": "Visual Studio 18 2026",
       "binaryDir": "${sourceDir}/build-${presetName}",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake"
+        "ASSDRAW_BUNDLED_WX": "ON"
       }
     },
     {
       "name": "release-x64",
-      "displayName": "Release x64 (MSVC + vcpkg)",
+      "displayName": "Release x64 (MSVC + wxWidgets 3.3.4)",
       "inherits": "windows-msvc-base",
-      "architecture": "x64",
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-windows-release"
-      }
+      "architecture": "x64"
     },
     {
       "name": "debug-x64",
-      "displayName": "Debug x64 (MSVC + vcpkg)",
+      "displayName": "Debug x64 (MSVC + wxWidgets 3.3.4)",
       "inherits": "windows-msvc-base",
-      "architecture": "x64",
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-windows"
-      }
+      "architecture": "x64"
     },
     {
       "name": "debug-x86",
-      "displayName": "Debug x86 (MSVC + vcpkg)",
+      "displayName": "Debug x86 (MSVC + wxWidgets 3.3.4)",
       "inherits": "windows-msvc-base",
-      "architecture": "Win32",
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x86-windows"
-      }
+      "architecture": "Win32"
     }
   ],
   "buildPresets": [

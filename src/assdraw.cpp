@@ -61,6 +61,8 @@ IMPLEMENT_APP(ASSDrawApp)
 #endif
 
 BEGIN_EVENT_TABLE(ASSDrawFrame, wxFrame)
+    EVT_MENU_RANGE(6100, 6102, ASSDrawFrame::OnChooseTheme)
+    EVT_SYS_COLOUR_CHANGED(ASSDrawFrame::OnSystemColoursChanged)
     EVT_MENU_RANGE(6000, 6007, ASSDrawFrame::OnChooseLanguage)
     EVT_TOOL(TB_CLEAR, ASSDrawFrame::OnSelect_Clear)
     EVT_TOOL(TB_PREVIEW, ASSDrawFrame::OnSelect_Preview)
@@ -101,6 +103,8 @@ END_EVENT_TABLE()
 bool ASSDrawApp::OnInit()
 {
 	SetAppName(TITLE);
+	if (!AssdrawTheme::SetAppearance(AssdrawTheme::ReadPreference()))
+		AssdrawTheme::SetAppearance("system");
 #ifdef __WXMSW__
 	SetCurrentProcessExplicitAppUserModelID(L"KerimDemirkaynak.ASSDraw3");
 #endif
@@ -169,6 +173,10 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 
 	// config
 	LoadSettings();
+	if (!config->HasGroup("/ui/theme_colors/light"))
+		SaveThemeViewColors(false);
+	view_is_dark = AssdrawTheme::IsDark();
+	LoadThemeViewColors(view_is_dark);
 
 	// THE CANVAS
     m_canvas = new ASSDrawCanvas( this , this );
@@ -180,6 +188,7 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 	commandpanel = new wxPanel(this, wxID_ANY);
 	srctxtctrl = new ASSDrawSrcTxtCtrl(commandpanel, this);
 	copy_button = new wxButton(commandpanel, wxID_COPY, _("Copy ASS"));
+	copy_button->SetBitmap(ASSDRAW_ICON(Copy));
 	copy_button->SetMinSize(FromDIP(wxSize(128, -1)));
 	copy_button->SetToolTip(_("Copy the command text, including ASS style tags"));
 	copy_button->Bind(wxEVT_BUTTON, &ASSDrawFrame::OnSelect_CopyCommands, this);
@@ -239,6 +248,8 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 
 	UpdateFrameUI();
 	ApplySettings();
+	theme_ready = true;
+	RefreshTheme();
 
 	if (firsttime)
 		_About();
@@ -250,13 +261,11 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 
 void ASSDrawFrame::SetToolBars()
 {
-    drawtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
-	drawtbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
-	drawtbar->AddTool(TB_CLEAR, _("Clear"), ASSDRAW_BITMAP_BUNDLE(new_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_CLEAR));
-    //tbar->AddTool(TB_EDITSRC, _("Source"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_EDITSRC));
-    drawtbar->AddCheckTool(TB_PREVIEW, _("Preview"), ASSDRAW_BITMAP_BUNDLE(preview_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_PREVIEW));
-    //drawtbar->AddTool(TB_TRANSFORM, _("Transform"), ASSDRAW_BITMAP_BUNDLE(rot_), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_TRANSFORM));
-	drawtbar->AddCheckTool(MODE_COLOR, _("Coloring"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), _T(""),
+    drawtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL | wxTB_NOALIGN);
+	drawtbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
+	drawtbar->AddTool(TB_CLEAR, _("Clear"), ASSDRAW_ICON(Clear), wxBitmapBundle(), wxITEM_NORMAL, _T(""), wxGetTranslation(TIPS_CLEAR));
+    drawtbar->AddCheckTool(TB_PREVIEW, _("Preview"), ASSDRAW_ICON(Preview), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_PREVIEW));
+	drawtbar->AddCheckTool(MODE_COLOR, _("Coloring"), ASSDRAW_ICON(Color), wxBitmapBundle(), _T(""),
 		_("Select a shape, then double-click it to choose its fill color"));
 	zoomslider = new wxSlider(drawtbar, TB_ZOOMSLIDER, 1000, 100, 5000, wxDefaultPosition, FromDIP(wxSize(140, -1)));
 	//zoomslider->SetSize(280, zoomslider->GetSize().y);
@@ -272,32 +281,26 @@ void ASSDrawFrame::SetToolBars()
     m_mgr.AddPane(drawtbar, wxAuiPaneInfo().Name(_T("drawtbar")).Caption(wxGetTranslation(TBNAME_DRAW)).
                   ToolbarPane().Top().Position(0).Dockable(true).LeftDockable(false).RightDockable(false));
 
-    modetbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
-	modetbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
-    modetbar->AddRadioTool(MODE_ARR, _("Drag"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_ARR));
-    modetbar->AddRadioTool(MODE_M, _("Move"), ASSDRAW_BITMAP_BUNDLE(m_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_M));
-    //modetbar->AddRadioTool(MODE_N, _("Move*"), ASSDRAW_BITMAP_BUNDLE(n_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_N));
-    modetbar->AddRadioTool(MODE_L, _("Line"), ASSDRAW_BITMAP_BUNDLE(l_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_L));
-    modetbar->AddRadioTool(MODE_B, _("Bezier"), ASSDRAW_BITMAP_BUNDLE(b_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_B));
-    //modetbar->AddRadioTool(MODE_S, _("Spline"), ASSDRAW_BITMAP_BUNDLE(s_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_S));
-    //modetbar->AddRadioTool(MODE_P, _("Extend"), ASSDRAW_BITMAP_BUNDLE(p_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_P));
-    //modetbar->AddRadioTool(MODE_C, _("Close"), ASSDRAW_BITMAP_BUNDLE(c_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_C));
-    modetbar->AddRadioTool(MODE_DEL, _("Delete"), ASSDRAW_BITMAP_BUNDLE(del_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DEL));
-    modetbar->AddRadioTool(MODE_SCALEROTATE, _("Scale/Rotate"), ASSDRAW_BITMAP_BUNDLE(sc_rot_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_SCALEROTATE));
-    modetbar->AddRadioTool(MODE_NUT_BILINEAR, _("Bilinear"), ASSDRAW_BITMAP_BUNDLE(nut_), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_NUTB));
-    //modetbar->AddRadioTool(MODE_NUT_PERSPECTIVE, _("NUT:P"), ASSDRAW_BITMAP_BUNDLE(arr_), wxBitmapBundle(), _T(""), _T(""));
-	modetbar->AddRadioTool(MODE_COLOR, _("Coloring"), ASSDRAW_BITMAP_BUNDLE(src_), wxBitmapBundle(), _T(""),
+    modetbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL | wxTB_NOALIGN);
+	modetbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
+    modetbar->AddRadioTool(MODE_ARR, _("Drag"), ASSDRAW_ICON(Drag), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_ARR));
+    modetbar->AddRadioTool(MODE_M, _("Move"), ASSDRAW_ICON(Move), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_M));
+    modetbar->AddRadioTool(MODE_L, _("Line"), ASSDRAW_ICON(Line), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_L));
+    modetbar->AddRadioTool(MODE_B, _("Bezier"), ASSDRAW_ICON(Bezier), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_B));
+    modetbar->AddRadioTool(MODE_DEL, _("Delete"), ASSDRAW_ICON(DeletePoint), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DEL));
+    modetbar->AddRadioTool(MODE_SCALEROTATE, _("Scale/Rotate"), ASSDRAW_ICON(ScaleRotate), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_SCALEROTATE));
+    modetbar->AddRadioTool(MODE_NUT_BILINEAR, _("Bilinear"), ASSDRAW_ICON(Bilinear), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_NUTB));
+	modetbar->AddRadioTool(MODE_COLOR, _("Coloring"), ASSDRAW_ICON(Color), wxBitmapBundle(), _T(""),
 		_("Click a filled shape to select it; double-click to choose its fill color"));
     modetbar->Realize();
 
     m_mgr.AddPane(modetbar, wxAuiPaneInfo().Name(_T("modetbar")).Caption(wxGetTranslation(TBNAME_MODE)).
                   ToolbarPane().Top().Position(1).Dockable(true).LeftDockable(false).RightDockable(false));
 
-    bgimgtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL);
-	bgimgtbar->SetToolBitmapSize(FromDIP(wxSize(24, 15)));
-    bgimgtbar->AddCheckTool(DRAG_DWG, _("Pan drawing"), ASSDRAW_BITMAP_BUNDLE(pan_shp), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DWG));
-    bgimgtbar->AddCheckTool(DRAG_BGIMG, _("Pan background"), ASSDRAW_BITMAP_BUNDLE(pan_bg), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_BGIMG));
-    //bgimgtbar->AddRadioTool(DRAG_BOTH, _("Pan both"), ASSDRAW_BITMAP_BUNDLE(pan_both), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_BOTH));
+    bgimgtbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_FLAT | wxTB_TEXT | wxTB_NODIVIDER | wxTB_HORIZONTAL | wxTB_NOALIGN);
+	bgimgtbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
+    bgimgtbar->AddCheckTool(DRAG_DWG, _("Pan drawing"), ASSDRAW_ICON(PanDrawing), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_DWG));
+    bgimgtbar->AddCheckTool(DRAG_BGIMG, _("Pan background"), ASSDRAW_ICON(PanBackground), wxBitmapBundle(), _T(""), wxGetTranslation(TIPS_BGIMG));
     bgimgtbar->Realize();
 
     m_mgr.AddPane(bgimgtbar, wxAuiPaneInfo().Name(_T("bgimgtbar")).Caption(wxGetTranslation(TBNAME_BGIMG)).
@@ -365,6 +368,14 @@ void ASSDrawFrame::SetMenus()
 	if (settingsdlg)
 		viewMenu->Append(MENU_SETTINGS, _("&Settings"), _T(""), wxITEM_CHECK);
 	viewMenu->Append(MENU_TBAR, _("&Toolbars"), tbarMenu);
+	themeMenu = new wxMenu;
+	themeMenu->AppendRadioItem(6100, _("System Default"));
+	themeMenu->AppendRadioItem(6101, _("Light"));
+	themeMenu->AppendRadioItem(6102, _("Dark"));
+	const int theme_id = AssdrawTheme::Requested() == "dark" ? 6102 :
+		AssdrawTheme::Requested() == "light" ? 6101 : 6100;
+	themeMenu->Check(theme_id, true);
+	viewMenu->AppendSubMenu(themeMenu, _("Theme"));
 	viewMenu->Append(MENU_RECENTER, _("Reposition [&0, 0]"), reposMenu);
 	viewMenu->AppendSeparator();
 	viewMenu->Append(MENU_RESETPERSPECTIVE, _("&Reset workspace"));
@@ -477,6 +488,7 @@ bool ASSDrawFrame::ApplyLanguage(const wxString& code)
 	ApplyDpiLayout();
 	SetStatusText(wxEmptyString, 1);
 	Thaw();
+	RefreshTheme();
 	config->Write("/ui/language", code);
 	SaveSettings();
 	if (!AssdrawI18n::SaveConfig(*config, configfile))

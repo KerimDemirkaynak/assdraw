@@ -53,6 +53,7 @@ class ASSDrawShapePreview : public ASSDrawEngine
 public:
 	int ParseASS(wxString str) override;
 	wxString GenerateASS() override;
+	void UpdateTheme();
 protected:
 	ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary *shapelib, wxString initialcmds = _T(""));
 	virtual void OnSize(wxSizeEvent& event);

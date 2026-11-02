@@ -65,6 +65,14 @@ void ASSDrawFrame::InitializeDefaultSettings()
 
 void ASSDrawFrame::ApplySettings()
 {
+	ApplyViewColours();
+	m_canvas->PrepareBackgroundBitmap(-1.0);
+	m_canvas->SetDrawCmdSet(behaviors.parse_spc? _T("m n l b s p c _"):_T("m n l b _"));
+	UpdateASSCommandStringToSrcTxtCtrl(m_canvas->GenerateASS());
+}
+
+void ASSDrawFrame::ApplyViewColours()
+{
 	wxColourSetAlpha(colors.canvas_shape_normal, alphas.canvas_shape_normal);
 	wxColourSetAlpha(colors.canvas_shape_preview, alphas.canvas_shape_preview);
 	wxColourSetAlpha(colors.canvas_shape_outline, alphas.canvas_shape_outline);
@@ -88,7 +96,6 @@ void ASSDrawFrame::ApplySettings()
 	m_canvas->color_bg.g = colors.canvas_bg.Green();
 	m_canvas->color_bg.b = colors.canvas_bg.Blue();
 	m_canvas->color_bg.a = colors.canvas_bg.Alpha();
-	m_canvas->PrepareBackgroundBitmap(-1.0);
 	m_canvas->Refresh();
 
 	shapelib->libarea->SetBackgroundColour(colors.library_libarea);
@@ -99,10 +106,6 @@ void ASSDrawFrame::ApplySettings()
 		wxColourToAggRGBA(colors.library_shape, shapes[i]->rgba_shape);
 	shapelib->libarea->Refresh();
 
-	m_canvas->SetDrawCmdSet(behaviors.parse_spc? _T("m n l b s p c _"):_T("m n l b _"));
-	// Editor preferences must not overwrite independently colored contours.
-
-	UpdateASSCommandStringToSrcTxtCtrl(m_canvas->GenerateASS());
 }
 
 void ASSDrawFrame::wxColourToAggRGBA(wxColour &colour, agg::rgba &rgba)
@@ -164,19 +167,22 @@ void ASSDrawFrame::SaveSettings()
 	#define CFGWRITE(var) config->Write(wxString(#var,wxConvUTF8), var);
 	#define CFGWRITECOLOR(color) config->Write(wxString(#color,wxConvUTF8), color.GetAsString(wxC2S_CSS_SYNTAX));
 	config->SetPath(_T("settings"));
+	SaveThemeViewColors(view_is_dark);
+	if (!view_is_dark) {
 	CFGWRITECOLOR(colors.canvas_bg)
-	CFGWRITECOLOR(colors.canvas_shape_normal)
-	CFGWRITECOLOR(colors.canvas_shape_preview)
 	CFGWRITECOLOR(colors.canvas_shape_controlpoint)
 	CFGWRITECOLOR(colors.canvas_shape_guideline)
 	CFGWRITECOLOR(colors.canvas_shape_mainpoint)
-	CFGWRITECOLOR(colors.canvas_shape_outline)
 	CFGWRITECOLOR(colors.canvas_shape_selectpoint)
 	CFGWRITECOLOR(colors.library_libarea)
 	CFGWRITECOLOR(colors.library_shape)
 	CFGWRITECOLOR(colors.origin)
 	CFGWRITECOLOR(colors.ruler_h)
 	CFGWRITECOLOR(colors.ruler_v)
+	}
+	CFGWRITECOLOR(colors.canvas_shape_normal)
+	CFGWRITECOLOR(colors.canvas_shape_preview)
+	CFGWRITECOLOR(colors.canvas_shape_outline)
 	CFGWRITE(alphas.canvas_shape_normal)
 	CFGWRITE(alphas.canvas_shape_preview)
 	CFGWRITE(alphas.canvas_shape_controlpoint)

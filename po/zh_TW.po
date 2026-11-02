@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 03:19+0300\n"
+"POT-Creation-Date: 2026-11-02 07:36+0300\n"
 "PO-Revision-Date: 2026-11-02 00:00+0300\n"
 "Last-Translator: ASSDraw contributors\n"
 "Language-Team: zh_TW\n"
@@ -13,15 +13,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/assdraw.cpp:368
+#: src/assdraw.cpp:392
 msgid "&About"
 msgstr "關於(&A)"
 
-#: src/assdraw.cpp:373
+#: src/assdraw.cpp:397
 msgid "&Background"
 msgstr "背景(&B)"
 
-#: src/assdraw.cpp:323
+#: src/assdraw.cpp:339
 msgid "&Bilinear transformation\tF7"
 msgstr "雙線性變換(&B)\tF7"
 
@@ -29,51 +29,51 @@ msgstr "雙線性變換(&B)\tF7"
 msgid "&Cancel"
 msgstr "取消(&C)"
 
-#: src/assdraw.cpp:371
+#: src/assdraw.cpp:395
 msgid "&Canvas"
 msgstr "畫布(&C)"
 
-#: src/assdraw.cpp:343
+#: src/assdraw.cpp:359
 msgid "&Center\tCtrl+5"
 msgstr "置中(&C)\tCtrl+5"
 
-#: src/assdraw.cpp:334
+#: src/assdraw.cpp:350
 msgid "&Center\tCtrl+Shift+5"
 msgstr "置中(&C)\tCtrl+Shift+5"
 
-#: src/assdraw.cpp:305
+#: src/assdraw.cpp:321
 msgid "&Clear\tCtrl+N"
 msgstr "清除(&C)\tCtrl+N"
 
-#: src/assdraw.cpp:324
+#: src/assdraw.cpp:340
 msgid "&Coloring"
 msgstr "著色(&C)"
 
-#: src/assdraw.cpp:321
+#: src/assdraw.cpp:337
 msgid "&Delete\tF5"
 msgstr "刪除(&D)\tF5"
 
-#: src/assdraw.cpp:375
+#: src/assdraw.cpp:399
 msgid "&Help"
 msgstr "說明(&H)"
 
-#: src/assdraw.cpp:387
+#: src/assdraw.cpp:411
 msgid "&Language"
 msgstr "語言(&L)"
 
-#: src/assdraw.cpp:358
+#: src/assdraw.cpp:374
 msgid "&Library"
 msgstr "圖庫(&L)"
 
-#: src/assdraw.cpp:367
+#: src/assdraw.cpp:391
 msgid "&Manual"
 msgstr "使用手冊(&M)"
 
-#: src/assdraw.cpp:372
+#: src/assdraw.cpp:396
 msgid "&Mode"
 msgstr "模式(&M)"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "&No"
 msgstr "否(&N)"
 
@@ -81,47 +81,47 @@ msgstr "否(&N)"
 msgid "&OK"
 msgstr "確定(&O)"
 
-#: src/assdraw.cpp:309
+#: src/assdraw.cpp:325
 msgid "&Paste\tCtrl+V"
 msgstr "貼上(&P)\tCtrl+V"
 
-#: src/assdraw.cpp:307
+#: src/assdraw.cpp:323
 msgid "&Preview\tCtrl+P"
 msgstr "預覽(&P)\tCtrl+P"
 
-#: src/assdraw.cpp:312
+#: src/assdraw.cpp:328
 msgid "&Redo\tCtrl+Y"
 msgstr "重做(&R)\tCtrl+Y"
 
-#: src/assdraw.cpp:364
+#: src/assdraw.cpp:388
 msgid "&Reset workspace"
 msgstr "重設工作區(&R)"
 
-#: src/assdraw.cpp:322
+#: src/assdraw.cpp:338
 msgid "&Scale/Rotate\tF6"
 msgstr "縮放／旋轉(&S)\tF6"
 
-#: src/assdraw.cpp:360
+#: src/assdraw.cpp:376
 msgid "&Settings"
 msgstr "設定(&S)"
 
-#: src/assdraw.cpp:361
+#: src/assdraw.cpp:377
 msgid "&Toolbars"
 msgstr "工具列(&T)"
 
-#: src/assdraw.cpp:308
+#: src/assdraw.cpp:324
 msgid "&Transform"
 msgstr "變換(&T)"
 
-#: src/assdraw.cpp:311
+#: src/assdraw.cpp:327
 msgid "&Undo\tCtrl+Z"
 msgstr "復原(&U)\tCtrl+Z"
 
-#: src/assdraw.cpp:374
+#: src/assdraw.cpp:398
 msgid "&Workspace"
 msgstr "工作區(&W)"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "&Yes"
 msgstr "是(&Y)"
 
@@ -129,15 +129,15 @@ msgstr "是(&Y)"
 msgid "<Select>"
 msgstr "<選取>"
 
-#: src/assdraw.cpp:837
+#: src/assdraw.cpp:862
 msgid "ASS drawing copied to clipboard."
 msgstr "ASS 繪圖已複製到剪貼簿。"
 
-#: src/localization.cpp:151
+#: src/localization.cpp:155
 msgid "ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."
 msgstr "ASSDraw3 是用於設計 ASS 字幕檔向量圖形的工具。"
 
-#: src/localization.cpp:161
+#: src/localization.cpp:165
 msgid "Acknowledgements"
 msgstr "致謝"
 
@@ -153,19 +153,19 @@ msgstr "新增 L 指令"
 msgid "Add a new M"
 msgstr "新增 M 指令"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:18
 msgid "Add to custom colours"
 msgstr "新增至自訂色彩"
 
-#: src/settings.cpp:77 src/settings.cpp:230
+#: src/settings.cpp:77 src/settings.cpp:251
 msgid "Appearance"
 msgstr "外觀"
 
-#: src/settings.cpp:114 src/settings.cpp:259
+#: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
 msgstr "套用"
 
-#: src/settings.cpp:102 src/settings.cpp:254
+#: src/settings.cpp:102 src/settings.cpp:275
 msgid "Ask for image opacity"
 msgstr "詢問影像不透明度"
 
@@ -177,19 +177,19 @@ msgstr "背景"
 msgid "Background image opacity"
 msgstr "背景影像不透明度"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:18
 msgid "Basic colours"
 msgstr "基本色彩"
 
-#: src/settings.cpp:100 src/settings.cpp:231
+#: src/settings.cpp:100 src/settings.cpp:252
 msgid "Behaviors"
 msgstr "行為"
 
-#: src/assdraw.cpp:275
+#: src/assdraw.cpp:291
 msgid "Bezier"
 msgstr "貝茲曲線"
 
-#: src/assdraw.cpp:281
+#: src/assdraw.cpp:297
 msgid "Bilinear"
 msgstr "雙線性"
 
@@ -201,27 +201,27 @@ msgstr "雙線性變換"
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "雙線性變換模式：拖曳頂點以扭曲圖形；拖曳邊線會同時移動兩個相鄰頂點"
 
-#: src/assdraw.cpp:344
+#: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr "左下\tCtrl+1"
 
-#: src/assdraw.cpp:335
+#: src/assdraw.cpp:351
 msgid "Bottom left\tCtrl+Shift+1"
 msgstr "左下\tCtrl+Shift+1"
 
-#: src/assdraw.cpp:345
+#: src/assdraw.cpp:361
 msgid "Bottom right\tCtrl+3"
 msgstr "右下\tCtrl+3"
 
-#: src/assdraw.cpp:336
+#: src/assdraw.cpp:352
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "右下\tCtrl+Shift+3"
 
-#: src/assdraw.cpp:932
+#: src/assdraw.cpp:957
 msgid "Cancel"
 msgstr "取消"
 
-#: src/include_once.hpp:63 src/settings.cpp:78 src/settings.cpp:232
+#: src/include_once.hpp:63 src/settings.cpp:78 src/settings.cpp:253
 msgid "Canvas"
 msgstr "畫布"
 
@@ -229,7 +229,7 @@ msgstr "畫布"
 msgid "Canvas background loaded"
 msgstr "畫布背景已載入"
 
-#: src/settings.cpp:101 src/settings.cpp:253
+#: src/settings.cpp:101 src/settings.cpp:274
 msgid "Capitalize commands"
 msgstr "指令使用大寫"
 
@@ -241,11 +241,11 @@ msgstr "變更子圖形顏色"
 msgid "Choose fill color"
 msgstr "選擇填滿顏色"
 
-#: src/assdraw.cpp:249
+#: src/assdraw.cpp:265
 msgid "Clear"
 msgstr "清除"
 
-#: src/assdraw.cpp:571
+#: src/assdraw.cpp:596
 msgid "Clear canvas"
 msgstr "清除畫布"
 
@@ -253,7 +253,7 @@ msgstr "清除畫布"
 msgid "Clear the canvas and create a new drawing"
 msgstr "清除畫布並建立新繪圖"
 
-#: src/assdraw.cpp:566
+#: src/assdraw.cpp:591
 msgid "Clear the canvas and create a new drawing?"
 msgstr "要清除畫布並建立新繪圖嗎？"
 
@@ -261,43 +261,43 @@ msgstr "要清除畫布並建立新繪圖嗎？"
 msgid "Click a filled part of the shape (not a hole)."
 msgstr "請點選圖形的填滿區域，而非孔洞。"
 
-#: src/assdraw.cpp:284 src/assdraw.cpp:324
+#: src/assdraw.cpp:300 src/assdraw.cpp:340
 msgid "Click a filled shape to select it; double-click to choose its fill color"
 msgstr "點選已填滿的圖形以選取；按兩下可選擇填滿顏色"
 
-#: src/localization.cpp:16
+#: src/localization.cpp:17
 msgid "Close"
 msgstr "關閉"
 
-#: src/assdraw.cpp:253 src/assdraw.cpp:283
+#: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
 msgstr "著色"
 
-#: src/library.cpp:227
+#: src/library.cpp:261
 msgid "Confirm delete?"
 msgstr "確定刪除？"
 
-#: src/settings.cpp:106 src/settings.cpp:258
+#: src/settings.cpp:106 src/settings.cpp:279
 msgid "Confirm quit"
 msgstr "結束前確認"
 
-#: src/assdraw.cpp:567
+#: src/assdraw.cpp:592
 msgid "Confirmation"
 msgstr "確認"
 
-#: src/settings.cpp:85 src/settings.cpp:239
+#: src/settings.cpp:85 src/settings.cpp:260
 msgid "Control lines"
 msgstr "控制線"
 
-#: src/settings.cpp:86 src/settings.cpp:240
+#: src/settings.cpp:86 src/settings.cpp:261
 msgid "Control lines @"
 msgstr "控制線不透明度"
 
-#: src/settings.cpp:89 src/settings.cpp:243
+#: src/settings.cpp:89 src/settings.cpp:264
 msgid "Control points"
 msgstr "控制點"
 
-#: src/settings.cpp:90 src/settings.cpp:244
+#: src/settings.cpp:90 src/settings.cpp:265
 msgid "Control points @"
 msgstr "控制點不透明度"
 
@@ -317,43 +317,51 @@ msgstr "轉換為貝茲曲線（B 指令）"
 msgid "Convert to line (L command)"
 msgstr "轉換為直線（L 指令）"
 
-#: src/assdraw.cpp:182 src/assdraw.cpp:460
+#: src/assdraw.cpp:190 src/assdraw.cpp:484
 msgid "Copy ASS"
 msgstr "複製 ASS"
 
-#: src/library.cpp:224
+#: src/library.cpp:258
 msgid "Copy commands to clipboard"
 msgstr "複製指令至剪貼簿"
 
-#: src/assdraw.cpp:184 src/assdraw.cpp:461
+#: src/assdraw.cpp:192 src/assdraw.cpp:485
 msgid "Copy the command text, including ASS style tags"
 msgstr "複製指令文字及 ASS 樣式標籤"
 
-#: src/assdraw.cpp:477
+#: src/assdraw.cpp:502
 msgid "Could not save the language preference."
 msgstr "無法儲存語言偏好設定。"
 
-#: src/localization.cpp:16
+#: src/frame_theme.cpp:76
+msgid "Could not save the theme preference."
+msgstr "無法儲存佈景主題偏好設定。"
+
+#: src/localization.cpp:17
 msgid "Custom"
 msgstr "自訂"
 
-#: src/localization.cpp:16
+#: src/localization.cpp:17
 msgid "Custom colour"
 msgstr "自訂顏色"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:18
 msgid "Custom colours"
 msgstr "自訂色彩"
 
-#: src/assdraw.cpp:317
+#: src/assdraw.cpp:333
 msgid "D&rag\tF1"
 msgstr "拖曳(&R)\tF1"
 
-#: src/settings.cpp:103 src/settings.cpp:255
+#: src/assdraw.cpp:381
+msgid "Dark"
+msgstr "深色"
+
+#: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
 msgstr "預設影像不透明度（0-255）"
 
-#: src/assdraw.cpp:279
+#: src/assdraw.cpp:295
 msgid "Delete"
 msgstr "刪除"
 
@@ -369,7 +377,7 @@ msgstr "刪除 L 指令"
 msgid "Delete a M"
 msgstr "刪除 M 指令"
 
-#: src/library.cpp:228
+#: src/library.cpp:262
 msgid "Delete from library"
 msgstr "從圖庫刪除"
 
@@ -377,7 +385,7 @@ msgstr "從圖庫刪除"
 msgid "Delete mode"
 msgstr "刪除模式"
 
-#: src/library.cpp:108 src/library.cpp:333
+#: src/library.cpp:117 src/library.cpp:367
 msgid "Delete selected"
 msgstr "刪除所選項目"
 
@@ -385,19 +393,19 @@ msgstr "刪除所選項目"
 msgid "Depending on what's in the clipboard, import as drawing commands or background"
 msgstr "依剪貼簿內容匯入繪圖指令或背景"
 
-#: src/assdraw.cpp:931
+#: src/assdraw.cpp:956
 msgid "Do you want to close ASSDraw3 now?"
 msgstr "現在要關閉 ASSDraw3 嗎？"
 
-#: src/assdraw.cpp:354
+#: src/assdraw.cpp:370
 msgid "Dock all"
 msgstr "全部停駐"
 
-#: src/assdraw.cpp:271
+#: src/assdraw.cpp:287
 msgid "Drag"
 msgstr "拖曳"
 
-#: src/localization.cpp:156
+#: src/localization.cpp:160
 msgid "Drag an image onto the canvas to use it as a tracing background."
 msgstr "將影像拖至畫布，作為描圖背景。"
 
@@ -413,15 +421,15 @@ msgstr "拖曳模式"
 msgid "Drag point"
 msgstr "拖曳點"
 
-#: src/assdraw.cpp:320
+#: src/assdraw.cpp:336
 msgid "Draw &B\tF4"
 msgstr "繪製 &B\tF4"
 
-#: src/assdraw.cpp:319
+#: src/assdraw.cpp:335
 msgid "Draw &L\tF3"
 msgstr "繪製 &L\tF3"
 
-#: src/assdraw.cpp:318
+#: src/assdraw.cpp:334
 msgid "Draw &M\tF2"
 msgstr "繪製 &M\tF2"
 
@@ -457,15 +465,15 @@ msgstr "S 繪圖模式（樣條曲線）"
 msgid "Draw the shapes without enlarged points and control points"
 msgstr "繪製圖形時不顯示放大的點與控制點"
 
-#: src/settings.cpp:79 src/settings.cpp:233
+#: src/settings.cpp:79 src/settings.cpp:254
 msgid "Drawing"
 msgstr "繪圖"
 
-#: src/settings.cpp:80 src/settings.cpp:234
+#: src/settings.cpp:80 src/settings.cpp:255
 msgid "Drawing @"
 msgstr "繪圖不透明度"
 
-#: src/assdraw.cpp:400 src/assdraw.cpp:411
+#: src/assdraw.cpp:424 src/assdraw.cpp:435
 msgid "Drawing commands"
 msgstr "繪圖指令"
 
@@ -477,15 +485,15 @@ msgstr "繪圖模式"
 msgid "Edit the source"
 msgstr "編輯原始碼"
 
-#: src/library.cpp:48 src/library.cpp:328
+#: src/library.cpp:48 src/library.cpp:362
 msgid "Empty drawing"
 msgstr "空白繪圖"
 
-#: src/assdraw.cpp:477 src/canvas.cpp:1186
+#: src/assdraw.cpp:502 src/canvas.cpp:1186
 msgid "Error"
 msgstr "錯誤"
 
-#: src/assdraw.cpp:932
+#: src/assdraw.cpp:957
 msgid "Exit"
 msgstr "結束"
 
@@ -497,7 +505,7 @@ msgstr "以 X = 4 水平翻轉"
 msgid "Flip vertically at Y = 3"
 msgstr "以 Y = 3 垂直翻轉"
 
-#: src/settings.cpp:97 src/settings.cpp:251
+#: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
 msgstr "水平尺規"
 
@@ -505,35 +513,39 @@ msgstr "水平尺規"
 msgid "Help! Help!"
 msgstr "說明！"
 
-#: src/assdraw.cpp:353
+#: src/assdraw.cpp:369
 msgid "Hide all"
 msgstr "全部隱藏"
 
-#: src/localization.cpp:160
+#: src/localization.cpp:164
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
 msgstr "在著色模式中選取已填滿的子圖形，再按兩下選擇顏色。「複製 ASS」會複製包含樣式的繪圖。"
 
-#: src/assdraw.cpp:433
+#: src/assdraw.cpp:457
 msgid "Language"
 msgstr "語言"
 
-#: src/settings.cpp:93 src/settings.cpp:247
+#: src/settings.cpp:93 src/settings.cpp:268
 msgid "Library"
 msgstr "圖庫"
 
-#: src/settings.cpp:94 src/settings.cpp:248
+#: src/settings.cpp:94 src/settings.cpp:269
 msgid "Library shapes"
 msgstr "圖庫圖形"
 
-#: src/assdraw.cpp:274
+#: src/assdraw.cpp:380
+msgid "Light"
+msgstr "淺色"
+
+#: src/assdraw.cpp:290
 msgid "Line"
 msgstr "直線"
 
-#: src/library.cpp:318
+#: src/library.cpp:352
 msgid "Load shape from library"
 msgstr "從圖庫載入圖形"
 
-#: src/library.cpp:216
+#: src/library.cpp:250
 msgid "Load to canvas"
 msgstr "載入至畫布"
 
@@ -542,11 +554,11 @@ msgstr "載入至畫布"
 msgid "Loading '%s' as canvas background ..."
 msgstr "正在將「%s」載入為畫布背景…"
 
-#: src/assdraw.cpp:709
+#: src/assdraw.cpp:734
 msgid "Manual"
 msgstr "使用手冊"
 
-#: src/localization.cpp:162
+#: src/localization.cpp:166
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
 msgstr "Maxim Shemanarev：Anti-Grain Geometry。wxWidgets 團隊：圖形介面工具。Adrian Secord：wxAGG。"
 
@@ -586,7 +598,7 @@ msgstr "模式：縮放／旋轉"
 msgid "Modify drawing commands"
 msgstr "修改繪圖指令"
 
-#: src/assdraw.cpp:272
+#: src/assdraw.cpp:288
 msgid "Move"
 msgstr "移動"
 
@@ -606,11 +618,11 @@ msgstr "將 [0,0] 移至此處"
 msgid "Move origin"
 msgstr "移動原點"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "No"
 msgstr "否"
 
-#: src/settings.cpp:105 src/settings.cpp:257
+#: src/settings.cpp:105 src/settings.cpp:278
 msgid "No splash screen"
 msgstr "不顯示啟動畫面"
 
@@ -626,63 +638,63 @@ msgstr ""
 "輸入的值有一個或多個不是實數。\n"
 "請修正。"
 
-#: src/settings.cpp:95 src/settings.cpp:249
+#: src/settings.cpp:95 src/settings.cpp:270
 msgid "Origin"
 msgstr "原點"
 
-#: src/settings.cpp:96 src/settings.cpp:250
+#: src/settings.cpp:96 src/settings.cpp:271
 msgid "Origin cross size"
 msgstr "原點十字標記大小"
 
-#: src/localization.cpp:153
+#: src/localization.cpp:157
 msgid "Original application: ai-chan (2006-2007)."
 msgstr "原始應用程式：ai-chan（2006-2007）。"
 
-#: src/settings.cpp:83 src/settings.cpp:237
+#: src/settings.cpp:83 src/settings.cpp:258
 msgid "Outline"
 msgstr "外框"
 
-#: src/settings.cpp:84 src/settings.cpp:238
+#: src/settings.cpp:84 src/settings.cpp:259
 msgid "Outline @"
 msgstr "外框不透明度"
 
-#: src/assdraw.cpp:293
+#: src/assdraw.cpp:309
 msgid "Pan background"
 msgstr "平移背景"
 
-#: src/assdraw.cpp:292
+#: src/assdraw.cpp:308
 msgid "Pan drawing"
 msgstr "平移繪圖"
 
-#: src/assdraw.cpp:327
+#: src/assdraw.cpp:343
 msgid "Pan/Zoom &Drawing\tShift+F1"
 msgstr "平移／縮放繪圖(&D)\tShift+F1"
 
-#: src/assdraw.cpp:328
+#: src/assdraw.cpp:344
 msgid "Pan/Zoom Back&ground\tShift+F2"
 msgstr "平移／縮放背景(&G)\tShift+F2"
 
-#: src/settings.cpp:104 src/settings.cpp:256
+#: src/settings.cpp:104 src/settings.cpp:277
 msgid "Parse S/P/C"
 msgstr "解析 S/P/C"
 
-#: src/settings.cpp:87 src/settings.cpp:241
+#: src/settings.cpp:87 src/settings.cpp:262
 msgid "Points"
 msgstr "點"
 
-#: src/settings.cpp:88 src/settings.cpp:242
+#: src/settings.cpp:88 src/settings.cpp:263
 msgid "Points @"
 msgstr "點的不透明度"
 
-#: src/assdraw.cpp:251 src/settings.cpp:81 src/settings.cpp:235
+#: src/assdraw.cpp:267 src/settings.cpp:81 src/settings.cpp:256
 msgid "Preview"
 msgstr "預覽"
 
-#: src/settings.cpp:82 src/settings.cpp:236
+#: src/settings.cpp:82 src/settings.cpp:257
 msgid "Preview @"
 msgstr "預覽不透明度"
 
-#: src/assdraw.cpp:875
+#: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr "重做\tCtrl+Y"
 
@@ -690,24 +702,24 @@ msgstr "重做\tCtrl+Y"
 msgid "Redo last undo"
 msgstr "重做上次復原的動作"
 
-#: src/assdraw.cpp:880
+#: src/assdraw.cpp:905
 #, c-format
 msgid "Redo: %s\tCtrl+Y"
 msgstr "重做：%s\tCtrl+Y"
 
-#: src/assdraw.cpp:338
+#: src/assdraw.cpp:354
 msgid "Remove background\tShift+Del"
 msgstr "移除背景\tShift+Del"
 
-#: src/assdraw.cpp:337 src/assdraw.cpp:362
+#: src/assdraw.cpp:353 src/assdraw.cpp:386
 msgid "Reposition [&0, 0]"
 msgstr "重新定位 [&0, 0]"
 
-#: src/settings.cpp:117 src/settings.cpp:260
+#: src/settings.cpp:117 src/settings.cpp:281
 msgid "Revert"
 msgstr "還原"
 
-#: src/localization.cpp:159
+#: src/localization.cpp:163
 msgid "Right-double-click opens a context menu. Hold Shift to temporarily switch to Drag mode."
 msgstr "按兩下滑鼠右鍵可開啟快顯功能表。按住 Shift 可暫時切換至拖曳模式。"
 
@@ -739,11 +751,11 @@ msgstr "以 (1, 2) 為中心順時針旋轉 90°"
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "以 (-1, 2) 為中心逆時針旋轉 90°"
 
-#: src/library.cpp:104 src/library.cpp:332
+#: src/library.cpp:113 src/library.cpp:366
 msgid "Save canvas"
 msgstr "儲存畫布"
 
-#: src/library.cpp:225
+#: src/library.cpp:259
 msgid "Save canvas here"
 msgstr "在此儲存畫布"
 
@@ -759,7 +771,7 @@ msgstr "水平方向放大 2 倍"
 msgid "Scale up vertically by a factor of 3"
 msgstr "垂直方向放大 3 倍"
 
-#: src/assdraw.cpp:280
+#: src/assdraw.cpp:296
 msgid "Scale/Rotate"
 msgstr "縮放／旋轉"
 
@@ -767,31 +779,31 @@ msgstr "縮放／旋轉"
 msgid "Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate"
 msgstr "縮放／旋轉模式：拖曳頂點或邊線以縮放；以右鍵拖曳可旋轉"
 
-#: src/localization.cpp:154
+#: src/localization.cpp:158
 msgid "Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."
 msgstr "選取繪圖工具，點選或拖曳以新增直線與曲線。拖曳點與控制把手可修改繪圖。"
 
-#: src/assdraw.cpp:254
+#: src/assdraw.cpp:270
 msgid "Select a shape, then double-click it to choose its fill color"
 msgstr "選取圖形，再按兩下選擇填滿顏色"
 
-#: src/library.cpp:106 src/library.cpp:332
+#: src/library.cpp:115 src/library.cpp:366
 msgid "Select all"
 msgstr "全選"
 
-#: src/library.cpp:107 src/library.cpp:333
+#: src/library.cpp:116 src/library.cpp:367
 msgid "Select none"
 msgstr "全部取消選取"
 
-#: src/settings.cpp:91 src/settings.cpp:245
+#: src/settings.cpp:91 src/settings.cpp:266
 msgid "Selected points"
 msgstr "所選的點"
 
-#: src/settings.cpp:92 src/settings.cpp:246
+#: src/settings.cpp:92 src/settings.cpp:267
 msgid "Selected points @"
 msgstr "所選點的不透明度"
 
-#: src/assdraw.cpp:330
+#: src/assdraw.cpp:346
 msgid "Set background image opacity"
 msgstr "設定背景影像不透明度"
 
@@ -799,7 +811,7 @@ msgstr "設定背景影像不透明度"
 msgid "Set continuous"
 msgstr "啟用連續性"
 
-#: src/assdraw.cpp:404 src/assdraw.cpp:412
+#: src/assdraw.cpp:428 src/assdraw.cpp:436
 msgid "Settings"
 msgstr "設定"
 
@@ -807,7 +819,7 @@ msgstr "設定"
 msgid "Shape selected. Double-click to choose its fill color."
 msgstr "已選取圖形。按兩下可選擇填滿顏色。"
 
-#: src/assdraw.cpp:395 src/assdraw.cpp:410
+#: src/assdraw.cpp:419 src/assdraw.cpp:434
 msgid "Shapes Library"
 msgstr "圖形庫"
 
@@ -815,7 +827,7 @@ msgstr "圖形庫"
 msgid "Shapes library"
 msgstr "圖形庫"
 
-#: src/assdraw.cpp:352
+#: src/assdraw.cpp:368
 msgid "Show all"
 msgstr "全部顯示"
 
@@ -823,7 +835,7 @@ msgstr "全部顯示"
 msgid "Smooth connection"
 msgstr "平滑連接"
 
-#: src/assdraw.cpp:377
+#: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
 msgstr "系統預設"
 
@@ -831,43 +843,51 @@ msgstr "系統預設"
 msgid "Templates"
 msgstr "範本"
 
-#: src/localization.cpp:163
+#: src/localization.cpp:167
 msgid "Thanks to jfs, ArchMageZeratul, RoRo, and the Aegisub community for their suggestions and support."
 msgstr "感謝 jfs、ArchMageZeratul、RoRo 及 Aegisub 社群提供建議與支援。"
 
-#: src/assdraw.cpp:709
+#: src/assdraw.cpp:734
 msgid "The manual is missing. Please reinstall ASSDraw3."
 msgstr "找不到使用手冊。請重新安裝 ASSDraw3。"
 
-#: src/assdraw.cpp:432
+#: src/assdraw.cpp:456
 msgid "The selected language could not be loaded. Please reinstall ASSDraw3."
 msgstr "無法載入所選語言。請重新安裝 ASSDraw3。"
 
-#: src/localization.cpp:152
+#: src/frame_theme.cpp:63
+msgid "The selected theme could not be applied."
+msgstr "無法套用所選的佈景主題。"
+
+#: src/assdraw.cpp:385 src/frame_theme.cpp:63 src/frame_theme.cpp:76
+msgid "Theme"
+msgstr "佈景主題"
+
+#: src/localization.cpp:156
 msgid "This version was created by Kerim Demirkaynak."
 msgstr "此版本由 Kerim Demirkaynak 建立。"
 
-#: src/localization.cpp:155
+#: src/localization.cpp:159
 msgid "Tips and shortcuts"
 msgstr "技巧與快捷鍵"
 
-#: src/assdraw.cpp:341
+#: src/assdraw.cpp:357
 msgid "Top left\tCtrl+7"
 msgstr "左上\tCtrl+7"
 
-#: src/assdraw.cpp:332
+#: src/assdraw.cpp:348
 msgid "Top left\tCtrl+Shift+7"
 msgstr "左上\tCtrl+Shift+7"
 
-#: src/assdraw.cpp:342
+#: src/assdraw.cpp:358
 msgid "Top right\tCtrl+9"
 msgstr "右上\tCtrl+9"
 
-#: src/assdraw.cpp:333
+#: src/assdraw.cpp:349
 msgid "Top right\tCtrl+Shift+9"
 msgstr "右上\tCtrl+Shift+9"
 
-#: src/assdraw.cpp:634 src/dlgctrl.cpp:100
+#: src/assdraw.cpp:659 src/dlgctrl.cpp:100
 msgid "Transform"
 msgstr "變換"
 
@@ -875,7 +895,7 @@ msgstr "變換"
 msgid "Transform the drawing using matrix transformation"
 msgstr "以矩陣變換調整繪圖"
 
-#: src/assdraw.cpp:864
+#: src/assdraw.cpp:889
 msgid "Undo\tCtrl+Z"
 msgstr "復原\tCtrl+Z"
 
@@ -883,12 +903,12 @@ msgstr "復原\tCtrl+Z"
 msgid "Undo last action"
 msgstr "復原上一個動作"
 
-#: src/assdraw.cpp:869
+#: src/assdraw.cpp:894
 #, c-format
 msgid "Undo: %s\tCtrl+Z"
 msgstr "復原：%s\tCtrl+Z"
 
-#: src/assdraw.cpp:355
+#: src/assdraw.cpp:371
 msgid "Undock all"
 msgstr "全部解除停駐"
 
@@ -896,15 +916,15 @@ msgstr "全部解除停駐"
 msgid "Unset continuous"
 msgstr "停用連續性"
 
-#: src/localization.cpp:157
+#: src/localization.cpp:161
 msgid "Use the Shapes Library to store drawings. Ctrl+Z undoes a drawing edit; Ctrl+Y redoes it."
 msgstr "使用圖形庫儲存繪圖。Ctrl+Z 可復原繪圖編輯；Ctrl+Y 可重做。"
 
-#: src/localization.cpp:158
+#: src/localization.cpp:162
 msgid "Use the mouse wheel or PageUp/PageDown to zoom. Right-drag pans the enabled drawing or background layer."
 msgstr "使用滾輪或 PageUp/PageDown 縮放。以右鍵拖曳可平移已啟用的繪圖或背景圖層。"
 
-#: src/settings.cpp:98 src/settings.cpp:252
+#: src/settings.cpp:98 src/settings.cpp:273
 msgid "V ruler"
 msgstr "垂直尺規"
 
@@ -917,7 +937,7 @@ msgstr "數值錯誤"
 msgid "Version: %s"
 msgstr "版本：%s"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "Yes"
 msgstr "是"
 

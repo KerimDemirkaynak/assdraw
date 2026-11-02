@@ -100,8 +100,6 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
  : wxDialog(parent, -1, wxString(_("Transform")))
 {
 	m_frame = parent;
-	transform_bitmap = NULL;
-	transform_bitmap_logical_size = wxSize(224, 56);
 	Bind(wxEVT_DPI_CHANGED, &ASSDrawTransformDlg::OnDPIChanged, this);
 
     wxBoxSizer* sizer_main = new wxBoxSizer(wxVERTICAL);
@@ -175,8 +173,9 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
     txtctrl_ny = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_ny, 0, flag_txtctrl, border);
 
-    transform_bitmap = new wxStaticBitmap(this, -1, ASSDRAW_BITMAP_BUNDLE(transform), wxDefaultPosition, FromDIP(transform_bitmap_logical_size), 0);
-    sizer_main->Add(transform_bitmap, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, border);
+    auto* formula = new wxStaticText(this, wxID_ANY,
+        "x' = m11(x - mx) + m12(y - my) + nx\ny' = m21(x - mx) + m22(y - my) + ny");
+    sizer_main->Add(formula, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, border);
 
     wxStdDialogButtonSizer* sizer_stdbutt = new wxStdDialogButtonSizer;
 
@@ -195,12 +194,6 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
 
 void ASSDrawTransformDlg::UpdateDpiLayout()
 {
-	if (transform_bitmap)
-	{
-		const wxSize bitmap_size = FromDIP(transform_bitmap_logical_size);
-		transform_bitmap->SetMinSize(bitmap_size);
-		transform_bitmap->SetSize(bitmap_size);
-	}
 
 	Layout();
 	Fit();
@@ -259,7 +252,7 @@ void ASSDrawTransformDlg::EndModal(int retCode)
 ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	: wxDialog(parent, wxID_ANY, wxString(TITLE), __DPDS__ , wxSIMPLE_BORDER), time_out(timeout)
 {
-	SetBackgroundColour(*wxWHITE);
+	SetBackgroundColour(AssdrawTheme::Surface());
 	html_logical_size = wxSize(396, 200);
 	htmlwin = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, FromDIP(html_logical_size), wxHW_DEFAULT_STYLE | wxSIMPLE_BORDER);
 	htmlwin->SetPage(AssdrawI18n::AboutHtml());
@@ -269,7 +262,7 @@ ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	sizer->AddGrowableCol(0);
 	//sizer->AddGrowableRow(1);
 
-	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), *wxWHITE, this), 1, wxEXPAND);
+	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), AssdrawTheme::Surface(), this), 1, wxEXPAND);
 	sizer->Add(htmlwin, 1, wxLEFT | wxRIGHT, FromDIP(2));
 	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
 	sizer->Add(new wxButton(this, wxID_OK, _("OK")), 0, wxALIGN_CENTER | wxBOTTOM, FromDIP(10));
@@ -352,7 +345,7 @@ BigStaticBitmapCtrl::BigStaticBitmapCtrl(wxWindow *parent, wxBitmapBundle bmap, 
 {
 	bitmap = bmap;
 	bitmap_logical_size = bitmap.IsOk() ? bitmap.GetDefaultSize() : wxSize(1, 1);
-	bgbrush = wxBrush(bgcol);
+	SetBackgroundColour(bgcol);
 	window_to_drag = todrag;
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -367,7 +360,7 @@ BigStaticBitmapCtrl::~BigStaticBitmapCtrl()
 void BigStaticBitmapCtrl::OnPaint(wxPaintEvent& event)
 {
 	wxPaintDC dc(this);
-	dc.SetBackground(bgbrush);
+	dc.SetBackground(wxBrush(GetBackgroundColour()));
 	dc.Clear();
 	if (bitmap.IsOk())
 		dc.DrawBitmap(bitmap.GetBitmap(GetScaledBitmapSize()), wxPoint(0, 0), true);

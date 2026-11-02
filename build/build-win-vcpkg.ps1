@@ -74,29 +74,8 @@ function Get-PlatformName([string]$ResolvedTriplet) {
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path | Split-Path -Parent
 Set-Location $repoRoot
 
-$resolvedVcpkgRoot = if ($VcpkgRoot) {
-    Resolve-RepoPath $VcpkgRoot
-}
-elseif ($env:VCPKG_ROOT) {
-    [System.IO.Path]::GetFullPath($env:VCPKG_ROOT)
-}
-else {
-    Join-Path $repoRoot 'vcpkg'
-}
-
-if (-not (Test-Path $resolvedVcpkgRoot)) {
-    throw "vcpkg root not found: $resolvedVcpkgRoot"
-}
-
-$resolvedVcpkgInstalledRoot = if ($VcpkgInstalledRoot) {
-    Resolve-RepoPath $VcpkgInstalledRoot
-}
-elseif ($env:PROJECT_VCPKG_INSTALLED_ROOT) {
-    [System.IO.Path]::GetFullPath($env:PROJECT_VCPKG_INSTALLED_ROOT)
-}
-else {
-    ''
-}
+# The filename and old vcpkg parameters remain compatible with older commands.
+# CMake now builds the same checksum-pinned wxWidgets 3.3.4 on both platforms.
 
 $cmake = Get-CMake
 $generator = Get-VsGenerator
@@ -113,19 +92,9 @@ foreach ($arg in @(
     '-B', $BuildDir,
     '-G', $generator,
     '-A', $platform,
-    "-DCMAKE_TOOLCHAIN_FILE=$resolvedVcpkgRoot/scripts/buildsystems/vcpkg.cmake",
-    "-DVCPKG_TARGET_TRIPLET=$Triplet",
-    "-DVCPKG_OVERLAY_TRIPLETS=$repoRoot/cmake"
+    '-DASSDRAW_BUNDLED_WX=ON'
 )) {
     $cmakeArgs.Add($arg)
-}
-
-if ($resolvedVcpkgInstalledRoot) {
-    $cmakeArgs.Add("-DVCPKG_INSTALLED_DIR=$resolvedVcpkgInstalledRoot")
-}
-else {
-    $cmakeArgs.Add('-U')
-    $cmakeArgs.Add('VCPKG_INSTALLED_DIR')
 }
 
 Invoke-Native $cmake $cmakeArgs

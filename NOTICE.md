@@ -14,7 +14,7 @@ This integration retains the existing BSD 3-Clause license and source notices.
   The wxGTK bitmap-refresh fix was adapted to reattach locked pixels during
   painting instead of drawing through a stale unlocked buffer.
 
-The existing CMake/vcpkg Windows installer, bitmap bundles, DPI handling,
+The existing CMake Windows installer, bitmap bundles, DPI handling,
 internationalization automation, and shape library are retained. The historical
 GPL-marked custom spline sources present in the reference forks were not added;
 this repository continues to use the pinned external AGG 2.6 spline code.
@@ -28,3 +28,15 @@ with all 22 original topics and 14 illustrations. Original text and credits are
 retained; encoding, local links, and navigation are adapted for offline browsers.
 `tools/export_manual.py` documents the export; the manifest records source and
 exported-file hashes. Normal application builds do not need a CHM extractor.
+
+Native application appearance uses wxWidgets 3.3.4. The bundled build verifies
+the official source archive by SHA-256 and links wxWidgets statically. Its
+wxWindows license and bundled library notices are installed under `licenses/`.
+The MSVC runtime is redistributed with Windows packages.
+This software is based in part on the work of the Independent JPEG Group.
+
+Toolbar icons are from Font Awesome Free 7.2.0, copyright 2026 Fonticons, Inc.,
+https://fontawesome.com, under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/.
+Source commit: `337dd2045d5621ce0f8567c33c256f3dedeed55d`. Original SVG files and
+license are retained in `vendor/fontawesome`. Embedding adds uniform padding
+and changes `currentColor` to the native theme's text colour; paths are unchanged.

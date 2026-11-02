@@ -26,6 +26,28 @@
 - **Dönüşümler** – ölçekleme/döndürme ve bilineer dönüşüm; wxGTK çizim düzeltmeleri.
 - **Yerleşik yardım** – resimli kılavuzun tamamı (çevrimdışı HTML ve orijinal CHM) her platformda açılır.
 
+## Uygulama teması
+
+**Çalışma alanı → Tema → Sistem Varsayılanı / Açık / Koyu** menüsünden seçim
+yapabilirsiniz. wxWidgets'in yerel tema desteği menüleri, başlık çubuklarını,
+araç çubuklarını, durum çubuğunu, metin alanlarını, ayarları, iletişim kutularını
+ve sabitlenmiş veya yüzen panelleri anında günceller. Tuval, cetveller, şekil
+önizlemeleri, simgeler ve Hakkında sayfası da temaya uyar. Sistem Varsayılanı,
+işletim sistemindeki tema değişikliklerini izler. Tercih kaydedilir.
+
+Açık ve koyu temaların görünüm renkleri ayrı saklanır; geri döndüğünüzde özel
+renkleriniz korunur. Çizimin dolgu ve kenarlık renkleri, arka plan görseli,
+geri alma geçmişi ve uygulanmamış komut metni değişmez. Tema menüsü altı dilde
+de çevrilmiştir. Anında yerel tema değişimi için wxWidgets 3.3.4 kullanılır;
+varsayılan derleme, sağlama toplamı sabitlenmiş resmi kaynağı derler.
+
+Araç çubukları, uygulamaya gömülü 17 Font Awesome Free SVG ikon kullanır.
+İkonlar renklerini yerel temadan alır ve geçerli DPI'da keskin çizilir; ek
+font veya internet bağlantısı gerekmez. Uygulama logosu korunur.
+GTK teması koyu tercihini desteklemiyorsa kurulu koyu varyantı veya yerleşik
+Adwaita bu uygulama için kullanılır. Açık temaya dönünce özgün GTK teması
+geri yüklenir.
+
 ## Diller
 
 English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt. Dil, **Dil** menüsünden çizim kaybolmadan anında değiştirilebilir ve bir sonraki açılış için kaydedilir.
@@ -38,17 +60,16 @@ English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt.
 | Platform | Paket |
 | --- | --- |
 | Windows x64 | `ASSDraw3-Windows-x64-Setup.exe` (kurulum) veya `ASSDraw3-Windows-x64-Portable.zip` (taşınabilir) |
-| Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04; wxWidgets 3.2 GTK çalışma zamanı gerekir) |
+| Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04; GTK 3 çalışma zamanını kullanır) |
 
 ## Derleme
 
-### Windows (CMake + vcpkg)
+### Windows (CMake + MSVC)
 
-Gereksinimler: Visual Studio 2022 veya üzeri (MSVC), [vcpkg](https://github.com/microsoft/vcpkg) ve Git.
+Gereksinimler: Visual Studio 2022 veya üzeri (MSVC), CMake 3.25+, Python 3 ve Git.
 
 ```powershell
 git submodule update --init --recursive vendor/agg
-$env:VCPKG_ROOT = 'F:\vcpkg'
 .\build\build-win-vcpkg.ps1 -Fresh
 ```
 
@@ -61,7 +82,7 @@ cmake --build --preset release-x64 --config Release
 
 ### Linux
 
-Gereksinimler: CMake 3.25+, C++17 derleyicisi, Git, Ninja ve wxWidgets geliştirme paketleri (Ubuntu: `libwxgtk3.2-dev ninja-build xvfb`).
+Gereksinimler: CMake 3.25+, C++17 derleyicisi, Git, Ninja ve GTK 3 geliştirme paketleri (Ubuntu: `libgtk-3-dev pkg-config ninja-build xvfb`).
 
 ```sh
 cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -71,9 +92,14 @@ ctest --test-dir build-linux --output-on-failure
 
 Arayüz testleri varsa Xvfb üzerinde çalışır. Yalnızca çekirdek testler için `-DASSDRAW_BUILD_APP=OFF` kullanın (wxWidgets ve AGG gerekmez). Çevrimdışı derlemede `ASSDRAW_AGG_ROOT` ile mevcut `agg-src` klasörünü belirtin.
 
+CMake her iki platformda aynı wxWidgets sürümünü derler. Çevrimdışı derlemede
+`FETCHCONTENT_SOURCE_DIR_WXWIDGETS` ile açılmış resmi wxWidgets 3.3.4 kaynak
+klasörünü belirtin. Kurulu wxWidgets 3.3.4+ için `-DASSDRAW_BUNDLED_WX=OFF`
+kullanın. Windows paketleri MSVC çalışma zamanı DLL dosyalarını ve lisansları içerir.
+
 ### Bağımlılıklar
 
-- wxWidgets 3.3.1 (vcpkg üzerinden, dinamik bağlama)
+- wxWidgets 3.3.4 (SHA-256 ile doğrulanmış resmi sürüm, statik derleme ve bağlama)
 - AGG 2.6, `vendor/agg` submodule'ü olarak sabitlenmiştir ([ghaerr/agg-2.6](https://github.com/ghaerr/agg-2.6), commit `c4f36b4`)
 
 ## Çeviri

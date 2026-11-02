@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 03:19+0300\n"
+"POT-Creation-Date: 2026-11-02 07:36+0300\n"
 "PO-Revision-Date: 2026-11-02 00:00+0300\n"
 "Last-Translator: ASSDraw contributors\n"
 "Language-Team: tr\n"
@@ -13,15 +13,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/assdraw.cpp:368
+#: src/assdraw.cpp:392
 msgid "&About"
 msgstr "&Hakkında"
 
-#: src/assdraw.cpp:373
+#: src/assdraw.cpp:397
 msgid "&Background"
 msgstr "&Arka plan"
 
-#: src/assdraw.cpp:323
+#: src/assdraw.cpp:339
 msgid "&Bilinear transformation\tF7"
 msgstr "&Bilineer dönüşüm\tF7"
 
@@ -29,51 +29,51 @@ msgstr "&Bilineer dönüşüm\tF7"
 msgid "&Cancel"
 msgstr "&İptal"
 
-#: src/assdraw.cpp:371
+#: src/assdraw.cpp:395
 msgid "&Canvas"
 msgstr "&Tuval"
 
-#: src/assdraw.cpp:343
+#: src/assdraw.cpp:359
 msgid "&Center\tCtrl+5"
 msgstr "&Merkez\tCtrl+5"
 
-#: src/assdraw.cpp:334
+#: src/assdraw.cpp:350
 msgid "&Center\tCtrl+Shift+5"
 msgstr "&Merkez\tCtrl+Shift+5"
 
-#: src/assdraw.cpp:305
+#: src/assdraw.cpp:321
 msgid "&Clear\tCtrl+N"
 msgstr "&Temizle\tCtrl+N"
 
-#: src/assdraw.cpp:324
+#: src/assdraw.cpp:340
 msgid "&Coloring"
 msgstr "&Renklendirme"
 
-#: src/assdraw.cpp:321
+#: src/assdraw.cpp:337
 msgid "&Delete\tF5"
 msgstr "&Sil\tF5"
 
-#: src/assdraw.cpp:375
+#: src/assdraw.cpp:399
 msgid "&Help"
 msgstr "&Yardım"
 
-#: src/assdraw.cpp:387
+#: src/assdraw.cpp:411
 msgid "&Language"
 msgstr "&Dil"
 
-#: src/assdraw.cpp:358
+#: src/assdraw.cpp:374
 msgid "&Library"
 msgstr "&Kitaplık"
 
-#: src/assdraw.cpp:367
+#: src/assdraw.cpp:391
 msgid "&Manual"
 msgstr "&Kılavuz"
 
-#: src/assdraw.cpp:372
+#: src/assdraw.cpp:396
 msgid "&Mode"
 msgstr "&Kip"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "&No"
 msgstr "&Hayır"
 
@@ -81,47 +81,47 @@ msgstr "&Hayır"
 msgid "&OK"
 msgstr "&Tamam"
 
-#: src/assdraw.cpp:309
+#: src/assdraw.cpp:325
 msgid "&Paste\tCtrl+V"
 msgstr "&Yapıştır\tCtrl+V"
 
-#: src/assdraw.cpp:307
+#: src/assdraw.cpp:323
 msgid "&Preview\tCtrl+P"
 msgstr "&Önizleme\tCtrl+P"
 
-#: src/assdraw.cpp:312
+#: src/assdraw.cpp:328
 msgid "&Redo\tCtrl+Y"
 msgstr "&Yinele\tCtrl+Y"
 
-#: src/assdraw.cpp:364
+#: src/assdraw.cpp:388
 msgid "&Reset workspace"
 msgstr "Çalışma alanını &sıfırla"
 
-#: src/assdraw.cpp:322
+#: src/assdraw.cpp:338
 msgid "&Scale/Rotate\tF6"
 msgstr "&Ölçekle/Döndür\tF6"
 
-#: src/assdraw.cpp:360
+#: src/assdraw.cpp:376
 msgid "&Settings"
 msgstr "&Ayarlar"
 
-#: src/assdraw.cpp:361
+#: src/assdraw.cpp:377
 msgid "&Toolbars"
 msgstr "&Araç çubukları"
 
-#: src/assdraw.cpp:308
+#: src/assdraw.cpp:324
 msgid "&Transform"
 msgstr "&Dönüştür"
 
-#: src/assdraw.cpp:311
+#: src/assdraw.cpp:327
 msgid "&Undo\tCtrl+Z"
 msgstr "&Geri al\tCtrl+Z"
 
-#: src/assdraw.cpp:374
+#: src/assdraw.cpp:398
 msgid "&Workspace"
 msgstr "&Çalışma alanı"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "&Yes"
 msgstr "&Evet"
 
@@ -129,15 +129,15 @@ msgstr "&Evet"
 msgid "<Select>"
 msgstr "<Seçin>"
 
-#: src/assdraw.cpp:837
+#: src/assdraw.cpp:862
 msgid "ASS drawing copied to clipboard."
 msgstr "ASS çizimi panoya kopyalandı."
 
-#: src/localization.cpp:151
+#: src/localization.cpp:155
 msgid "ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."
 msgstr "ASSDraw3, ASS altyazı dosyaları için vektör şekiller tasarlama aracıdır."
 
-#: src/localization.cpp:161
+#: src/localization.cpp:165
 msgid "Acknowledgements"
 msgstr "Teşekkürler"
 
@@ -153,19 +153,19 @@ msgstr "Yeni bir L ekle"
 msgid "Add a new M"
 msgstr "Yeni bir M ekle"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:18
 msgid "Add to custom colours"
 msgstr "Özel renklere ekle"
 
-#: src/settings.cpp:77 src/settings.cpp:230
+#: src/settings.cpp:77 src/settings.cpp:251
 msgid "Appearance"
 msgstr "Görünüm"
 
-#: src/settings.cpp:114 src/settings.cpp:259
+#: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
 msgstr "Uygula"
 
-#: src/settings.cpp:102 src/settings.cpp:254
+#: src/settings.cpp:102 src/settings.cpp:275
 msgid "Ask for image opacity"
 msgstr "Görsel opaklığını sor"
 
@@ -177,19 +177,19 @@ msgstr "Arka plan"
 msgid "Background image opacity"
 msgstr "Arka plan görselinin opaklığı"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:18
 msgid "Basic colours"
 msgstr "Temel renkler"
 
-#: src/settings.cpp:100 src/settings.cpp:231
+#: src/settings.cpp:100 src/settings.cpp:252
 msgid "Behaviors"
 msgstr "Davranışlar"
 
-#: src/assdraw.cpp:275
+#: src/assdraw.cpp:291
 msgid "Bezier"
 msgstr "Bezier"
 
-#: src/assdraw.cpp:281
+#: src/assdraw.cpp:297
 msgid "Bilinear"
 msgstr "Bilineer"
 
@@ -201,27 +201,27 @@ msgstr "Bilineer dönüşüm"
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "Bilineer dönüşüm kipi: Şekli bozmak için köşeleri sürükleyin; bir kenarı sürüklemek iki komşu köşeyi birlikte taşır"
 
-#: src/assdraw.cpp:344
+#: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr "Sol alt\tCtrl+1"
 
-#: src/assdraw.cpp:335
+#: src/assdraw.cpp:351
 msgid "Bottom left\tCtrl+Shift+1"
 msgstr "Sol alt\tCtrl+Shift+1"
 
-#: src/assdraw.cpp:345
+#: src/assdraw.cpp:361
 msgid "Bottom right\tCtrl+3"
 msgstr "Sağ alt\tCtrl+3"
 
-#: src/assdraw.cpp:336
+#: src/assdraw.cpp:352
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "Sağ alt\tCtrl+Shift+3"
 
-#: src/assdraw.cpp:932
+#: src/assdraw.cpp:957
 msgid "Cancel"
 msgstr "İptal"
 
-#: src/include_once.hpp:63 src/settings.cpp:78 src/settings.cpp:232
+#: src/include_once.hpp:63 src/settings.cpp:78 src/settings.cpp:253
 msgid "Canvas"
 msgstr "Tuval"
 
@@ -229,7 +229,7 @@ msgstr "Tuval"
 msgid "Canvas background loaded"
 msgstr "Tuval arka planı yüklendi"
 
-#: src/settings.cpp:101 src/settings.cpp:253
+#: src/settings.cpp:101 src/settings.cpp:274
 msgid "Capitalize commands"
 msgstr "Komutları büyük harfle yaz"
 
@@ -241,11 +241,11 @@ msgstr "Alt şeklin rengini değiştir"
 msgid "Choose fill color"
 msgstr "Dolgu rengini seç"
 
-#: src/assdraw.cpp:249
+#: src/assdraw.cpp:265
 msgid "Clear"
 msgstr "Temizle"
 
-#: src/assdraw.cpp:571
+#: src/assdraw.cpp:596
 msgid "Clear canvas"
 msgstr "Tuvali temizle"
 
@@ -253,7 +253,7 @@ msgstr "Tuvali temizle"
 msgid "Clear the canvas and create a new drawing"
 msgstr "Tuvali temizleyip yeni bir çizim oluştur"
 
-#: src/assdraw.cpp:566
+#: src/assdraw.cpp:591
 msgid "Clear the canvas and create a new drawing?"
 msgstr "Tuval temizlensin ve yeni bir çizim oluşturulsun mu?"
 
@@ -261,43 +261,43 @@ msgstr "Tuval temizlensin ve yeni bir çizim oluşturulsun mu?"
 msgid "Click a filled part of the shape (not a hole)."
 msgstr "Şeklin dolu bir bölümüne tıklayın; boşluğuna değil."
 
-#: src/assdraw.cpp:284 src/assdraw.cpp:324
+#: src/assdraw.cpp:300 src/assdraw.cpp:340
 msgid "Click a filled shape to select it; double-click to choose its fill color"
 msgstr "Dolu bir şekli tıklayarak seçin; dolgu rengini seçmek için çift tıklayın"
 
-#: src/localization.cpp:16
+#: src/localization.cpp:17
 msgid "Close"
 msgstr "Kapat"
 
-#: src/assdraw.cpp:253 src/assdraw.cpp:283
+#: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
 msgstr "Renklendirme"
 
-#: src/library.cpp:227
+#: src/library.cpp:261
 msgid "Confirm delete?"
 msgstr "Silme işlemi onaylansın mı?"
 
-#: src/settings.cpp:106 src/settings.cpp:258
+#: src/settings.cpp:106 src/settings.cpp:279
 msgid "Confirm quit"
 msgstr "Çıkışı onayla"
 
-#: src/assdraw.cpp:567
+#: src/assdraw.cpp:592
 msgid "Confirmation"
 msgstr "Onay"
 
-#: src/settings.cpp:85 src/settings.cpp:239
+#: src/settings.cpp:85 src/settings.cpp:260
 msgid "Control lines"
 msgstr "Kontrol çizgileri"
 
-#: src/settings.cpp:86 src/settings.cpp:240
+#: src/settings.cpp:86 src/settings.cpp:261
 msgid "Control lines @"
 msgstr "Kontrol çizgilerinin opaklığı"
 
-#: src/settings.cpp:89 src/settings.cpp:243
+#: src/settings.cpp:89 src/settings.cpp:264
 msgid "Control points"
 msgstr "Kontrol noktaları"
 
-#: src/settings.cpp:90 src/settings.cpp:244
+#: src/settings.cpp:90 src/settings.cpp:265
 msgid "Control points @"
 msgstr "Kontrol noktalarının opaklığı"
 
@@ -317,43 +317,51 @@ msgstr "Bezier eğrisine dönüştür (B komutu)"
 msgid "Convert to line (L command)"
 msgstr "Doğruya dönüştür (L komutu)"
 
-#: src/assdraw.cpp:182 src/assdraw.cpp:460
+#: src/assdraw.cpp:190 src/assdraw.cpp:484
 msgid "Copy ASS"
 msgstr "ASS kopyala"
 
-#: src/library.cpp:224
+#: src/library.cpp:258
 msgid "Copy commands to clipboard"
 msgstr "Komutları panoya kopyala"
 
-#: src/assdraw.cpp:184 src/assdraw.cpp:461
+#: src/assdraw.cpp:192 src/assdraw.cpp:485
 msgid "Copy the command text, including ASS style tags"
 msgstr "ASS stil etiketleriyle birlikte komut metnini kopyala"
 
-#: src/assdraw.cpp:477
+#: src/assdraw.cpp:502
 msgid "Could not save the language preference."
 msgstr "Dil tercihi kaydedilemedi."
 
-#: src/localization.cpp:16
+#: src/frame_theme.cpp:76
+msgid "Could not save the theme preference."
+msgstr "Tema tercihi kaydedilemedi."
+
+#: src/localization.cpp:17
 msgid "Custom"
 msgstr "Özel"
 
-#: src/localization.cpp:16
+#: src/localization.cpp:17
 msgid "Custom colour"
 msgstr "Özel renk"
 
-#: src/localization.cpp:17
+#: src/localization.cpp:18
 msgid "Custom colours"
 msgstr "Özel renkler"
 
-#: src/assdraw.cpp:317
+#: src/assdraw.cpp:333
 msgid "D&rag\tF1"
 msgstr "&Sürükle\tF1"
 
-#: src/settings.cpp:103 src/settings.cpp:255
+#: src/assdraw.cpp:381
+msgid "Dark"
+msgstr "Koyu"
+
+#: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
 msgstr "Varsayılan görsel opaklığı (0-255)"
 
-#: src/assdraw.cpp:279
+#: src/assdraw.cpp:295
 msgid "Delete"
 msgstr "Sil"
 
@@ -369,7 +377,7 @@ msgstr "L komutunu sil"
 msgid "Delete a M"
 msgstr "M komutunu sil"
 
-#: src/library.cpp:228
+#: src/library.cpp:262
 msgid "Delete from library"
 msgstr "Kitaplıktan sil"
 
@@ -377,7 +385,7 @@ msgstr "Kitaplıktan sil"
 msgid "Delete mode"
 msgstr "Silme kipi"
 
-#: src/library.cpp:108 src/library.cpp:333
+#: src/library.cpp:117 src/library.cpp:367
 msgid "Delete selected"
 msgstr "Seçilenleri sil"
 
@@ -385,19 +393,19 @@ msgstr "Seçilenleri sil"
 msgid "Depending on what's in the clipboard, import as drawing commands or background"
 msgstr "Pano içeriğine göre çizim komutlarını veya arka planı içe aktar"
 
-#: src/assdraw.cpp:931
+#: src/assdraw.cpp:956
 msgid "Do you want to close ASSDraw3 now?"
 msgstr "ASSDraw3 kapatılsın mı?"
 
-#: src/assdraw.cpp:354
+#: src/assdraw.cpp:370
 msgid "Dock all"
 msgstr "Tümünü sabitle"
 
-#: src/assdraw.cpp:271
+#: src/assdraw.cpp:287
 msgid "Drag"
 msgstr "Sürükle"
 
-#: src/localization.cpp:156
+#: src/localization.cpp:160
 msgid "Drag an image onto the canvas to use it as a tracing background."
 msgstr "Kılavuz arka plan olarak kullanmak için tuvale bir görsel sürükleyin."
 
@@ -413,15 +421,15 @@ msgstr "Sürükleme kipi"
 msgid "Drag point"
 msgstr "Noktayı sürükle"
 
-#: src/assdraw.cpp:320
+#: src/assdraw.cpp:336
 msgid "Draw &B\tF4"
 msgstr "&B çiz\tF4"
 
-#: src/assdraw.cpp:319
+#: src/assdraw.cpp:335
 msgid "Draw &L\tF3"
 msgstr "&L çiz\tF3"
 
-#: src/assdraw.cpp:318
+#: src/assdraw.cpp:334
 msgid "Draw &M\tF2"
 msgstr "&M çiz\tF2"
 
@@ -457,15 +465,15 @@ msgstr "S çizim kipi (spline eğrisi)"
 msgid "Draw the shapes without enlarged points and control points"
 msgstr "Şekilleri büyütülmüş noktalar ve kontrol noktaları olmadan göster"
 
-#: src/settings.cpp:79 src/settings.cpp:233
+#: src/settings.cpp:79 src/settings.cpp:254
 msgid "Drawing"
 msgstr "Çizim"
 
-#: src/settings.cpp:80 src/settings.cpp:234
+#: src/settings.cpp:80 src/settings.cpp:255
 msgid "Drawing @"
 msgstr "Çizim opaklığı"
 
-#: src/assdraw.cpp:400 src/assdraw.cpp:411
+#: src/assdraw.cpp:424 src/assdraw.cpp:435
 msgid "Drawing commands"
 msgstr "Çizim komutları"
 
@@ -477,15 +485,15 @@ msgstr "Çizim kipi"
 msgid "Edit the source"
 msgstr "Kaynağı düzenle"
 
-#: src/library.cpp:48 src/library.cpp:328
+#: src/library.cpp:48 src/library.cpp:362
 msgid "Empty drawing"
 msgstr "Boş çizim"
 
-#: src/assdraw.cpp:477 src/canvas.cpp:1186
+#: src/assdraw.cpp:502 src/canvas.cpp:1186
 msgid "Error"
 msgstr "Hata"
 
-#: src/assdraw.cpp:932
+#: src/assdraw.cpp:957
 msgid "Exit"
 msgstr "Çıkış"
 
@@ -497,7 +505,7 @@ msgstr "X = 4 etrafında yatay çevir"
 msgid "Flip vertically at Y = 3"
 msgstr "Y = 3 etrafında dikey çevir"
 
-#: src/settings.cpp:97 src/settings.cpp:251
+#: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
 msgstr "Yatay cetvel"
 
@@ -505,35 +513,39 @@ msgstr "Yatay cetvel"
 msgid "Help! Help!"
 msgstr "Yardım! Yardım!"
 
-#: src/assdraw.cpp:353
+#: src/assdraw.cpp:369
 msgid "Hide all"
 msgstr "Tümünü gizle"
 
-#: src/localization.cpp:160
+#: src/localization.cpp:164
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
 msgstr "Renklendirme kipinde dolu bir alt şekli seçip çift tıklayarak rengini belirleyin. ASS kopyala, biçimlendirilmiş çizimi kopyalar."
 
-#: src/assdraw.cpp:433
+#: src/assdraw.cpp:457
 msgid "Language"
 msgstr "Dil"
 
-#: src/settings.cpp:93 src/settings.cpp:247
+#: src/settings.cpp:93 src/settings.cpp:268
 msgid "Library"
 msgstr "Kitaplık"
 
-#: src/settings.cpp:94 src/settings.cpp:248
+#: src/settings.cpp:94 src/settings.cpp:269
 msgid "Library shapes"
 msgstr "Kitaplık şekilleri"
 
-#: src/assdraw.cpp:274
+#: src/assdraw.cpp:380
+msgid "Light"
+msgstr "Açık"
+
+#: src/assdraw.cpp:290
 msgid "Line"
 msgstr "Doğru"
 
-#: src/library.cpp:318
+#: src/library.cpp:352
 msgid "Load shape from library"
 msgstr "Kitaplıktan şekil yükle"
 
-#: src/library.cpp:216
+#: src/library.cpp:250
 msgid "Load to canvas"
 msgstr "Tuvale yükle"
 
@@ -542,11 +554,11 @@ msgstr "Tuvale yükle"
 msgid "Loading '%s' as canvas background ..."
 msgstr "'%s' tuval arka planı olarak yükleniyor..."
 
-#: src/assdraw.cpp:709
+#: src/assdraw.cpp:734
 msgid "Manual"
 msgstr "Kılavuz"
 
-#: src/localization.cpp:162
+#: src/localization.cpp:166
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
 msgstr "Maxim Shemanarev: Anti-Grain Geometry. wxWidgets ekibi: arayüz araçları. Adrian Secord: wxAGG."
 
@@ -586,7 +598,7 @@ msgstr "Kip: Ölçekle/Döndür"
 msgid "Modify drawing commands"
 msgstr "Çizim komutlarını değiştir"
 
-#: src/assdraw.cpp:272
+#: src/assdraw.cpp:288
 msgid "Move"
 msgstr "Taşı"
 
@@ -606,11 +618,11 @@ msgstr "[0,0] noktasını buraya taşı"
 msgid "Move origin"
 msgstr "Başlangıç noktasını taşı"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "No"
 msgstr "Hayır"
 
-#: src/settings.cpp:105 src/settings.cpp:257
+#: src/settings.cpp:105 src/settings.cpp:278
 msgid "No splash screen"
 msgstr "Açılış ekranını gösterme"
 
@@ -626,63 +638,63 @@ msgstr ""
 "Girilen değerlerden en az biri gerçek sayı değil.\n"
 "Lütfen düzeltin."
 
-#: src/settings.cpp:95 src/settings.cpp:249
+#: src/settings.cpp:95 src/settings.cpp:270
 msgid "Origin"
 msgstr "Başlangıç noktası"
 
-#: src/settings.cpp:96 src/settings.cpp:250
+#: src/settings.cpp:96 src/settings.cpp:271
 msgid "Origin cross size"
 msgstr "Başlangıç işaretinin boyutu"
 
-#: src/localization.cpp:153
+#: src/localization.cpp:157
 msgid "Original application: ai-chan (2006-2007)."
 msgstr "Orijinal uygulama: ai-chan (2006-2007)."
 
-#: src/settings.cpp:83 src/settings.cpp:237
+#: src/settings.cpp:83 src/settings.cpp:258
 msgid "Outline"
 msgstr "Kenarlık"
 
-#: src/settings.cpp:84 src/settings.cpp:238
+#: src/settings.cpp:84 src/settings.cpp:259
 msgid "Outline @"
 msgstr "Kenarlık opaklığı"
 
-#: src/assdraw.cpp:293
+#: src/assdraw.cpp:309
 msgid "Pan background"
 msgstr "Arka planı kaydır"
 
-#: src/assdraw.cpp:292
+#: src/assdraw.cpp:308
 msgid "Pan drawing"
 msgstr "Çizimi kaydır"
 
-#: src/assdraw.cpp:327
+#: src/assdraw.cpp:343
 msgid "Pan/Zoom &Drawing\tShift+F1"
 msgstr "&Çizimi kaydır/yakınlaştır\tShift+F1"
 
-#: src/assdraw.cpp:328
+#: src/assdraw.cpp:344
 msgid "Pan/Zoom Back&ground\tShift+F2"
 msgstr "Arka &planı kaydır/yakınlaştır\tShift+F2"
 
-#: src/settings.cpp:104 src/settings.cpp:256
+#: src/settings.cpp:104 src/settings.cpp:277
 msgid "Parse S/P/C"
 msgstr "S/P/C komutlarını ayrıştır"
 
-#: src/settings.cpp:87 src/settings.cpp:241
+#: src/settings.cpp:87 src/settings.cpp:262
 msgid "Points"
 msgstr "Noktalar"
 
-#: src/settings.cpp:88 src/settings.cpp:242
+#: src/settings.cpp:88 src/settings.cpp:263
 msgid "Points @"
 msgstr "Nokta opaklığı"
 
-#: src/assdraw.cpp:251 src/settings.cpp:81 src/settings.cpp:235
+#: src/assdraw.cpp:267 src/settings.cpp:81 src/settings.cpp:256
 msgid "Preview"
 msgstr "Önizleme"
 
-#: src/settings.cpp:82 src/settings.cpp:236
+#: src/settings.cpp:82 src/settings.cpp:257
 msgid "Preview @"
 msgstr "Önizleme opaklığı"
 
-#: src/assdraw.cpp:875
+#: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr "Yinele\tCtrl+Y"
 
@@ -690,24 +702,24 @@ msgstr "Yinele\tCtrl+Y"
 msgid "Redo last undo"
 msgstr "Son geri alma işlemini yinele"
 
-#: src/assdraw.cpp:880
+#: src/assdraw.cpp:905
 #, c-format
 msgid "Redo: %s\tCtrl+Y"
 msgstr "Yinele: %s\tCtrl+Y"
 
-#: src/assdraw.cpp:338
+#: src/assdraw.cpp:354
 msgid "Remove background\tShift+Del"
 msgstr "Arka planı kaldır\tShift+Del"
 
-#: src/assdraw.cpp:337 src/assdraw.cpp:362
+#: src/assdraw.cpp:353 src/assdraw.cpp:386
 msgid "Reposition [&0, 0]"
 msgstr "[&0, 0] noktasını konumlandır"
 
-#: src/settings.cpp:117 src/settings.cpp:260
+#: src/settings.cpp:117 src/settings.cpp:281
 msgid "Revert"
 msgstr "Geri döndür"
 
-#: src/localization.cpp:159
+#: src/localization.cpp:163
 msgid "Right-double-click opens a context menu. Hold Shift to temporarily switch to Drag mode."
 msgstr "Sağ tuşla çift tıklamak bağlam menüsünü açar. Geçici olarak sürükleme kipine geçmek için Shift tuşunu basılı tutun."
 
@@ -739,11 +751,11 @@ msgstr "(1, 2) etrafında saat yönünde 90° döndür"
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "(-1, 2) etrafında saat yönünün tersine 90° döndür"
 
-#: src/library.cpp:104 src/library.cpp:332
+#: src/library.cpp:113 src/library.cpp:366
 msgid "Save canvas"
 msgstr "Tuvali kaydet"
 
-#: src/library.cpp:225
+#: src/library.cpp:259
 msgid "Save canvas here"
 msgstr "Tuvali buraya kaydet"
 
@@ -759,7 +771,7 @@ msgstr "Yatayda 2 kat büyüt"
 msgid "Scale up vertically by a factor of 3"
 msgstr "Dikeyde 3 kat büyüt"
 
-#: src/assdraw.cpp:280
+#: src/assdraw.cpp:296
 msgid "Scale/Rotate"
 msgstr "Ölçekle/Döndür"
 
@@ -767,31 +779,31 @@ msgstr "Ölçekle/Döndür"
 msgid "Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate"
 msgstr "Ölçekleme/döndürme kipi: Yeniden boyutlandırmak için köşeyi veya kenarı sürükleyin; döndürmek için sağ tuşla sürükleyin"
 
-#: src/localization.cpp:154
+#: src/localization.cpp:158
 msgid "Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."
 msgstr "Bir çizim aracı seçin; doğru ve eğri eklemek için tıklayın veya sürükleyin. Çizimi değiştirmek için noktaları ve kontrol tutamaçlarını sürükleyin."
 
-#: src/assdraw.cpp:254
+#: src/assdraw.cpp:270
 msgid "Select a shape, then double-click it to choose its fill color"
 msgstr "Bir şekli seçin; dolgu rengini seçmek için çift tıklayın"
 
-#: src/library.cpp:106 src/library.cpp:332
+#: src/library.cpp:115 src/library.cpp:366
 msgid "Select all"
 msgstr "Tümünü seç"
 
-#: src/library.cpp:107 src/library.cpp:333
+#: src/library.cpp:116 src/library.cpp:367
 msgid "Select none"
 msgstr "Seçimi kaldır"
 
-#: src/settings.cpp:91 src/settings.cpp:245
+#: src/settings.cpp:91 src/settings.cpp:266
 msgid "Selected points"
 msgstr "Seçili noktalar"
 
-#: src/settings.cpp:92 src/settings.cpp:246
+#: src/settings.cpp:92 src/settings.cpp:267
 msgid "Selected points @"
 msgstr "Seçili noktaların opaklığı"
 
-#: src/assdraw.cpp:330
+#: src/assdraw.cpp:346
 msgid "Set background image opacity"
 msgstr "Arka plan görselinin opaklığını ayarla"
 
@@ -799,7 +811,7 @@ msgstr "Arka plan görselinin opaklığını ayarla"
 msgid "Set continuous"
 msgstr "Sürekliliği etkinleştir"
 
-#: src/assdraw.cpp:404 src/assdraw.cpp:412
+#: src/assdraw.cpp:428 src/assdraw.cpp:436
 msgid "Settings"
 msgstr "Ayarlar"
 
@@ -807,7 +819,7 @@ msgstr "Ayarlar"
 msgid "Shape selected. Double-click to choose its fill color."
 msgstr "Şekil seçildi. Dolgu rengini seçmek için çift tıklayın."
 
-#: src/assdraw.cpp:395 src/assdraw.cpp:410
+#: src/assdraw.cpp:419 src/assdraw.cpp:434
 msgid "Shapes Library"
 msgstr "Şekil Kitaplığı"
 
@@ -815,7 +827,7 @@ msgstr "Şekil Kitaplığı"
 msgid "Shapes library"
 msgstr "Şekil kitaplığı"
 
-#: src/assdraw.cpp:352
+#: src/assdraw.cpp:368
 msgid "Show all"
 msgstr "Tümünü göster"
 
@@ -823,7 +835,7 @@ msgstr "Tümünü göster"
 msgid "Smooth connection"
 msgstr "Pürüzsüz bağlantı"
 
-#: src/assdraw.cpp:377
+#: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
 msgstr "Sistem Varsayılanı"
 
@@ -831,43 +843,51 @@ msgstr "Sistem Varsayılanı"
 msgid "Templates"
 msgstr "Şablonlar"
 
-#: src/localization.cpp:163
+#: src/localization.cpp:167
 msgid "Thanks to jfs, ArchMageZeratul, RoRo, and the Aegisub community for their suggestions and support."
 msgstr "Önerileri ve destekleri için jfs, ArchMageZeratul, RoRo ve Aegisub topluluğuna teşekkürler."
 
-#: src/assdraw.cpp:709
+#: src/assdraw.cpp:734
 msgid "The manual is missing. Please reinstall ASSDraw3."
 msgstr "Kılavuz bulunamadı. Lütfen ASSDraw3'ü yeniden kurun."
 
-#: src/assdraw.cpp:432
+#: src/assdraw.cpp:456
 msgid "The selected language could not be loaded. Please reinstall ASSDraw3."
 msgstr "Seçilen dil yüklenemedi. Lütfen ASSDraw3'ü yeniden kurun."
 
-#: src/localization.cpp:152
+#: src/frame_theme.cpp:63
+msgid "The selected theme could not be applied."
+msgstr "Seçilen tema uygulanamadı."
+
+#: src/assdraw.cpp:385 src/frame_theme.cpp:63 src/frame_theme.cpp:76
+msgid "Theme"
+msgstr "Tema"
+
+#: src/localization.cpp:156
 msgid "This version was created by Kerim Demirkaynak."
 msgstr "Bu sürüm Kerim Demirkaynak tarafından oluşturuldu."
 
-#: src/localization.cpp:155
+#: src/localization.cpp:159
 msgid "Tips and shortcuts"
 msgstr "İpuçları ve kısayollar"
 
-#: src/assdraw.cpp:341
+#: src/assdraw.cpp:357
 msgid "Top left\tCtrl+7"
 msgstr "Sol üst\tCtrl+7"
 
-#: src/assdraw.cpp:332
+#: src/assdraw.cpp:348
 msgid "Top left\tCtrl+Shift+7"
 msgstr "Sol üst\tCtrl+Shift+7"
 
-#: src/assdraw.cpp:342
+#: src/assdraw.cpp:358
 msgid "Top right\tCtrl+9"
 msgstr "Sağ üst\tCtrl+9"
 
-#: src/assdraw.cpp:333
+#: src/assdraw.cpp:349
 msgid "Top right\tCtrl+Shift+9"
 msgstr "Sağ üst\tCtrl+Shift+9"
 
-#: src/assdraw.cpp:634 src/dlgctrl.cpp:100
+#: src/assdraw.cpp:659 src/dlgctrl.cpp:100
 msgid "Transform"
 msgstr "Dönüştür"
 
@@ -875,7 +895,7 @@ msgstr "Dönüştür"
 msgid "Transform the drawing using matrix transformation"
 msgstr "Çizimi matris dönüşümüyle dönüştür"
 
-#: src/assdraw.cpp:864
+#: src/assdraw.cpp:889
 msgid "Undo\tCtrl+Z"
 msgstr "Geri al\tCtrl+Z"
 
@@ -883,12 +903,12 @@ msgstr "Geri al\tCtrl+Z"
 msgid "Undo last action"
 msgstr "Son işlemi geri al"
 
-#: src/assdraw.cpp:869
+#: src/assdraw.cpp:894
 #, c-format
 msgid "Undo: %s\tCtrl+Z"
 msgstr "Geri al: %s\tCtrl+Z"
 
-#: src/assdraw.cpp:355
+#: src/assdraw.cpp:371
 msgid "Undock all"
 msgstr "Tümünü ayır"
 
@@ -896,15 +916,15 @@ msgstr "Tümünü ayır"
 msgid "Unset continuous"
 msgstr "Sürekliliği devre dışı bırak"
 
-#: src/localization.cpp:157
+#: src/localization.cpp:161
 msgid "Use the Shapes Library to store drawings. Ctrl+Z undoes a drawing edit; Ctrl+Y redoes it."
 msgstr "Çizimlerinizi saklamak için Şekil Kitaplığı'nı kullanın. Ctrl+Z çizim düzenlemesini geri alır; Ctrl+Y yineler."
 
-#: src/localization.cpp:158
+#: src/localization.cpp:162
 msgid "Use the mouse wheel or PageUp/PageDown to zoom. Right-drag pans the enabled drawing or background layer."
 msgstr "Yakınlaştırmak için fare tekerleğini veya PageUp/PageDown tuşlarını kullanın. Sağ tuşla sürüklemek etkin çizim veya arka plan katmanını kaydırır."
 
-#: src/settings.cpp:98 src/settings.cpp:252
+#: src/settings.cpp:98 src/settings.cpp:273
 msgid "V ruler"
 msgstr "Dikey cetvel"
 
@@ -917,7 +937,7 @@ msgstr "Değer hatası"
 msgid "Version: %s"
 msgstr "Sürüm: %s"
 
-#: src/localization.cpp:15
+#: src/localization.cpp:16
 msgid "Yes"
 msgstr "Evet"
 
