@@ -112,12 +112,17 @@ static void CheckClipboardImages(ASSDrawFrame* frame)
     for (int y = 0; y < image.GetHeight(); ++y)
         for (int x = 0; x < image.GetWidth(); ++x)
             image.SetAlpha(x, y, x < 60 ? (y < 40 ? 255 : 0) : (y < 40 ? 128 : 64));
+#ifdef __WXMSW__
     wxMemoryOutputStream png;
     assert(image.SaveFile(png, wxBITMAP_TYPE_PNG));
     auto* data = new wxCustomDataObject(wxDataFormat("PNG"));
     std::vector<unsigned char> bytes(png.GetSize());
     png.CopyTo(bytes.data(), bytes.size());
     assert(data->SetData(bytes.size(), bytes.data()));
+#else
+    // wxGTK represents its standard bitmap clipboard format as image/png.
+    auto* data = new wxBitmapDataObject(wxBitmap(image));
+#endif
     {
         wxClipboardLocker clipboard;
         assert(!!clipboard && wxTheClipboard->SetData(data));

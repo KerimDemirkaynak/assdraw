@@ -669,6 +669,7 @@ void ASSDrawFrame::_Paste()
 		if (!clipboard) return;
 		// Browsers and image editors commonly provide PNG in addition to DIB.
 		// Prefer it to preserve alpha instead of relying on native bitmap depth.
+#ifdef __WXMSW__
 		for (const char* format : {"image/png", "PNG"}) {
 			wxCustomDataObject data{wxDataFormat(format)};
 			if (wxTheClipboard->IsSupported(data.GetFormat())
@@ -678,6 +679,9 @@ void ASSDrawFrame::_Paste()
 				if (image.LoadFile(stream, wxBITMAP_TYPE_PNG)) break;
 			}
 		}
+#endif
+		// wxGTK's bitmap data object already transfers PNG. Its standard PNG
+		// format must not be requested as a private/custom data format.
 		if (!image.IsOk() && wxTheClipboard->IsSupported(wxDF_BITMAP)) {
 			wxBitmapDataObject data;
 			if (wxTheClipboard->GetData(data) && data.GetBitmap().IsOk())
