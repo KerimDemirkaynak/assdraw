@@ -11,6 +11,7 @@
 #include <wx/iconbndl.h>
 #include <wx/stopwatch.h>
 #include <wx/utils.h>
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <clocale>
@@ -70,6 +71,67 @@ static void CheckPreviewPixels(ASSDrawShapePreview* preview, const char* stage)
     assert(ink > 50);
 }
 
+static void CheckLibraryResize(ASSDrawFrame* frame, ASSDrawShapePreview* drawing)
+{
+    auto* library = frame->shapelib;
+    const wxString commands = drawing->GenerateASS();
+    // Match the reported case with several previews and a vertical scrollbar.
+    for (int i = 0; i < 3; ++i)
+        library->AddShapePreview("");
+    const wxString perspective = frame->m_mgr.SavePerspective();
+    frame->m_mgr.GetPane(library).Float().FloatingPosition(40, 40)
+        .FloatingSize(frame->FromDIP(wxSize(220, 500)));
+    frame->m_mgr.Update();
+    wxTheApp->Yield(true);
+    wxFrame* host = frame->m_mgr.GetPane(library).frame;
+    assert(host);
+
+    // Resize the real enclosing window; do not directly resize previews or
+    // manually call their layout helper, which would mask a broken size event.
+    for (int repeat = 0; repeat < 3; ++repeat) {
+        for (int width : {220, 560, 180, 700, 160, 480, 180, 220}) {
+            const wxSize requested = frame->FromDIP(wxSize(width, 500));
+            host->SetClientSize(requested);
+            wxStopWatch elapsed;
+            bool fitted = false;
+            do {
+                host->Layout();
+                wxTheApp->Yield(true);
+                const wxSize viewport = library->libarea->GetClientSize();
+                const int expected = std::max(frame->FromDIP(32), viewport.x - frame->FromDIP(10));
+                fitted = std::abs(host->GetClientSize().x - requested.x) <= frame->FromDIP(4)
+                    && library->GetSize().x <= host->GetClientSize().x
+                    && library->libarea->GetSize().x <= library->GetClientSize().x
+                    && library->libarea->GetVirtualSize().x <= viewport.x + frame->FromDIP(2);
+                for (auto* preview : library->GetShapePreviews()) {
+                    fitted = fitted && std::abs(preview->GetSize().x - expected) <= frame->FromDIP(2)
+                        && std::abs(preview->GetSize().y - expected) <= frame->FromDIP(2);
+                }
+                if (fitted)
+                    break;
+                wxMilliSleep(10);
+            } while (elapsed.Time() < 2000);
+            if (!fitted) {
+                std::cerr << "Library resize stuck: requested=" << width
+                    << ", host=" << host->GetClientSize().x << ", library=" << library->GetSize().x
+                    << ", viewport=" << library->libarea->GetClientSize().x
+                    << ", virtual=" << library->libarea->GetVirtualSize().x
+                    << ", preview=" << drawing->GetSize().x << "x" << drawing->GetSize().y << "\n";
+            }
+            assert(fitted);
+            assert(drawing->GenerateASS() == commands);
+        }
+    }
+    library->libarea->Scroll(0, 100000);
+    wxTheApp->Yield(true);
+    assert(library->GetShapePreviews().size() == 4);
+    library->libarea->Scroll(0, 0);
+    assert(frame->m_mgr.LoadPerspective(perspective));
+    frame->ApplyDpiLayout();
+    wxTheApp->Yield(true);
+    CheckPreviewPixels(drawing, "after-library-resize");
+}
+
 class ASSDrawTestApp : public wxApp {
 public:
     bool OnInit() override { wxInitAllImageHandlers(); return true; }
@@ -99,6 +161,8 @@ int main(int argc, char** argv)
     wxTheApp->SetTopWindow(frame);
     auto* canvas = frame->m_canvas;
     wxTheApp->Yield(true);
+    assert(frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
+    assert(frame->viewMenu->IsChecked(MENU_SETTINGS));
 
 #ifdef __WXMSW__
     // A valid title-bar icon doesn't guarantee that Windows has a taskbar icon.
@@ -153,6 +217,7 @@ int main(int argc, char** argv)
     preview->ParseASS(before);
     frame->shapelib->UpdatePreviewDisplays();
     CheckPreviewPixels(preview, "after-resize");
+    CheckLibraryResize(frame, preview);
     frame->shapelib->LoadToCanvas(preview);
     assert(canvas->GenerateASS() == before);
 
@@ -275,6 +340,31 @@ int main(int argc, char** argv)
     assert(frame->shapelib->GetShapePreviews().empty());
     wxTheApp->Yield(true);
 
+    // Simulate an existing 3.1 workspace from before Settings was visible by
+    // default. The migration must open it once, then respect a user hide.
+    frame->m_mgr.GetPane(frame->settingsdlg).Hide();
+    frame->m_mgr.Update();
+    frame->config->DeleteEntry("/ui/settings_visible_default_applied");
+    frame->Destroy();
+    wxTheApp->Yield(true);
+    frame = new ASSDrawFrame(wxTheApp, TITLE, wxDefaultPosition, wxSize(800, 600));
+    wxTheApp->SetTopWindow(frame);
+    wxTheApp->Yield(true);
+    assert(frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
+    assert(frame->viewMenu->IsChecked(MENU_SETTINGS));
+    wxCommandEvent hide_settings(wxEVT_MENU, MENU_SETTINGS);
+    frame->GetEventHandler()->ProcessEvent(hide_settings);
+    assert(!frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
+    frame->Destroy();
+    wxTheApp->Yield(true);
+    frame = new ASSDrawFrame(wxTheApp, TITLE, wxDefaultPosition, wxSize(800, 600));
+    wxTheApp->SetTopWindow(frame);
+    wxTheApp->Yield(true);
+    assert(!frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
+    assert(!frame->viewMenu->IsChecked(MENU_SETTINGS));
+    frame->_ResetPerspective();
+    assert(frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
+    assert(frame->viewMenu->IsChecked(MENU_SETTINGS));
     frame->Destroy();
     wxTheApp->Yield(true);
     wxTheApp->OnExit();

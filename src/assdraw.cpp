@@ -208,6 +208,12 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 	wxString perspective;
 	if (config->Read(_T("perspective"), &perspective) && version == VERSION) m_mgr.LoadPerspective(perspective, false);
 	config->SetPath(_T(".."));
+	// Apply the visible Settings default once to existing workspaces, while
+	// allowing a later explicit hide/show choice to persist across restarts.
+	if (!config->ReadBool("/ui/settings_visible_default_applied", false)) {
+		m_mgr.GetPane(settingsdlg).Show(true);
+		config->Write("/ui/settings_visible_default_applied", true);
+	}
 	UpdatePaneTranslations();
 
 	config->SetPath(_T("library"));
@@ -402,7 +408,7 @@ void ASSDrawFrame::SetPanes()
 
 	if (settingsdlg)
 		m_mgr.AddPane(settingsdlg, wxAuiPaneInfo().Name(_T("settings")).Caption(_("Settings")).
-                  Right().Layer(3).Position(0).CloseButton(true).BestSize(FromDIP(wxSize(240, 480))).MinSize(FromDIP(wxSize(200, 200))).Show(false));
+                  Right().Layer(3).Position(0).CloseButton(true).BestSize(FromDIP(wxSize(240, 480))).MinSize(FromDIP(wxSize(200, 200))).Show(true));
 }
 
 void ASSDrawFrame::UpdatePaneTranslations()
