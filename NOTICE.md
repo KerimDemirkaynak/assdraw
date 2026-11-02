@@ -33,3 +33,4 @@ Native application appearance uses wxWidgets 3.3.4. The bundled build verifies
 the official source archive by SHA-256 and links wxWidgets statically. Its
 wxWindows license and bundled library notices are installed under `licenses/`.
 The MSVC runtime is redistributed with Windows packages.
+This software is based in part on the work of the Independent JPEG Group.

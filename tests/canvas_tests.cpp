@@ -302,12 +302,12 @@ int main(int argc, char** argv)
         assert(AssdrawTheme::IsDark() == dark);
         assert(frame->view_is_dark == dark);
     };
-    const auto snapshot = [frame](const char* name) {
-        frame->Refresh(); frame->Update(); wxTheApp->Yield(true);
-        const wxSize size = frame->GetClientSize();
+    const auto snapshot = [](wxWindow* window, const char* name) {
+        window->Refresh(); window->Update(); wxTheApp->Yield(true);
+        const wxSize size = window->GetSize();
         wxBitmap bitmap(size.x, size.y);
         wxMemoryDC target(bitmap);
-        wxClientDC source(frame);
+        wxWindowDC source(window);
         assert(target.Blit(0, 0, size.x, size.y, &source, 0, 0));
         target.SelectObject(wxNullBitmap);
         assert(bitmap.SaveFile(wxString::FromUTF8(name), wxBITMAP_TYPE_PNG));
@@ -329,7 +329,22 @@ int main(int argc, char** argv)
         assert(canvas->GetTopUndo() == theme_undo && canvas->GetTopRedo() == theme_redo);
         assert(canvas->GetBackgroundInfo(width, height, after, after_scale));
         assert(after == displacement && after_scale == scale);
-        if (repeat == 0) snapshot("theme-dark.png");
+        if (repeat == 0) {
+            snapshot(frame, "theme-dark.png");
+            auto* about = new ASSDrawAboutDlg(frame, 0);
+            about->Show();
+            wxTheApp->Yield(true);
+            assert(about->GetBackgroundColour() == AssdrawTheme::Surface());
+            snapshot(about, "theme-dark-about.png");
+            about->Destroy();
+            wxTheApp->Yield(true);
+            auto* transform = new ASSDrawTransformDlg(frame);
+            transform->Show();
+            wxTheApp->Yield(true);
+            snapshot(transform, "theme-dark-transform.png");
+            transform->Destroy();
+            wxTheApp->Yield(true);
+        }
         assert(frame->ApplyTheme("light"));
         settle_theme(false);
         assert(frame->themeMenu->IsChecked(6101));
@@ -337,7 +352,7 @@ int main(int argc, char** argv)
         assert(frame->colors.library_libarea == light_library);
         assert(canvas->GenerateASS() == theme_document);
         assert(frame->srctxtctrl->GetValue() == theme_pending);
-        if (repeat == 0) snapshot("theme-light.png");
+        if (repeat == 0) snapshot(frame, "theme-light.png");
     }
     assert(frame->ApplyTheme("dark")); settle_theme(true);
     const wxColour custom_dark(20, 30, 40);

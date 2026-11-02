@@ -117,7 +117,7 @@ if(ASSDRAW_BUNDLED_WX)
     install(FILES "${wxwidgets_SOURCE_DIR}/docs/licence.txt" DESTINATION licenses RENAME wxWidgets.txt)
     install(FILES "${wxwidgets_SOURCE_DIR}/src/jpeg/README" DESTINATION licenses RENAME jpeg.txt)
     foreach(thirdparty_license src/expat/COPYING src/zlib/LICENSE src/tiff/LICENSE.md
-            src/png/LICENSE 3rdparty/pcre/COPYING 3rdparty/nanosvg/LICENSE.txt)
+            src/png/LICENSE 3rdparty/pcre/LICENCE.md 3rdparty/nanosvg/LICENSE.txt)
         get_filename_component(license_directory "${thirdparty_license}" DIRECTORY)
         get_filename_component(license_name "${license_directory}" NAME)
         install(FILES "${wxwidgets_SOURCE_DIR}/${thirdparty_license}"

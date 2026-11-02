@@ -352,7 +352,7 @@ BigStaticBitmapCtrl::BigStaticBitmapCtrl(wxWindow *parent, wxBitmapBundle bmap, 
 {
 	bitmap = bmap;
 	bitmap_logical_size = bitmap.IsOk() ? bitmap.GetDefaultSize() : wxSize(1, 1);
-	bgbrush = wxBrush(bgcol);
+	SetBackgroundColour(bgcol);
 	window_to_drag = todrag;
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -367,7 +367,7 @@ BigStaticBitmapCtrl::~BigStaticBitmapCtrl()
 void BigStaticBitmapCtrl::OnPaint(wxPaintEvent& event)
 {
 	wxPaintDC dc(this);
-	dc.SetBackground(bgbrush);
+	dc.SetBackground(wxBrush(GetBackgroundColour()));
 	dc.Clear();
 	if (bitmap.IsOk())
 		dc.DrawBitmap(bitmap.GetBitmap(GetScaledBitmapSize()), wxPoint(0, 0), true);

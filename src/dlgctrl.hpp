@@ -120,7 +120,6 @@ protected:
 
 	wxBitmapBundle bitmap;
 	wxSize bitmap_logical_size;
-	wxBrush bgbrush;
 	wxWindow *window_to_drag;
 	wxPoint dragpoint, wndpos;
 
