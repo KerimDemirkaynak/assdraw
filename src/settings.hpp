@@ -50,6 +50,11 @@ public:
 	virtual void OnSettingsApplyButtonClicked(wxCommandEvent &event);
 	virtual void OnSettingsRevertButtonClicked(wxCommandEvent &event);
 	virtual void RefreshSettingsDisplay();
+	void UpdateTranslations();
+	wxPGId appearance_category;
+	wxPGId behavior_category;
+	wxButton* apply_button;
+	wxButton* revert_button;
 
 	wxPGId colors_canvas_bg_pgid;
 	wxPGId colors_canvas_shape_normal_pgid;
@@ -71,13 +76,13 @@ public:
 	wxPGId alphas_canvas_shape_mainpoint_pgid;
 	wxPGId alphas_canvas_shape_controlpoint_pgid;
 	wxPGId alphas_canvas_shape_selectpoint_pgid;
+	wxPGId alphas_dfltimgopac_pgid;
 	wxPGId sizes_origincross_pgid;
 	wxPGId behaviors_capitalizecmds_pgid;
 	wxPGId behaviors_autoaskimgopac_pgid;
 	wxPGId behaviors_parse_spc_pgid;
 	wxPGId behaviors_nosplashscreen_pgid;
 	wxPGId behaviors_confirmquit_pgid;
-
 	wxPropertyGrid *propgrid;
 	//DECLARE_EVENT_TABLE()
 

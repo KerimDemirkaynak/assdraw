@@ -1,6 +1,6 @@
 [Setup]
 AppName=ASSDraw3
-AppVersion=3.0
+AppVersion=3.1
 DefaultDirName={autopf}\ASSDraw3
 DefaultGroupName=ASSDraw3
 OutputDir=installer
@@ -38,12 +38,19 @@ Name: "uk_UA"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "build-dir\Release\assdraw3.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build-dir\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build-dir\Release\assdraw3.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source: "build-dir\Release\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source: "build-dir\Release\ASSDraw3.chm"; DestDir: "{app}\bin"; Flags: ignoreversion
+Source: "build-dir\Release\locale\*"; DestDir: "{app}\bin\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build-dir\Release\help\*"; DestDir: "{app}\bin\help"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "NOTICE.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "vendor\wxlocale\LICENSE.wxWidgets.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "vendor\wxlocale\COPYING.LIB.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\ASSDraw3"; Filename: "{app}\assdraw3.exe"
-Name: "{autodesktop}\ASSDraw3"; Filename: "{app}\assdraw3.exe"; Tasks: desktopicon
+Name: "{autoprograms}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"
+Name: "{autodesktop}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\assdraw3.exe"; Description: "{cm:LaunchProgram,ASSDraw3}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; Description: "{cm:LaunchProgram,ASSDraw3}"; Flags: nowait postinstall skipifsilent

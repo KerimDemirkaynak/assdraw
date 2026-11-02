@@ -6,6 +6,32 @@ on:
   workflow_dispatch: # Bu parametre sayesinde Actions sekmesinden manuel tetikleyebilirsin.
 
 jobs:
+  build-linux:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwxgtk3.2-dev ninja-build xvfb gettext
+    - name: Configure
+      run: cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
+    - name: Build editor and tests
+      run: cmake --build build-linux --parallel 2
+    - name: Package Linux build
+      run: |
+        cmake --install build-linux --prefix package/ASSDraw3-Linux-x64
+        python3 tools/translations.py --check-package package/ASSDraw3-Linux-x64
+        tar -C package -czf ASSDraw3-Linux-x64.tar.gz ASSDraw3-Linux-x64
+    - name: Upload Linux build
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw3-Linux-x64
+        path: ASSDraw3-Linux-x64.tar.gz
+        if-no-files-found: error
+    - name: Run regression tests
+      run: ctest --test-dir build-linux --output-on-failure
+
   build-windows:
     runs-on: windows-latest
 
@@ -44,6 +70,30 @@ jobs:
       run: .\build\build-win-vcpkg.ps1 -Fresh
       shell: pwsh
 
+    - name: Package Windows build
+      run: |
+        $package = 'package\ASSDraw3-Windows-x64'
+        cmake --install build-dir --config Release --prefix $package
+        if ($LASTEXITCODE -ne 0) { throw 'Application staging failed.' }
+        Get-ChildItem 'build-dir\Release' -Filter '*.dll' | Copy-Item -Destination $package
+        python tools/translations.py --check-package $package
+        if ($LASTEXITCODE -ne 0) { throw 'Language or manual files are missing.' }
+        Compress-Archive -Path "$package\*" -DestinationPath 'ASSDraw3-Windows-x64.zip' -Force
+      shell: pwsh
+
+    - name: Upload Windows build
+      uses: actions/upload-artifact@v4
+      with:
+        name: ASSDraw3-Windows-x64
+        path: ASSDraw3-Windows-x64.zip
+        if-no-files-found: error
+
+    - name: Build and run regression tests
+      run: |
+        cmake --build build-dir --config Release --target assdraw-core-tests assdraw-gui-tests --parallel
+        ctest --test-dir build-dir -C Release --output-on-failure
+      shell: pwsh
+
     - name: Compile Inno Setup Installer
       run: |
         & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
@@ -54,3 +104,4 @@ jobs:
       with:
         name: ASSDraw3-Windows-Setup
         path: installer\ASSDraw3_Setup.exe
+        if-no-files-found: error

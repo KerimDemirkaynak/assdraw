@@ -26,6 +26,7 @@
 */
 
 #include "assdraw.hpp"
+#include "styled_ass.hpp"
 #include "library.hpp"
 
 #include <wx/clipbrd.h>
@@ -45,6 +46,20 @@ ASSDrawShapePreview::ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary 
 	if (ParseASS(initialcmds) > 0)
 		SetFitToViewPointOnNextPaint(FromDIP(5), FromDIP(5));
 	cb = new wxCheckBox(this, wxID_ANY, _T(""));
+}
+
+int ASSDrawShapePreview::ParseASS(wxString str)
+{
+	// Retain the complete styled output for copying, loading, and config saves.
+	// Preview geometry uses the same shared coordinate system as the canvas.
+	source_ass = str;
+	const StyledAssImport imported = ImportStyledAss(std::string(str.mb_str(wxConvUTF8)), ShapeStyle());
+	return ASSDrawEngine::ParseASS(wxString(imported.drawing_text.c_str(), wxConvUTF8));
+}
+
+wxString ASSDrawShapePreview::GenerateASS()
+{
+	return source_ass;
 }
 
 void ASSDrawShapePreview::OnSize(wxSizeEvent& event)
@@ -78,11 +93,11 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 	toolbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_HORIZONTAL | wxNO_BORDER | wxTB_FLAT | wxTB_NODIVIDER);
 	toolbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
 	toolbar->SetMargins(0, FromDIP(3));
-	toolbar->AddTool(TOOL_SAVE, _T("Save canvas"), ASSDRAW_BITMAP_BUNDLE(add));
+	toolbar->AddTool(TOOL_SAVE, _("Save canvas"), ASSDRAW_BITMAP_BUNDLE(add));
 	toolbar->AddSeparator();
-	toolbar->AddTool(TOOL_CHECK, _T("Select all"), ASSDRAW_BITMAP_BUNDLE(check));
-	toolbar->AddTool(TOOL_UNCHECK, _T("Select none"), ASSDRAW_BITMAP_BUNDLE(uncheck));
-	toolbar->AddTool(TOOL_DELETE, _T("Delete selected"), ASSDRAW_BITMAP_BUNDLE(delcross));
+	toolbar->AddTool(TOOL_CHECK, _("Select all"), ASSDRAW_BITMAP_BUNDLE(check));
+	toolbar->AddTool(TOOL_UNCHECK, _("Select none"), ASSDRAW_BITMAP_BUNDLE(uncheck));
+	toolbar->AddTool(TOOL_DELETE, _("Delete selected"), ASSDRAW_BITMAP_BUNDLE(delcross));
 
 	libarea = new wxScrolledWindow(this, wxID_ANY, __DPDS__ , wxScrolledWindowStyle | wxSIMPLE_BORDER);
 	libarea->SetBackgroundColour(wxColour(0xFF, 0xFF, 0x99));
@@ -167,7 +182,7 @@ void ASSDrawShapeLibrary::UpdatePreviewDisplays()
 	if (dim < 1)
 		dim = 1;
 	libarea->Show(false);
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
@@ -195,19 +210,19 @@ void ASSDrawShapeLibrary::OnMouseRightClick(wxMouseEvent &event)
 	{
 		activepreview = prev;
 		wxMenu *menu = new wxMenu;
-		wxMenuItem *menuload = new wxMenuItem(menu, MENU_LOAD, _T("Load to canvas"));
+		wxMenuItem *menuload = new wxMenuItem(menu, MENU_LOAD, _("Load to canvas"));
 #ifdef __WINDOWS__
 		wxFont f = menuload->GetFont();
 		f.SetWeight(wxFONTWEIGHT_BOLD);
 		menuload->SetFont(f);
 #endif
 		menu->Append(menuload);
-		//menu->Append(MENU_LOAD, _T("Load to canvas"))->GetFont().SetWeight(wxFONTWEIGHT_BOLD);
-		menu->Append(MENU_COPYCLIPBOARD, _T("Copy commands to clipboard"));
-		menu->Append(MENU_SAVECANVAS, _T("Save canvas here"));
+		//menu->Append(MENU_LOAD, _("Load to canvas"))->GetFont().SetWeight(wxFONTWEIGHT_BOLD);
+		menu->Append(MENU_COPYCLIPBOARD, _("Copy commands to clipboard"));
+		menu->Append(MENU_SAVECANVAS, _("Save canvas here"));
 		wxMenu *submenu = new wxMenu;
-		submenu->Append(MENU_DELETE, _T("Confirm delete?"));
-		menu->Append(MENU_DUMMY, _T("Delete from library"), submenu);
+		submenu->Append(MENU_DELETE, _("Confirm delete?"));
+		menu->Append(MENU_DUMMY, _("Delete from library"), submenu);
 		PopupMenu(menu);
 		delete menu;
 	}
@@ -254,7 +269,7 @@ void ASSDrawShapeLibrary::SaveShapeFromCanvas(wxCommandEvent& WXUNUSED(event))
 void ASSDrawShapeLibrary::CheckUncheckAllPreviews(wxCommandEvent &event)
 {
 	bool checked = event.GetId() == TOOL_CHECK;
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
@@ -265,9 +280,10 @@ void ASSDrawShapeLibrary::CheckUncheckAllPreviews(wxCommandEvent &event)
 
 void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 {
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
+		wxSizerItemList::compatibility_iterator next = node->GetNext();
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
 		if (shprvw->cb->GetValue())
 		{
@@ -275,7 +291,7 @@ void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 			shprvw->Show(false);
 			shprvw->Destroy();
 		}
-		node = node->GetNext();
+		node = next;
 	}
 	UpdatePreviewDisplays();
 	Refresh();
@@ -284,7 +300,7 @@ void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 std::vector< ASSDrawShapePreview *> ASSDrawShapeLibrary::GetShapePreviews()
 {
 	std::vector< ASSDrawShapePreview *> out;
-	wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
+	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
@@ -296,9 +312,23 @@ std::vector< ASSDrawShapePreview *> ASSDrawShapeLibrary::GetShapePreviews()
 
 void ASSDrawShapeLibrary::LoadToCanvas(ASSDrawShapePreview *preview)
 {
-	m_frame->m_canvas->AddUndo(_T("Load shape from library"));
+	m_frame->m_canvas->AddUndo(wxTRANSLATE("Load shape from library"));
 	m_frame->m_canvas->ParseASS(preview->GenerateASS());
 	m_frame->m_canvas->RefreshDisplay();
 	m_frame->m_canvas->RefreshUndocmds();
 	m_frame->UpdateFrameUI();
+}
+
+void ASSDrawShapeLibrary::UpdateTranslations()
+{
+    const std::pair<int, wxString> labels[] = {
+        {TOOL_SAVE, _("Save canvas")}, {TOOL_CHECK, _("Select all")},
+        {TOOL_UNCHECK, _("Select none")}, {TOOL_DELETE, _("Delete selected")}
+    };
+    for (const auto& entry : labels) {
+        toolbar->FindById(entry.first)->SetLabel(entry.second);
+        toolbar->SetToolShortHelp(entry.first, entry.second);
+    }
+    toolbar->Realize();
+    Layout();
 }

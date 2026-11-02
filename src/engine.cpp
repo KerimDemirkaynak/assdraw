@@ -146,16 +146,21 @@ ASSDrawEngine::ASSDrawEngine( wxWindow *parent, int extraflags )
 ASSDrawEngine::~ASSDrawEngine()
 {
     ResetEngine ( false );
-    //delete pointsys;
+    delete pointsys;
 }
 
 // parse ASS draw commands; returns the number of parsed commands
 int ASSDrawEngine::ParseASS ( wxString str )
 {
 	ResetEngine( false );
-	str.Replace(_T("\t"), _T(""));
-	str.Replace(_T("\r"), _T(""));
-	str.Replace(_T("\n"), _T(""));
+	// The command pane accepts multiline pasted input. Normalize whitespace
+	// without changing token boundaries; exported ASS itself is one line.
+	str.Replace(_T("\t"), _T(" "));
+	str.Replace(_T("\r"), _T(" "));
+	str.Replace(_T("\n"), _T(" "));
+	// A normal ASS override block may be directly adjacent to its first draw
+	// command ("{\\p1}m ..."), so make that boundary tokenizable as well.
+	str.Replace(_T("}"), _T("} "));
 	str = str.Lower() + _T(" _ _");
 	// we don't use regex because the pattern is too simple
 	wxStringTokenizer tkz( str, _T(" ") );
@@ -539,7 +544,14 @@ void ASSDrawEngine::RefreshDisplay()
 
 void ASSDrawEngine::OnPaint(wxPaintEvent& event)
 {
-	draw();
+	// Raw bitmap storage may move after unlocking it on wxGTK. Reattach while
+	// the pixel buffer is locked for every redraw, then blit the finished bitmap.
+	if (bitmap)
+	{
+		memDC.SelectObject(wxNullBitmap);
+		attachAndDraw();
+		memDC.SelectObject(*bitmap);
+	}
 	onPaint(event);
 	if (setfitviewpoint)
 	{
@@ -565,7 +577,9 @@ void ASSDrawEngine::draw()
 	update_rendered_bound_coords(true);
 	DoDraw(rbase, rprim, rsolid, mtx);
 
-	delete rm_path, rb_path, rm_curve;
+	delete rm_curve;
+	delete rm_path;
+	delete rb_path;
 }
 
 void ASSDrawEngine::ConstructPathsAndCurves(agg::trans_affine& mtx,
@@ -586,7 +600,7 @@ void ASSDrawEngine::ConstructPathsAndCurves(agg::trans_affine& mtx,
 	}
 	_rm_path = new trans_path(m_path, mtx);
 	_rb_path = new trans_path(b_path, mtx);
-    _rm_curve = new agg::conv_curve<trans_path>(*rm_path);
+    _rm_curve = new agg::conv_curve<trans_path>(*_rm_path);
 }
 
 void ASSDrawEngine::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, RendererSolid& rsolid, agg::trans_affine& mtx )
@@ -630,8 +644,8 @@ void ASSDrawEngine::AddDrawCmdToAGGPathStorage(DrawCmd* cmd, agg::path_storage& 
 			x[1] = (*iterate)->x();
 			y[1] = (*iterate)->y();
 			path.curve4(x[0], y[0], x[1], y[1], cmd->m_point->x(),cmd->m_point->y());
-    		break;
 		}
+		break;
 
 	case L:
 		if (mode == CTRL_LN)
@@ -641,7 +655,10 @@ void ASSDrawEngine::AddDrawCmdToAGGPathStorage(DrawCmd* cmd, agg::path_storage& 
 		break;
 
 	case S:
+	{
 		unsigned np = cmd->controlpoints.size();
+		if (np == 0)
+			break;
         agg::pod_array<double> m_polygon(np * 2);
         unsigned _pn = 0;
 		PointList::iterator iterate = cmd->controlpoints.begin();
@@ -678,6 +695,7 @@ void ASSDrawEngine::AddDrawCmdToAGGPathStorage(DrawCmd* cmd, agg::path_storage& 
 	        path.line_to(cmd->m_point->x(), cmd->m_point->y());
 		}
 		break;
+	}
 	}
 
 }

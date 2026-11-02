@@ -1,0 +1,685 @@
+# ASSDraw3 application translations. English is the source language.
+msgid ""
+msgstr "Project-Id-Version: ASSDraw3 3.1\nReport-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\nLanguage: tr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\nPO-Revision-Date: 2026-11-02 00:00+0300\nLast-Translator: ASSDraw contributors\nLanguage-Team: tr\n"
+
+msgid "&About"
+msgstr "&Hakkında"
+
+msgid "&Background"
+msgstr "&Arka plan"
+
+msgid "&Bilinear transformation\tF7"
+msgstr "&Bilineer dönüşüm\tF7"
+
+msgid "&Cancel"
+msgstr "&İptal"
+
+msgid "&Canvas"
+msgstr "&Tuval"
+
+msgid "&Center\tCtrl+5"
+msgstr "&Merkez\tCtrl+5"
+
+msgid "&Center\tCtrl+Shift+5"
+msgstr "&Merkez\tCtrl+Shift+5"
+
+msgid "&Clear\tCtrl+N"
+msgstr "&Temizle\tCtrl+N"
+
+msgid "&Coloring"
+msgstr "&Renklendirme"
+
+msgid "&Delete\tF5"
+msgstr "&Sil\tF5"
+
+msgid "&Help"
+msgstr "&Yardım"
+
+msgid "&Language"
+msgstr "&Dil"
+
+msgid "&Library"
+msgstr "&Kitaplık"
+
+msgid "&Manual"
+msgstr "&Kılavuz"
+
+msgid "&Mode"
+msgstr "&Kip"
+
+msgid "&No"
+msgstr "&Hayır"
+
+msgid "&OK"
+msgstr "&Tamam"
+
+msgid "&Paste\tCtrl+V"
+msgstr "&Yapıştır\tCtrl+V"
+
+msgid "&Preview\tCtrl+P"
+msgstr "&Önizleme\tCtrl+P"
+
+msgid "&Redo\tCtrl+Y"
+msgstr "&Yinele\tCtrl+Y"
+
+msgid "&Reset workspace"
+msgstr "Çalışma alanını &sıfırla"
+
+msgid "&Scale/Rotate\tF6"
+msgstr "&Ölçekle/Döndür\tF6"
+
+msgid "&Settings"
+msgstr "&Ayarlar"
+
+msgid "&Toolbars"
+msgstr "&Araç çubukları"
+
+msgid "&Transform"
+msgstr "&Dönüştür"
+
+msgid "&Undo\tCtrl+Z"
+msgstr "&Geri al\tCtrl+Z"
+
+msgid "&Workspace"
+msgstr "&Çalışma alanı"
+
+msgid "&Yes"
+msgstr "&Evet"
+
+msgid "<Select>"
+msgstr "<Seçin>"
+
+msgid "ASS drawing copied to clipboard."
+msgstr "ASS çizimi panoya kopyalandı."
+
+msgid "ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."
+msgstr "ASSDraw3, ASS altyazı dosyaları için vektör şekiller tasarlama aracıdır."
+
+msgid "Acknowledgements"
+msgstr "Teşekkürler"
+
+msgid "Add a new B"
+msgstr "Yeni bir B ekle"
+
+msgid "Add a new L"
+msgstr "Yeni bir L ekle"
+
+msgid "Add a new M"
+msgstr "Yeni bir M ekle"
+
+msgid "Add to custom colours"
+msgstr "Özel renklere ekle"
+
+msgid "Appearance"
+msgstr "Görünüm"
+
+msgid "Apply"
+msgstr "Uygula"
+
+msgid "Ask for image opacity"
+msgstr "Görsel opaklığını sor"
+
+msgid "Background"
+msgstr "Arka plan"
+
+msgid "Background image opacity"
+msgstr "Arka plan görselinin opaklığı"
+
+msgid "Basic colours"
+msgstr "Temel renkler"
+
+msgid "Behaviors"
+msgstr "Davranışlar"
+
+msgid "Bezier"
+msgstr "Bezier"
+
+msgid "Bilinear"
+msgstr "Bilineer"
+
+msgid "Bilinear transform"
+msgstr "Bilineer dönüşüm"
+
+msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
+msgstr "Bilineer dönüşüm kipi: Şekli bozmak için köşeleri sürükleyin; bir kenarı sürüklemek iki komşu köşeyi birlikte taşır"
+
+msgid "Bottom left\tCtrl+1"
+msgstr "Sol alt\tCtrl+1"
+
+msgid "Bottom left\tCtrl+Shift+1"
+msgstr "Sol alt\tCtrl+Shift+1"
+
+msgid "Bottom right\tCtrl+3"
+msgstr "Sağ alt\tCtrl+3"
+
+msgid "Bottom right\tCtrl+Shift+3"
+msgstr "Sağ alt\tCtrl+Shift+3"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Canvas"
+msgstr "Tuval"
+
+msgid "Canvas background loaded"
+msgstr "Tuval arka planı yüklendi"
+
+msgid "Capitalize commands"
+msgstr "Komutları büyük harfle yaz"
+
+msgid "Change sub-shape color"
+msgstr "Alt şeklin rengini değiştir"
+
+msgid "Choose fill color"
+msgstr "Dolgu rengini seç"
+
+msgid "Clear"
+msgstr "Temizle"
+
+msgid "Clear canvas"
+msgstr "Tuvali temizle"
+
+msgid "Clear the canvas and create a new drawing"
+msgstr "Tuvali temizleyip yeni bir çizim oluştur"
+
+msgid "Clear the canvas and create a new drawing?"
+msgstr "Tuval temizlensin ve yeni bir çizim oluşturulsun mu?"
+
+msgid "Click a filled part of the shape (not a hole)."
+msgstr "Şeklin dolu bir bölümüne tıklayın; boşluğuna değil."
+
+msgid "Click a filled shape to select it; double-click to choose its fill color"
+msgstr "Dolu bir şekli tıklayarak seçin; dolgu rengini seçmek için çift tıklayın"
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Coloring"
+msgstr "Renklendirme"
+
+msgid "Confirm delete?"
+msgstr "Silme işlemi onaylansın mı?"
+
+msgid "Confirm quit"
+msgstr "Çıkışı onayla"
+
+msgid "Confirmation"
+msgstr "Onay"
+
+msgid "Control lines"
+msgstr "Kontrol çizgileri"
+
+msgid "Control lines @"
+msgstr "Kontrol çizgilerinin opaklığı"
+
+msgid "Control points"
+msgstr "Kontrol noktaları"
+
+msgid "Control points @"
+msgstr "Kontrol noktalarının opaklığı"
+
+msgid "Convert Bezier to Line"
+msgstr "Bezier eğrisini doğruya dönüştür"
+
+msgid "Convert Line to Bezier"
+msgstr "Doğruyu Bezier eğrisine dönüştür"
+
+msgid "Convert to Bezier curve (B command)"
+msgstr "Bezier eğrisine dönüştür (B komutu)"
+
+msgid "Convert to line (L command)"
+msgstr "Doğruya dönüştür (L komutu)"
+
+msgid "Copy ASS"
+msgstr "ASS kopyala"
+
+msgid "Copy commands to clipboard"
+msgstr "Komutları panoya kopyala"
+
+msgid "Copy the command text, including ASS style tags"
+msgstr "ASS stil etiketleriyle birlikte komut metnini kopyala"
+
+msgid "Could not save the language preference."
+msgstr "Dil tercihi kaydedilemedi."
+
+msgid "Custom"
+msgstr "Özel"
+
+msgid "Custom colour"
+msgstr "Özel renk"
+
+msgid "Custom colours"
+msgstr "Özel renkler"
+
+msgid "D&rag\tF1"
+msgstr "&Sürükle\tF1"
+
+msgid "Default image opacity (0-255)"
+msgstr "Varsayılan görsel opaklığı (0-255)"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Delete a B"
+msgstr "B komutunu sil"
+
+msgid "Delete a L"
+msgstr "L komutunu sil"
+
+msgid "Delete a M"
+msgstr "M komutunu sil"
+
+msgid "Delete from library"
+msgstr "Kitaplıktan sil"
+
+msgid "Delete mode"
+msgstr "Silme kipi"
+
+msgid "Delete selected"
+msgstr "Seçilenleri sil"
+
+msgid "Depending on what's in the clipboard, import as drawing commands or background"
+msgstr "Pano içeriğine göre çizim komutlarını veya arka planı içe aktar"
+
+msgid "Do you want to close ASSDraw3 now?"
+msgstr "ASSDraw3 kapatılsın mı?"
+
+msgid "Dock all"
+msgstr "Tümünü sabitle"
+
+msgid "Drag"
+msgstr "Sürükle"
+
+msgid "Drag an image onto the canvas to use it as a tracing background."
+msgstr "Kılavuz arka plan olarak kullanmak için tuvale bir görsel sürükleyin."
+
+msgid "Drag control point"
+msgstr "Kontrol noktasını sürükle"
+
+msgid "Drag mode"
+msgstr "Sürükleme kipi"
+
+msgid "Drag point"
+msgstr "Noktayı sürükle"
+
+msgid "Draw &B\tF4"
+msgstr "&B çiz\tF4"
+
+msgid "Draw &L\tF3"
+msgstr "&L çiz\tF3"
+
+msgid "Draw &M\tF2"
+msgstr "&M çiz\tF2"
+
+msgid "Draw B mode (Cubic Bezier curve)"
+msgstr "B çizim kipi (kübik Bezier eğrisi)"
+
+msgid "Draw C mode (Close the last spline)"
+msgstr "C çizim kipi (son spline eğrisini kapatır)"
+
+msgid "Draw L mode (Straight line)"
+msgstr "L çizim kipi (doğru)"
+
+msgid "Draw M mode (Close current shape and move the virtual pen to a new point)"
+msgstr "M çizim kipi (geçerli şekli kapatır ve sanal kalemi yeni bir noktaya taşır)"
+
+msgid "Draw N mode (Same as M but doesn't close the shape)"
+msgstr "N çizim kipi (M ile aynıdır ancak şekli kapatmaz)"
+
+msgid "Draw P mode (Extends a spline with another point)"
+msgstr "P çizim kipi (spline eğrisini yeni bir noktayla uzatır)"
+
+msgid "Draw S mode (Spline)"
+msgstr "S çizim kipi (spline eğrisi)"
+
+msgid "Draw the shapes without enlarged points and control points"
+msgstr "Şekilleri büyütülmüş noktalar ve kontrol noktaları olmadan göster"
+
+msgid "Drawing"
+msgstr "Çizim"
+
+msgid "Drawing @"
+msgstr "Çizim opaklığı"
+
+msgid "Drawing commands"
+msgstr "Çizim komutları"
+
+msgid "Drawing mode"
+msgstr "Çizim kipi"
+
+msgid "Edit the source"
+msgstr "Kaynağı düzenle"
+
+msgid "Error"
+msgstr "Hata"
+
+msgid "Exit"
+msgstr "Çıkış"
+
+msgid "Flip horizontally at X = 4"
+msgstr "X = 4 etrafında yatay çevir"
+
+msgid "Flip vertically at Y = 3"
+msgstr "Y = 3 etrafında dikey çevir"
+
+msgid "H ruler"
+msgstr "Yatay cetvel"
+
+msgid "Help! Help!"
+msgstr "Yardım! Yardım!"
+
+msgid "Hide all"
+msgstr "Tümünü gizle"
+
+msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
+msgstr "Renklendirme kipinde dolu bir alt şekli seçip çift tıklayarak rengini belirleyin. ASS kopyala, biçimlendirilmiş çizimi kopyalar."
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "Library"
+msgstr "Kitaplık"
+
+msgid "Library shapes"
+msgstr "Kitaplık şekilleri"
+
+msgid "Line"
+msgstr "Doğru"
+
+msgid "Load shape from library"
+msgstr "Kitaplıktan şekil yükle"
+
+msgid "Load to canvas"
+msgstr "Tuvale yükle"
+
+#, c-format
+msgid "Loading '%s' as canvas background ..."
+msgstr "'%s' tuval arka planı olarak yükleniyor..."
+
+msgid "Manual"
+msgstr "Kılavuz"
+
+msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
+msgstr "Maxim Shemanarev: Anti-Grain Geometry. wxWidgets ekibi: arayüz araçları. Adrian Secord: wxAGG."
+
+msgid "Mode: &Delete"
+msgstr "Kip: &Sil"
+
+msgid "Mode: Bilinear transformation"
+msgstr "Kip: Bilineer dönüşüm"
+
+msgid "Mode: Coloring"
+msgstr "Kip: Renklendirme"
+
+msgid "Mode: D&rag"
+msgstr "Kip: &Sürükle"
+
+msgid "Mode: Draw &B"
+msgstr "Kip: &B çiz"
+
+msgid "Mode: Draw &L"
+msgstr "Kip: &L çiz"
+
+msgid "Mode: Draw &M"
+msgstr "Kip: &M çiz"
+
+msgid "Mode: Scale/Rotate"
+msgstr "Kip: Ölçekle/Döndür"
+
+msgid "Modify drawing commands"
+msgstr "Çizim komutlarını değiştir"
+
+msgid "Move"
+msgstr "Taşı"
+
+msgid "Move 5 units down"
+msgstr "5 birim aşağı taşı"
+
+msgid "Move 5 units right"
+msgstr "5 birim sağa taşı"
+
+msgid "Move [0,0] here"
+msgstr "[0,0] noktasını buraya taşı"
+
+msgid "Move origin"
+msgstr "Başlangıç noktasını taşı"
+
+msgid "No"
+msgstr "Hayır"
+
+msgid "No splash screen"
+msgstr "Açılış ekranını gösterme"
+
+msgid "OK"
+msgstr "Tamam"
+
+msgid "One or more values entered are not real numbers.\nPlease fix."
+msgstr "Girilen değerlerden en az biri gerçek sayı değil.\nLütfen düzeltin."
+
+msgid "Origin"
+msgstr "Başlangıç noktası"
+
+msgid "Origin cross size"
+msgstr "Başlangıç işaretinin boyutu"
+
+msgid "Original application: ai-chan (2006-2007)."
+msgstr "Orijinal uygulama: ai-chan (2006-2007)."
+
+msgid "Outline"
+msgstr "Kenarlık"
+
+msgid "Outline @"
+msgstr "Kenarlık opaklığı"
+
+msgid "Pan background"
+msgstr "Arka planı kaydır"
+
+msgid "Pan drawing"
+msgstr "Çizimi kaydır"
+
+msgid "Pan/Zoom &Drawing\tShift+F1"
+msgstr "&Çizimi kaydır/yakınlaştır\tShift+F1"
+
+msgid "Pan/Zoom Back&ground\tShift+F2"
+msgstr "Arka &planı kaydır/yakınlaştır\tShift+F2"
+
+msgid "Parse S/P/C"
+msgstr "S/P/C komutlarını ayrıştır"
+
+msgid "Points"
+msgstr "Noktalar"
+
+msgid "Points @"
+msgstr "Nokta opaklığı"
+
+msgid "Preview"
+msgstr "Önizleme"
+
+msgid "Preview @"
+msgstr "Önizleme opaklığı"
+
+msgid "Redo\tCtrl+Y"
+msgstr "Yinele\tCtrl+Y"
+
+msgid "Redo last undo"
+msgstr "Son geri alma işlemini yinele"
+
+#, c-format
+msgid "Redo: %s\tCtrl+Y"
+msgstr "Yinele: %s\tCtrl+Y"
+
+msgid "Remove background\tShift+Del"
+msgstr "Arka planı kaldır\tShift+Del"
+
+msgid "Reposition [&0, 0]"
+msgstr "[&0, 0] noktasını konumlandır"
+
+msgid "Revert"
+msgstr "Geri döndür"
+
+msgid "Right-double-click opens a context menu. Hold Shift to temporarily switch to Drag mode."
+msgstr "Sağ tuşla çift tıklamak bağlam menüsünü açar. Geçici olarak sürükleme kipine geçmek için Shift tuşunu basılı tutun."
+
+msgid "Right-dragging pans background, mousewheel zooms in/out background"
+msgstr "Sağ tuşla sürüklemek arka planı kaydırır; fare tekerleği arka planı yakınlaştırır/uzaklaştırır"
+
+msgid "Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background"
+msgstr "Sağ tuşla sürüklemek çizimi ve arka planı kaydırır; fare tekerleği ikisini de yakınlaştırır/uzaklaştırır"
+
+msgid "Right-dragging pans drawing, mousewheel zooms in/out drawing"
+msgstr "Sağ tuşla sürüklemek çizimi kaydırır; fare tekerleği çizimi yakınlaştırır/uzaklaştırır"
+
+msgid "Rotate"
+msgstr "Döndür"
+
+msgid "Rotate 180° at (0, 0)"
+msgstr "(0, 0) etrafında 180° döndür"
+
+msgid "Rotate 90° clockwise at (1, 2)"
+msgstr "(1, 2) etrafında saat yönünde 90° döndür"
+
+msgid "Rotate 90° counterclockwise at (-1, 2)"
+msgstr "(-1, 2) etrafında saat yönünün tersine 90° döndür"
+
+msgid "Save canvas"
+msgstr "Tuvali kaydet"
+
+msgid "Save canvas here"
+msgstr "Tuvali buraya kaydet"
+
+msgid "Scale"
+msgstr "Ölçekle"
+
+msgid "Scale up horizontally by a factor of 2"
+msgstr "Yatayda 2 kat büyüt"
+
+msgid "Scale up vertically by a factor of 3"
+msgstr "Dikeyde 3 kat büyüt"
+
+msgid "Scale/Rotate"
+msgstr "Ölçekle/Döndür"
+
+msgid "Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate"
+msgstr "Ölçekleme/döndürme kipi: Yeniden boyutlandırmak için köşeyi veya kenarı sürükleyin; döndürmek için sağ tuşla sürükleyin"
+
+msgid "Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."
+msgstr "Bir çizim aracı seçin; doğru ve eğri eklemek için tıklayın veya sürükleyin. Çizimi değiştirmek için noktaları ve kontrol tutamaçlarını sürükleyin."
+
+msgid "Select a shape, then double-click it to choose its fill color"
+msgstr "Bir şekli seçin; dolgu rengini seçmek için çift tıklayın"
+
+msgid "Select all"
+msgstr "Tümünü seç"
+
+msgid "Select none"
+msgstr "Seçimi kaldır"
+
+msgid "Selected points"
+msgstr "Seçili noktalar"
+
+msgid "Selected points @"
+msgstr "Seçili noktaların opaklığı"
+
+msgid "Set background image opacity"
+msgstr "Arka plan görselinin opaklığını ayarla"
+
+msgid "Set continuous"
+msgstr "Sürekliliği etkinleştir"
+
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgid "Shape selected. Double-click to choose its fill color."
+msgstr "Şekil seçildi. Dolgu rengini seçmek için çift tıklayın."
+
+msgid "Shapes Library"
+msgstr "Şekil Kitaplığı"
+
+msgid "Shapes library"
+msgstr "Şekil kitaplığı"
+
+msgid "Show all"
+msgstr "Tümünü göster"
+
+msgid "Smooth connection"
+msgstr "Pürüzsüz bağlantı"
+
+msgid "System Default"
+msgstr "Sistem Varsayılanı"
+
+msgid "Templates"
+msgstr "Şablonlar"
+
+msgid "Thanks to jfs, ArchMageZeratul, RoRo, and the Aegisub community for their suggestions and support."
+msgstr "Önerileri ve destekleri için jfs, ArchMageZeratul, RoRo ve Aegisub topluluğuna teşekkürler."
+
+msgid "The manual is missing. Please reinstall ASSDraw3."
+msgstr "Kılavuz bulunamadı. Lütfen ASSDraw3'ü yeniden kurun."
+
+msgid "The selected language could not be loaded. Please reinstall ASSDraw3."
+msgstr "Seçilen dil yüklenemedi. Lütfen ASSDraw3'ü yeniden kurun."
+
+msgid "This version was created by Kerim Demirkaynak."
+msgstr "Bu sürüm Kerim Demirkaynak tarafından oluşturuldu."
+
+msgid "Tips and shortcuts"
+msgstr "İpuçları ve kısayollar"
+
+msgid "Top left\tCtrl+7"
+msgstr "Sol üst\tCtrl+7"
+
+msgid "Top left\tCtrl+Shift+7"
+msgstr "Sol üst\tCtrl+Shift+7"
+
+msgid "Top right\tCtrl+9"
+msgstr "Sağ üst\tCtrl+9"
+
+msgid "Top right\tCtrl+Shift+9"
+msgstr "Sağ üst\tCtrl+Shift+9"
+
+msgid "Transform"
+msgstr "Dönüştür"
+
+msgid "Transform the drawing using matrix transformation"
+msgstr "Çizimi matris dönüşümüyle dönüştür"
+
+msgid "Undo\tCtrl+Z"
+msgstr "Geri al\tCtrl+Z"
+
+msgid "Undo last action"
+msgstr "Son işlemi geri al"
+
+#, c-format
+msgid "Undo: %s\tCtrl+Z"
+msgstr "Geri al: %s\tCtrl+Z"
+
+msgid "Undock all"
+msgstr "Tümünü ayır"
+
+msgid "Unset continuous"
+msgstr "Sürekliliği devre dışı bırak"
+
+msgid "Use the Shapes Library to store drawings. Ctrl+Z undoes a drawing edit; Ctrl+Y redoes it."
+msgstr "Çizimlerinizi saklamak için Şekil Kitaplığı'nı kullanın. Ctrl+Z çizim düzenlemesini geri alır; Ctrl+Y yineler."
+
+msgid "Use the mouse wheel or PageUp/PageDown to zoom. Right-drag pans the enabled drawing or background layer."
+msgstr "Yakınlaştırmak için fare tekerleğini veya PageUp/PageDown tuşlarını kullanın. Sağ tuşla sürüklemek etkin çizim veya arka plan katmanını kaydırır."
+
+msgid "V ruler"
+msgstr "Dikey cetvel"
+
+msgid "Value error"
+msgstr "Değer hatası"
+
+#, c-format
+msgid "Version: %s"
+msgstr "Sürüm: %s"
+
+msgid "Yes"
+msgstr "Evet"
+
+msgid "You must delete that command/point last"
+msgstr "Bu komutu veya noktayı en son silmelisiniz"
+
+msgid "Zoom"
+msgstr "Yakınlaştırma"

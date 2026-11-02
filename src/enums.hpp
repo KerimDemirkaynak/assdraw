@@ -81,20 +81,21 @@ enum MODE
     MODE_S = 105,
     MODE_P = 106,
     MODE_C = 107,
-    MODE_DEL = 108,
+	MODE_DEL = 108,
 	MODE_SCALEROTATE = 109,
-	MODE_NUT_BILINEAR = 110
+	MODE_NUT_BILINEAR = 110,
+	MODE_COLOR = 111
 };
 
 // enum for IDs of other tools on the toolbar
 enum {
-     TB_CLEAR = 111,
-     TB_EDITSRC = 112,
-     TB_PREVIEW = 113,
-     TB_TRANSFORM = 114,
-     TB_HELP = 115,
-     TB_ZOOMSLIDER = 116,
-     TB_BGALPHA_SLIDER = 117
+     TB_CLEAR = 112,
+     TB_EDITSRC = 113,
+     TB_PREVIEW = 114,
+     TB_TRANSFORM = 115,
+     TB_HELP = 116,
+     TB_ZOOMSLIDER = 117,
+     TB_BGALPHA_SLIDER = 118
 };
 
 enum DRAGMODETOOL
