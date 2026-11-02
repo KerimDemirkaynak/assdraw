@@ -17,6 +17,10 @@ on:
         description: Sign Windows packages with SignPath (requires project approval and credentials)
         type: boolean
         default: false
+      scan_download_run_id:
+        description: Scan Windows downloads from this earlier run without executing them (leave empty to build)
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -24,6 +28,7 @@ permissions:
 
 jobs:
   build-linux:
+    if: github.event_name != 'workflow_dispatch' || inputs.scan_download_run_id == ''
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
@@ -50,6 +55,7 @@ jobs:
       run: ctest --test-dir build-linux --output-on-failure
 
   build-windows:
+    if: github.event_name != 'workflow_dispatch' || inputs.scan_download_run_id == ''
     runs-on: windows-latest
     env:
       SIGN_WINDOWS: ${{ github.event_name == 'workflow_dispatch' && inputs.sign_windows }}
@@ -216,6 +222,23 @@ jobs:
         }
       shell: pwsh
 
+    - name: Scan Windows packages with Microsoft Defender
+      timeout-minutes: 15
+      run: |
+        $paths = @('package\ASSDraw3-Windows-x64')
+        if (Test-Path 'ASSDraw3-Windows-x64-Portable.zip') { $paths += 'ASSDraw3-Windows-x64-Portable.zip' }
+        if (Test-Path 'installer\ASSDraw3-Windows-x64-Setup.exe') { $paths += 'installer\ASSDraw3-Windows-x64-Setup.exe' }
+        .\build\scan-windows-downloads.ps1 -Paths $paths -ReportPath "$env:RUNNER_TEMP\defender-report.txt"
+      shell: pwsh
+
+    - name: Upload antivirus scan report
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: windows-defender-report
+        path: ${{ runner.temp }}/defender-report.txt
+        if-no-files-found: ignore
+
     - name: Upload Windows build
       if: github.event_name != 'workflow_dispatch' || inputs.windows_package != 'inno-setup'
       uses: actions/upload-artifact@v7
@@ -240,3 +263,46 @@ jobs:
           'Windows packages: unsigned development build. See docs/windows-code-signing.md for signed builds.' >> $env:GITHUB_STEP_SUMMARY
         }
       shell: pwsh
+
+  scan-reported-downloads:
+    if: github.event_name == 'workflow_dispatch' && inputs.scan_download_run_id != ''
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate source run
+      env:
+        SOURCE_RUN_ID: ${{ inputs.scan_download_run_id }}
+      run: |
+        if ($env:SOURCE_RUN_ID -notmatch '^[0-9]+$') { throw 'Source run ID must be numeric.' }
+      shell: pwsh
+
+    - name: Download reported Windows packages
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      with:
+        github-token: ${{ github.token }}
+        run-id: ${{ inputs.scan_download_run_id }}
+        pattern: ASSDraw3-Windows-x64-*
+        merge-multiple: true
+        path: ${{ runner.temp }}/reported-downloads
+
+    - name: Scan original downloads without running them
+      run: |
+        $downloads = Join-Path $env:RUNNER_TEMP 'reported-downloads'
+        $portable = Join-Path $downloads 'ASSDraw3-Windows-x64-Portable.zip'
+        $installer = Join-Path $downloads 'ASSDraw3-Windows-x64-Setup.exe'
+        if (-not (Test-Path $portable) -or -not (Test-Path $installer)) {
+          throw 'Both original Windows packages are required for this investigation.'
+        }
+        Expand-Archive -LiteralPath $portable -DestinationPath (Join-Path $downloads 'portable')
+        .\build\scan-windows-downloads.ps1 -Paths @($downloads) -ReportPath "$env:RUNNER_TEMP\reported-defender-report.txt"
+      shell: pwsh
+
+    - name: Upload investigation report
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: reported-downloads-defender-report
+        path: ${{ runner.temp }}/reported-defender-report.txt
+        if-no-files-found: ignore

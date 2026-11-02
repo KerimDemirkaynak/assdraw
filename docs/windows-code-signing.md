@@ -91,12 +91,27 @@ The workflow:
    its signature, timestamp, and signing certificate against the application.
 6. Installs the final installer in a temporary directory and checks that its
    application is byte-for-byte identical to the signed application.
-7. Publishes the selected final packages only after all applicable checks pass.
+7. Updates Microsoft Defender, verifies that it detects the harmless EICAR test
+   file, and scans the staged application files and the selected final packages.
+   Archive scanning and exclusion handling are enforced by custom-scan flags.
+8. Publishes the selected final packages only after all applicable checks pass.
 
 A signing or verification failure stops the job; there is no unsigned fallback
 for a requested signed build. The workflow summary explicitly states whether the
 build was signed. The `signing-input-*` artifacts are unsigned inputs for the
 service, expire after one day, and are not release downloads.
+
+The antivirus gate also runs for unsigned builds. A detection, scan error, failed
+engine control, or failed signature update stops Windows package publication.
+The `windows-defender-report` artifact records file hashes, engine/database
+versions, and scan output. A no-detection result is limited to this engine and
+these definitions; it does not establish that another product's alert is false.
+
+To investigate an earlier build, run the same workflow with
+**scan_download_run_id** set to its numeric Actions run ID. This mode skips builds
+and signing, downloads that run's original Windows installer and portable ZIP,
+extracts the portable archive, and scans them without executing the downloads.
+See the `reported-downloads-defender-report` artifact for the hashes and results.
 
 Local builds and builds with **sign_windows** disabled require no signing
 account and remain unsigned. The signing steps cannot be tested against a real
