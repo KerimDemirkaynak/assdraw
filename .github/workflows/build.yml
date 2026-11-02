@@ -285,6 +285,7 @@ jobs:
         run-id: ${{ inputs.scan_download_run_id }}
         pattern: ASSDraw3-Windows-x64-*
         merge-multiple: true
+        skip-decompress: true
         path: ${{ runner.temp }}/reported-downloads
 
     - name: Scan original downloads without running them
