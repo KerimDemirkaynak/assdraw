@@ -32,7 +32,8 @@ English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt.
 
 ## İndirme
 
-En güncel sürümü [Releases](https://github.com/KerimDemirkaynak/assdraw/releases) sayfasından indirebilirsiniz.
+- **Kararlı** – test edilmiş sürümler [Releases](https://github.com/KerimDemirkaynak/assdraw/releases) sayfasında yayınlanır.
+- **En son (geliştirme)** – en yeni derlemelere [Actions](https://github.com/KerimDemirkaynak/assdraw/actions) sayfasından ulaşabilirsiniz. Başarılı bir çalıştırmayı açıp paketleri artifacts bölümünden indirin. Bu derlemeler kararsız olabilir.
 
 | Platform | Paket |
 | --- | --- |
