@@ -6,9 +6,48 @@
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
 #include <wx/wfstream.h>
+#include <wx/dcclient.h>
+#include <wx/dcmemory.h>
+#include <wx/iconbndl.h>
 #include <cassert>
 #include <iostream>
 #include <clocale>
+#include <cmath>
+
+#ifdef __WXMSW__
+#include <wx/msw/wrapwin.h>
+#endif
+
+static void CheckPreviewPixels(ASSDrawShapePreview* preview)
+{
+    // A serialized drawing alone doesn't prove a visible thumbnail exists.
+    // Two paints also exercise the deferred fit/repaint path.
+    for (int pass = 0; pass < 3; ++pass) {
+        preview->Refresh(false);
+        preview->Update();
+        wxTheApp->Yield(true);
+    }
+    const PointSystem* points = preview->_PointSystem();
+    assert(std::isfinite(points->scale) && points->scale > 0);
+    assert(std::isfinite(points->originx) && std::isfinite(points->originy));
+    const wxSize size = preview->GetClientSize();
+    assert(size.x >= 32 && size.y >= 32);
+    wxBitmap screenshot(size.x, size.y);
+    wxMemoryDC output(screenshot);
+    wxClientDC input(preview);
+    assert(output.Blit(0, 0, size.x, size.y, &input, 0, 0));
+    output.SelectObject(wxNullBitmap);
+    const wxImage image = screenshot.ConvertToImage();
+    int ink = 0;
+    // Exclude the selection checkbox and the window border.
+    for (int y = preview->FromDIP(24); y < size.y - 4; ++y) {
+        for (int x = 4; x < size.x - 4; ++x) {
+            if (image.GetRed(x, y) < 200 && image.GetBlue(x, y) > 50)
+                ++ink;
+        }
+    }
+    assert(ink > 50);
+}
 
 class ASSDrawTestApp : public wxApp {
 public:
@@ -40,6 +79,24 @@ int main(int argc, char** argv)
     auto* canvas = frame->m_canvas;
     wxTheApp->Yield(true);
 
+#ifdef __WXMSW__
+    // A valid title-bar icon doesn't guarantee that Windows has a taskbar icon.
+    assert(frame->GetIcons().GetIconOfExactSize(16).IsOk());
+    assert(frame->GetIcons().GetIconOfExactSize(32).IsOk());
+    assert(frame->GetIcons().GetIconOfExactSize(48).IsOk());
+    const HWND handle = static_cast<HWND>(frame->GetHandle());
+    assert(::SendMessage(handle, WM_GETICON, ICON_SMALL, 0) != 0);
+    const HICON big = reinterpret_cast<HICON>(::SendMessage(handle, WM_GETICON, ICON_BIG, 0));
+    assert(big != nullptr);
+    ICONINFO info{};
+    assert(::GetIconInfo(big, &info));
+    BITMAP native_bitmap{};
+    assert(::GetObject(info.hbmColor, sizeof(native_bitmap), &native_bitmap));
+    assert(native_bitmap.bmWidth >= 32 && native_bitmap.bmHeight >= 32);
+    ::DeleteObject(info.hbmColor);
+    ::DeleteObject(info.hbmMask);
+#endif
+
     // Multiline text keeps adjacent command tokens separate.
     canvas->ParseASS("m 10 10\nl 100 10\tl 100 100\r\nl 10 100");
     assert(canvas->GenerateDrawingASS().Find("100 100") != wxNOT_FOUND);
@@ -60,6 +117,21 @@ int main(int argc, char** argv)
     // Library saves, copies, and reloads retain colors and uncompensated geometry.
     auto* preview = frame->shapelib->AddShapePreview(before);
     assert(preview->GenerateASS() == before);
+    CheckPreviewPixels(preview);
+    // Empty/single-axis drawings and a collapsed pane must not poison the
+    // transform used when a stored preview is subsequently replaced.
+    for (const wxString& degenerate : {wxString(""), wxString("m 0 0"), wxString("m 0 0 l 0 100")}) {
+        preview->ParseASS(degenerate);
+        preview->FitToViewPoint(10, 10);
+        assert(std::isfinite(preview->_PointSystem()->scale));
+        assert(std::isfinite(preview->_PointSystem()->originx));
+        assert(std::isfinite(preview->_PointSystem()->originy));
+    }
+    preview->SetSize(1, 1);
+    preview->FitToViewPoint(10, 10);
+    preview->ParseASS(before);
+    frame->shapelib->UpdatePreviewDisplays();
+    CheckPreviewPixels(preview);
     frame->shapelib->LoadToCanvas(preview);
     assert(canvas->GenerateASS() == before);
 
@@ -168,6 +240,7 @@ int main(int argc, char** argv)
     assert(AssdrawI18n::EffectiveLanguage() == "en");
     const wxString manual = AssdrawI18n::ManualPath();
     assert(!manual.empty() && wxFileExists(manual));
+    assert(manual.EndsWith("help/index.html"));
     const wxString previous_directory = wxGetCwd();
     assert(wxSetWorkingDirectory(directory));
     assert(AssdrawI18n::ManualPath() == manual);

@@ -130,13 +130,18 @@ bool SetLanguage(const wxString& code)
 wxString ManualPath()
 {
     const wxString directory = wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath();
+    // Downloaded CHM files can open with an empty content pane under Windows'
+    // Internet Zone restrictions. The complete illustrated HTML manual works
+    // from an extracted portable package as well as an installed copy.
+    const wxString html = directory + "/help/index.html";
+    if (wxFileExists(html))
+        return html;
 #ifdef __WXMSW__
     const wxString chm = wxFileName(directory, "ASSDraw3.chm").GetFullPath();
     if (wxFileExists(chm))
         return chm;
 #endif
-    const wxString html = directory + "/help/index.html";
-    return wxFileExists(html) ? html : wxString();
+    return wxString();
 }
 
 wxString AboutHtml()

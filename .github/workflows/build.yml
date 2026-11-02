@@ -3,7 +3,16 @@ name: Build ASSDraw3
 on:
   pull_request:
     branches: [ "master", "main" ]
-  workflow_dispatch: # Bu parametre sayesinde Actions sekmesinden manuel tetikleyebilirsin.
+  workflow_dispatch:
+    inputs:
+      windows_package:
+        description: Windows download format
+        type: choice
+        default: both
+        options:
+          - both
+          - inno-setup
+          - portable
 
 jobs:
   build-linux:
@@ -24,10 +33,10 @@ jobs:
         python3 tools/translations.py --check-package package/ASSDraw3-Linux-x64
         tar -C package -czf ASSDraw3-Linux-x64.tar.gz ASSDraw3-Linux-x64
     - name: Upload Linux build
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
-        name: ASSDraw3-Linux-x64
         path: ASSDraw3-Linux-x64.tar.gz
+        archive: false
         if-no-files-found: error
     - name: Run regression tests
       run: ctest --test-dir build-linux --output-on-failure
@@ -78,30 +87,51 @@ jobs:
         Get-ChildItem 'build-dir\Release' -Filter '*.dll' | Copy-Item -Destination $package
         python tools/translations.py --check-package $package
         if ($LASTEXITCODE -ne 0) { throw 'Language or manual files are missing.' }
-        Compress-Archive -Path "$package\*" -DestinationPath 'ASSDraw3-Windows-x64.zip' -Force
+      shell: pwsh
+
+    - name: Create portable ZIP
+      if: github.event_name != 'workflow_dispatch' || inputs.windows_package != 'inno-setup'
+      run: Compress-Archive -Path 'package\ASSDraw3-Windows-x64\*' -DestinationPath 'ASSDraw3-Windows-x64-Portable.zip' -Force
       shell: pwsh
 
     - name: Upload Windows build
-      uses: actions/upload-artifact@v4
+      if: github.event_name != 'workflow_dispatch' || inputs.windows_package != 'inno-setup'
+      uses: actions/upload-artifact@v7
       with:
-        name: ASSDraw3-Windows-x64
-        path: ASSDraw3-Windows-x64.zip
+        path: ASSDraw3-Windows-x64-Portable.zip
+        archive: false
         if-no-files-found: error
+
+    - name: Compile Inno Setup Installer
+      if: github.event_name != 'workflow_dispatch' || inputs.windows_package != 'portable'
+      run: |
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+        if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
+      shell: pwsh
+
+    - name: Upload Windows Installer
+      if: github.event_name != 'workflow_dispatch' || inputs.windows_package != 'portable'
+      uses: actions/upload-artifact@v7
+      with:
+        path: installer\ASSDraw3-Windows-x64-Setup.exe
+        archive: false
+        if-no-files-found: error
+
+    - name: Verify Windows installer
+      if: github.event_name != 'workflow_dispatch' || inputs.windows_package != 'portable'
+      run: |
+        $install = Join-Path $env:RUNNER_TEMP 'assdraw-installed'
+        $setup = Start-Process 'installer\ASSDraw3-Windows-x64-Setup.exe' -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=`"$install`"" -Wait -PassThru
+        if ($setup.ExitCode -ne 0) { throw "Installer failed: $($setup.ExitCode)" }
+        if (-not (Test-Path "$install\bin\assdraw3.exe")) { throw 'Installed executable is missing.' }
+        python tools/translations.py --check-package "$install\bin"
+        if ($LASTEXITCODE -ne 0) { throw 'Installed resources are incomplete.' }
+      shell: pwsh
 
     - name: Build and run regression tests
       run: |
         cmake --build build-dir --config Release --target assdraw-core-tests assdraw-gui-tests --parallel
+        if ($LASTEXITCODE -ne 0) { throw 'Test build failed.' }
         ctest --test-dir build-dir -C Release --output-on-failure
+        if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed.' }
       shell: pwsh
-
-    - name: Compile Inno Setup Installer
-      run: |
-        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
-      shell: pwsh
-
-    - name: Upload Windows Installer
-      uses: actions/upload-artifact@v4
-      with:
-        name: ASSDraw3-Windows-Setup
-        path: installer\ASSDraw3_Setup.exe
-        if-no-files-found: error

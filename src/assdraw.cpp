@@ -42,6 +42,12 @@
 #include <wx/filename.h>
 #include <wx/dynlib.h>
 #include <wx/stdpaths.h>
+#include <wx/iconbndl.h>
+
+#ifdef __WXMSW__
+#include <wx/msw/wrapwin.h>
+#include <shobjidl.h>
+#endif
 
 #if !defined(__WINDOWS__)
 #include "xpm/res.h"
@@ -95,6 +101,9 @@ END_EVENT_TABLE()
 bool ASSDrawApp::OnInit()
 {
 	SetAppName(TITLE);
+#ifdef __WXMSW__
+	SetCurrentProcessExplicitAppUserModelID(L"KerimDemirkaynak.ASSDraw3");
+#endif
 	if (!AssdrawI18n::SetLanguage(AssdrawI18n::ReadLanguagePreference()))
 		AssdrawI18n::SetLanguage("en");
     // create the main application window
@@ -124,7 +133,14 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 #endif
 
     // set the frame icon
-    SetIcon(wxICON(appico));
+#ifdef __WXMSW__
+	wxIconBundle icons;
+	for (int size : {16, 32, 48})
+		icons.AddIcon(wxIcon("APPICO", wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+	SetIcons(icons);
+#else
+	SetIcon(wxICON(appico));
+#endif
 
    	// Create status bar for the frame
     CreateStatusBar(3);

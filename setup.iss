@@ -1,10 +1,14 @@
 [Setup]
 AppName=ASSDraw3
+AppId=ASSDraw3
 AppVersion=3.1
 DefaultDirName={autopf}\ASSDraw3
 DefaultGroupName=ASSDraw3
 OutputDir=installer
-OutputBaseFilename=ASSDraw3_Setup
+OutputBaseFilename=ASSDraw3-Windows-x64-Setup
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+UninstallDisplayIcon={app}\bin\assdraw3.exe
 Compression=lzma
 SolidCompression=yes
 WizardImageFile=docs\resources\welcome-large.bmp
@@ -49,8 +53,8 @@ Source: "vendor\wxlocale\LICENSE.wxWidgets.txt"; DestDir: "{app}"; Flags: ignore
 Source: "vendor\wxlocale\COPYING.LIB.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"
-Name: "{autodesktop}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; Tasks: desktopicon
+Name: "{autoprograms}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; IconFilename: "{app}\bin\assdraw3.exe"; AppUserModelID: "KerimDemirkaynak.ASSDraw3"
+Name: "{autodesktop}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; IconFilename: "{app}\bin\assdraw3.exe"; AppUserModelID: "KerimDemirkaynak.ASSDraw3"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; Description: "{cm:LaunchProgram,ASSDraw3}"; Flags: nowait postinstall skipifsilent

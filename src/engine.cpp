@@ -39,6 +39,8 @@
 #include <vector> // ok, we use vector too
 #include <stdio.h>
 #include <algorithm>
+#include <cmath>
+#include "agg_bounding_rect.h"
 
 
 
@@ -726,20 +728,35 @@ void ASSDrawEngine::update_rendered_bound_coords(bool rendered_fresh)
 
 void ASSDrawEngine::FitToViewPoint(int hmargin, int vmargin)
 {
-	wxSize v = GetClientSize();
-	double wide = rendered_max_x - rendered_min_x;
-	double high = rendered_max_y - rendered_min_y;
-	double widthratio = (double) (v.x - hmargin * 2) / wide;
-	double heightratio = (double) (v.y - vmargin * 2) / high;
-	double ratio = (widthratio < heightratio? widthratio:heightratio);
-	pointsys->scale = pointsys->scale * ratio;
-	if (pointsys->scale < 0.01) pointsys->scale = 0.01;
-	double new_min_x = pointsys->originx + (rendered_min_x - pointsys->originx) * ratio;
-	double new_max_x = pointsys->originx + (rendered_max_x - pointsys->originx) * ratio;
-	pointsys->originx += (v.x - new_max_x + new_min_x) / 2 - new_min_x;
-	double new_min_y = pointsys->originy + (rendered_min_y - pointsys->originy) * ratio;
-	double new_max_y = pointsys->originy + (rendered_max_y - pointsys->originy) * ratio;
-	pointsys->originy += (v.y - new_max_y + new_min_y) / 2 - new_min_y;
+	const wxSize v = GetClientSize();
+	if (v.x <= 0 || v.y <= 0)
+		return;
+
+	// Fit the drawing itself, not the last rasterization. Empty or one-point
+	// paths have no rasterizer bounds; using those could produce NaN/infinity
+	// and permanently blank a preview when it was later given a valid shape.
+	agg::path_storage path;
+	for (DrawCmd* cmd : cmds)
+		AddDrawCmdToAGGPathStorage(cmd, path);
+	agg::conv_curve<agg::path_storage> curve(path);
+	double x1, y1, x2, y2;
+	if (!agg::bounding_rect_single(curve, 0, &x1, &y1, &x2, &y2))
+		return;
+	const double wide = x2 - x1, high = y2 - y1;
+	const double available_width = std::max(1, v.x - 2 * hmargin);
+	const double available_height = std::max(1, v.y - 2 * vmargin);
+	double scale = 1.0;
+	if (wide > 0 && high > 0)
+		scale = std::min(available_width / wide, available_height / high);
+	else if (wide > 0)
+		scale = available_width / wide;
+	else if (high > 0)
+		scale = available_height / high;
+	if (!std::isfinite(scale) || !std::isfinite(x1 + x2) || !std::isfinite(y1 + y2))
+		return;
+	pointsys->scale = std::clamp(scale, 0.01, 10000.0);
+	pointsys->originx = v.x / 2.0 - (x1 + x2) * pointsys->scale / 2.0;
+	pointsys->originy = v.y / 2.0 - (y1 + y2) * pointsys->scale / 2.0;
 	RefreshDisplay();
 }
 

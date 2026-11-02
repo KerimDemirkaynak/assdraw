@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Using the mouse and keyboard</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+body {
+  margin: 5px 5px 5px 5px;
+  background-color: #ffffff;
+}
+/* ========== Text Styles ========== */
+hr { color: #000000}
+body, table /* Font Style */
+{
+ font-size: 10pt;
+ font-family: 'Verdana';
+ font-style: normal;
+ font-weight: normal;
+ color: #000000;
+ text-decoration: none;
+}
+span.rvts1 /* Heading */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts2 /* Subheading */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #000080;
+}
+span.rvts3 /* Keywords */
+{
+ font-family: 'Arial';
+ font-style: italic;
+ color: #800000;
+}
+a.rvts4, span.rvts4 /* Jump 1 */
+{
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+a.rvts5, span.rvts5 /* Jump 2 */
+{
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+span.rvts6 /* Font Hint */
+{
+ font-family: 'Arial';
+ color: #808080;
+}
+span.rvts7 /* Font Hint Title */
+{
+ font-size: 15pt;
+ font-family: 'Tahoma';
+ font-weight: bold;
+ color: #404040;
+}
+span.rvts8 /* Font Hint Bold */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #808080;
+}
+span.rvts9 /* Font Hint Italic */
+{
+ font-family: 'Arial';
+ font-style: italic;
+ color: #808080;
+}
+span.rvts10
+{
+ font-style: italic;
+}
+span.rvts11
+{
+ font-weight: bold;
+ text-decoration: underline;
+}
+a.rvts12, span.rvts12
+{
+ color: #0000ff;
+ text-decoration: underline;
+}
+a.rvts12:hover { color: #0000ff; }
+span.rvts13
+{
+ font-weight: bold;
+}
+span.rvts14 /* Font Style */
+{
+ font-size: 18pt;
+ font-family: 'Tahoma';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts15 /* Font Style */
+{
+ font-style: italic;
+ color: #c0c0c0;
+}
+a.rvts16, span.rvts16 /* Font Style */
+{
+ font-style: italic;
+ color: #6666ff;
+ text-decoration: underline;
+}
+/* ========== Para Styles ========== */
+p,ul,ol /* Paragraph Style */
+{
+ text-align: left;
+ text-indent: 0px;
+ padding: 0px 0px 0px 0px;
+ margin: 0px 0px 0px 0px;
+}
+.rvps1 /* Centered */
+{
+ text-align: center;
+}
+.rvps2 /* Paragraph Style */
+{
+ background: #ffffff;
+ margin: 0px 0px 20px 0px;
+}
+.rvps3 /* Paragraph Style */
+{
+ border-color: #c0c0c0;
+ border-style: solid;
+ border-width: 1px;
+ border-right: none;
+ border-bottom: none;
+ border-left: none;
+ background: #ffffff;
+ padding: 3px 0px 0px 0px;
+ margin: 27px 0px 0px 0px;
+}
+--></style>
+<meta name="generator" content="HelpNDoc Free"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{max-width:1000px;margin:2rem auto;padding:0 1rem}img{max-width:100%;height:auto}.manual-nav{margin-bottom:1.5rem;font:16px/1.6 system-ui,sans-serif}</style></head>
+<body>
+<nav class="manual-nav"><a href="../index.html">ASSDraw3 3.1 guide</a> / <a href="index.html">Original manual contents</a></nav>
+
+<p class=rvps2><span class=rvts14>Using the mouse and keyboard</span></p>
+<p><span class=rvts11>Left mouse button</span></p>
+<p><br></p>
+<p>On the canvas, your left mouse button does the followings:</p>
+<p><br></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li>In any drawing mode except <span class=rvts10>Scale/Rotate</span> and <span class=rvts10>Bilinear Transformation</span>, pointing/hovering on a point or a control point highlights the point, showing the point's coordinates and highlighting the line/curve the point belongs to.</li>
+<li>In <span class=rvts10>Drag</span> drawing mode, you can drag points and control points to change the shape.</li>
+<li>Also in <span class=rvts10>Drag</span> mode, if you can drag on empty area of the canvas to select multiple points (see <a class=rvts12 href="multiple-points-selection.html">Multiple points selection</a>), then drag on of the selected points to move all of them in-sync.</li>
+<li>In <span class=rvts10>M</span>, <span class=rvts10>L</span> or <span class=rvts10>B</span> drawing mode, left-clicking on the canvas adds an M, L or B command (move, line or bezier curve) to the end of the commands string. The point associated to the command is added to the canvas when you depress the mouse button and can still be moved around until you release the button, at which time the command is finalized (for bezier curve, the control points are generated at that moment). Left-clicking and dragging from an existing point on the canvas adds the new command/point immediately after the existing one.</li>
+<li>In Scale/Rotate and Bilinear Transformation modes, drag an edge or a vertex of the bounding rectangle to scale or transform the shape.</li>
+</ul>
+<p><br></p>
+<p><span class=rvts11>Right mouse button</span></p>
+<p><br></p>
+<p>On the other hand, your right mouse button is used as follow:</p>
+<p><br></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li>In all drawing modes except <span class=rvts10>Scale/Rotate</span>, right-dragging the canvas (i.e. holding right button down while moving the mouse pointer over the canvas) pans the canvas, moving the shape within the viewpoint.</li>
+<li>In <span class=rvts10>Scale/Rotate</span> drawing mode, right-dragging rotates the shapes around the shape's center.</li>
+<li>Double-right-clicking on a shape's point (but not control point) pops up <a class=rvts12 href="context-menu.html">context menu</a> to perform special functions on the point:
+<br><br></li>
+</ul>
+<p><span class=rvts11>Mousewheel</span></p>
+<p><br></p>
+<p>Mousewheel is mainly used for zooming. Mousewheel up zooms in (scale up) while mousewheel down zooms out (scale down).</p>
+<p><br></p>
+<p><span class=rvts11>Keyboard shortcuts</span></p>
+<p><br></p>
+<p>Even though ASSDraw3 is virtually usable with just a mouse, there are several keyboard shortcuts that can used in together with mouse captures for different purposes (refer summary below).</p>
+<p><br></p>
+<p><span class=rvts11>Summary</span></p>
+<p><br></p>
+<div><table width=800 border=1 cellpadding=2 cellspacing=0 style="border-color: #000000; border-style: solid;">
+<tr valign=top>
+<td width=236 style="border-color: #000000; border-style: solid; background-color: #ffcc99;">
+<p><span class=rvts13>Keyboard key / Mouse gesture</span></p>
+</td>
+<td width=381 style="border-color: #000000; border-style: solid; background-color: #ffcc99;">
+<p><span class=rvts13>Action</span></p>
+</td>
+<td width=153 style="border-color: #000000; border-style: solid; background-color: #ffcc99;">
+<p><span class=rvts13>Ctrl key</span></p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>PageUp</p>
+</td>
+<td rowspan=2 width=381 style="border-color: #969696; border-style: solid;">
+<p>Zoom in (scale up)</p>
+</td>
+<td rowspan=2 width=153 style="border-color: #969696; border-style: solid;">
+<p>Refine scaling by 0.1</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Mousewheel up</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>PageDown</p>
+</td>
+<td rowspan=2 width=381 style="border-color: #969696; border-style: solid;">
+<p>Zoom out (scale down)</p>
+</td>
+<td rowspan=2 width=153 style="border-color: #969696; border-style: solid;">
+<p>Refine scaling by 0.1</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Mousewheel down</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Directional keys</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Pan</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>Refine panning by 10</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + N</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Clear canvas</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + P</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Preview</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F1</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>Drag</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F2</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>M</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F3</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>L</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F4</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>B</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F5</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>Delete</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F6</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>Scale/Rotate</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>F7</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Drawing mode: <span class=rvts10>Bilinear Transformation</span></p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + 1</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Reposition origin to bottom left of canvas</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + 3</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Reposition origin to bottom right of canvas</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + 5</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Reposition origin to center of canvas</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + 7</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Reposition origin to top left of canvas</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+<tr valign=top>
+<td width=236 style="border-color: #969696; border-style: solid;">
+<p>Ctrl + 9</p>
+</td>
+<td width=381 style="border-color: #969696; border-style: solid;">
+<p>Reposition origin to top right of canvas</p>
+</td>
+<td width=153 style="border-color: #969696; border-style: solid;">
+<p>-</p>
+</td>
+</tr>
+</table>
+</div>
+<p class=rvps3><span class=rvts15>This help file has been generated by the freeware version of </span><a class=rvts16 href="http://www.ibe-software.com/products/software/helpndoc/" target="_blank">HelpNDoc</a></p>
+
+</body></html>

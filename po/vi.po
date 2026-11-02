@@ -1,685 +1,930 @@
 # ASSDraw3 application translations. English is the source language.
 msgid ""
-msgstr "Project-Id-Version: ASSDraw3 3.1\nReport-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\nLanguage: vi\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\nPO-Revision-Date: 2026-11-02 00:00+0300\nLast-Translator: ASSDraw contributors\nLanguage-Team: vi\n"
+msgstr ""
+"Project-Id-Version: ASSDraw3 3.1\n"
+"Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
+"POT-Creation-Date: 2026-11-02 03:19+0300\n"
+"PO-Revision-Date: 2026-11-02 00:00+0300\n"
+"Last-Translator: ASSDraw contributors\n"
+"Language-Team: vi\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
+#: src/assdraw.cpp:368
 msgid "&About"
 msgstr "&Giới thiệu"
 
+#: src/assdraw.cpp:373
 msgid "&Background"
 msgstr "&Nền"
 
+#: src/assdraw.cpp:323
 msgid "&Bilinear transformation\tF7"
 msgstr "Biến đổi &song tuyến tính\tF7"
 
+#: src/dlgctrl.cpp:187
 msgid "&Cancel"
 msgstr "&Hủy"
 
+#: src/assdraw.cpp:371
 msgid "&Canvas"
 msgstr "&Khung vẽ"
 
+#: src/assdraw.cpp:343
 msgid "&Center\tCtrl+5"
 msgstr "&Giữa\tCtrl+5"
 
+#: src/assdraw.cpp:334
 msgid "&Center\tCtrl+Shift+5"
 msgstr "&Giữa\tCtrl+Shift+5"
 
+#: src/assdraw.cpp:305
 msgid "&Clear\tCtrl+N"
 msgstr "&Xóa sạch\tCtrl+N"
 
+#: src/assdraw.cpp:324
 msgid "&Coloring"
 msgstr "&Tô màu"
 
+#: src/assdraw.cpp:321
 msgid "&Delete\tF5"
 msgstr "&Xóa\tF5"
 
+#: src/assdraw.cpp:375
 msgid "&Help"
 msgstr "&Trợ giúp"
 
+#: src/assdraw.cpp:387
 msgid "&Language"
 msgstr "&Ngôn ngữ"
 
+#: src/assdraw.cpp:358
 msgid "&Library"
 msgstr "&Thư viện"
 
+#: src/assdraw.cpp:367
 msgid "&Manual"
 msgstr "&Hướng dẫn"
 
+#: src/assdraw.cpp:372
 msgid "&Mode"
 msgstr "&Chế độ"
 
+#: src/localization.cpp:15
 msgid "&No"
 msgstr "&Không"
 
+#: src/dlgctrl.cpp:184
 msgid "&OK"
 msgstr "Đồ&ng ý"
 
+#: src/assdraw.cpp:309
 msgid "&Paste\tCtrl+V"
 msgstr "&Dán\tCtrl+V"
 
+#: src/assdraw.cpp:307
 msgid "&Preview\tCtrl+P"
 msgstr "&Xem trước\tCtrl+P"
 
+#: src/assdraw.cpp:312
 msgid "&Redo\tCtrl+Y"
 msgstr "&Làm lại\tCtrl+Y"
 
+#: src/assdraw.cpp:364
 msgid "&Reset workspace"
 msgstr "Đặt &lại không gian làm việc"
 
+#: src/assdraw.cpp:322
 msgid "&Scale/Rotate\tF6"
 msgstr "&Co giãn/Xoay\tF6"
 
+#: src/assdraw.cpp:360
 msgid "&Settings"
 msgstr "&Cài đặt"
 
+#: src/assdraw.cpp:361
 msgid "&Toolbars"
 msgstr "&Thanh công cụ"
 
+#: src/assdraw.cpp:308
 msgid "&Transform"
 msgstr "&Biến đổi"
 
+#: src/assdraw.cpp:311
 msgid "&Undo\tCtrl+Z"
 msgstr "&Hoàn tác\tCtrl+Z"
 
+#: src/assdraw.cpp:374
 msgid "&Workspace"
 msgstr "&Không gian làm việc"
 
+#: src/localization.cpp:15
 msgid "&Yes"
 msgstr "&Có"
 
+#: src/include_once.hpp:69
 msgid "<Select>"
 msgstr "<Chọn>"
 
+#: src/assdraw.cpp:837
 msgid "ASS drawing copied to clipboard."
 msgstr "Đã sao chép hình vẽ ASS vào bộ nhớ tạm."
 
+#: src/localization.cpp:151
 msgid "ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."
 msgstr "ASSDraw3 là công cụ thiết kế hình dạng vector cho tệp phụ đề ASS."
 
+#: src/localization.cpp:161
 msgid "Acknowledgements"
 msgstr "Lời cảm ơn"
 
+#: src/canvas.cpp:1149
 msgid "Add a new B"
 msgstr "Thêm lệnh B mới"
 
+#: src/canvas.cpp:1147
 msgid "Add a new L"
 msgstr "Thêm lệnh L mới"
 
+#: src/canvas.cpp:1145
 msgid "Add a new M"
 msgstr "Thêm lệnh M mới"
 
+#: src/localization.cpp:17
 msgid "Add to custom colours"
 msgstr "Thêm vào màu tùy chỉnh"
 
+#: src/settings.cpp:77 src/settings.cpp:230
 msgid "Appearance"
 msgstr "Giao diện"
 
+#: src/settings.cpp:114 src/settings.cpp:259
 msgid "Apply"
 msgstr "Áp dụng"
 
+#: src/settings.cpp:102 src/settings.cpp:254
 msgid "Ask for image opacity"
 msgstr "Hỏi độ đục của ảnh"
 
+#: src/include_once.hpp:65
 msgid "Background"
 msgstr "Nền"
 
+#: src/canvas.cpp:229 src/canvas.cpp:357
 msgid "Background image opacity"
 msgstr "Độ đục của ảnh nền"
 
+#: src/localization.cpp:17
 msgid "Basic colours"
 msgstr "Màu cơ bản"
 
+#: src/settings.cpp:100 src/settings.cpp:231
 msgid "Behaviors"
 msgstr "Hành vi"
 
+#: src/assdraw.cpp:275
 msgid "Bezier"
 msgstr "Bézier"
 
+#: src/assdraw.cpp:281
 msgid "Bilinear"
 msgstr "Song tuyến tính"
 
+#: src/canvas.cpp:820
 msgid "Bilinear transform"
 msgstr "Biến đổi song tuyến tính"
 
+#: src/include_once.hpp:57
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "Chế độ song tuyến tính: kéo các đỉnh để làm biến dạng hình; kéo một cạnh sẽ di chuyển hai đỉnh kề nhau"
 
+#: src/assdraw.cpp:344
 msgid "Bottom left\tCtrl+1"
 msgstr "Dưới bên trái\tCtrl+1"
 
+#: src/assdraw.cpp:335
 msgid "Bottom left\tCtrl+Shift+1"
 msgstr "Dưới bên trái\tCtrl+Shift+1"
 
+#: src/assdraw.cpp:345
 msgid "Bottom right\tCtrl+3"
 msgstr "Dưới bên phải\tCtrl+3"
 
+#: src/assdraw.cpp:336
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "Dưới bên phải\tCtrl+Shift+3"
 
+#: src/assdraw.cpp:932
 msgid "Cancel"
 msgstr "Hủy"
 
+#: src/include_once.hpp:63 src/settings.cpp:78 src/settings.cpp:232
 msgid "Canvas"
 msgstr "Khung vẽ"
 
+#: src/canvas.cpp:2186
 msgid "Canvas background loaded"
 msgstr "Đã tải nền khung vẽ"
 
+#: src/settings.cpp:101 src/settings.cpp:253
 msgid "Capitalize commands"
 msgstr "Viết hoa lệnh"
 
+#: src/canvas.cpp:785
 msgid "Change sub-shape color"
 msgstr "Đổi màu hình con"
 
+#: src/canvas.cpp:780
 msgid "Choose fill color"
 msgstr "Chọn màu tô"
 
+#: src/assdraw.cpp:249
 msgid "Clear"
 msgstr "Xóa sạch"
 
+#: src/assdraw.cpp:571
 msgid "Clear canvas"
 msgstr "Xóa sạch khung vẽ"
 
+#: src/include_once.hpp:39
 msgid "Clear the canvas and create a new drawing"
 msgstr "Xóa sạch khung vẽ và tạo hình vẽ mới"
 
+#: src/assdraw.cpp:566
 msgid "Clear the canvas and create a new drawing?"
 msgstr "Xóa sạch khung vẽ và tạo hình vẽ mới?"
 
+#: src/canvas.cpp:766
 msgid "Click a filled part of the shape (not a hole)."
 msgstr "Nhấp vào phần được tô của hình, không phải vùng rỗng."
 
+#: src/assdraw.cpp:284 src/assdraw.cpp:324
 msgid "Click a filled shape to select it; double-click to choose its fill color"
 msgstr "Nhấp vào hình được tô để chọn; nhấp đúp để chọn màu tô"
 
+#: src/localization.cpp:16
 msgid "Close"
 msgstr "Đóng"
 
+#: src/assdraw.cpp:253 src/assdraw.cpp:283
 msgid "Coloring"
 msgstr "Tô màu"
 
+#: src/library.cpp:227
 msgid "Confirm delete?"
 msgstr "Xác nhận xóa?"
 
+#: src/settings.cpp:106 src/settings.cpp:258
 msgid "Confirm quit"
 msgstr "Xác nhận thoát"
 
+#: src/assdraw.cpp:567
 msgid "Confirmation"
 msgstr "Xác nhận"
 
+#: src/settings.cpp:85 src/settings.cpp:239
 msgid "Control lines"
 msgstr "Đường điều khiển"
 
+#: src/settings.cpp:86 src/settings.cpp:240
 msgid "Control lines @"
 msgstr "Độ đục của đường điều khiển"
 
+#: src/settings.cpp:89 src/settings.cpp:243
 msgid "Control points"
 msgstr "Điểm điều khiển"
 
+#: src/settings.cpp:90 src/settings.cpp:244
 msgid "Control points @"
 msgstr "Độ đục của điểm điều khiển"
 
+#: src/canvas.cpp:1607
 msgid "Convert Bezier to Line"
 msgstr "Đổi đường Bézier thành đường thẳng"
 
+#: src/canvas.cpp:1591
 msgid "Convert Line to Bezier"
 msgstr "Đổi đường thẳng thành đường Bézier"
 
+#: src/canvas.cpp:1416
 msgid "Convert to Bezier curve (B command)"
 msgstr "Đổi thành đường Bézier (lệnh B)"
 
+#: src/canvas.cpp:1420
 msgid "Convert to line (L command)"
 msgstr "Đổi thành đường thẳng (lệnh L)"
 
+#: src/assdraw.cpp:182 src/assdraw.cpp:460
 msgid "Copy ASS"
 msgstr "Sao chép ASS"
 
+#: src/library.cpp:224
 msgid "Copy commands to clipboard"
 msgstr "Sao chép lệnh vào bộ nhớ tạm"
 
+#: src/assdraw.cpp:184 src/assdraw.cpp:461
 msgid "Copy the command text, including ASS style tags"
 msgstr "Sao chép văn bản lệnh cùng thẻ kiểu ASS"
 
+#: src/assdraw.cpp:477
 msgid "Could not save the language preference."
 msgstr "Không thể lưu tùy chọn ngôn ngữ."
 
+#: src/localization.cpp:16
 msgid "Custom"
 msgstr "Tùy chỉnh"
 
+#: src/localization.cpp:16
 msgid "Custom colour"
 msgstr "Màu tùy chỉnh"
 
+#: src/localization.cpp:17
 msgid "Custom colours"
 msgstr "Màu tùy chỉnh"
 
+#: src/assdraw.cpp:317
 msgid "D&rag\tF1"
 msgstr "&Kéo\tF1"
 
+#: src/settings.cpp:103 src/settings.cpp:255
 msgid "Default image opacity (0-255)"
 msgstr "Độ đục ảnh mặc định (0-255)"
 
+#: src/assdraw.cpp:279
 msgid "Delete"
 msgstr "Xóa"
 
+#: src/canvas.cpp:1178
 msgid "Delete a B"
 msgstr "Xóa lệnh B"
 
+#: src/canvas.cpp:1176
 msgid "Delete a L"
 msgstr "Xóa lệnh L"
 
+#: src/canvas.cpp:1174
 msgid "Delete a M"
 msgstr "Xóa lệnh M"
 
+#: src/library.cpp:228
 msgid "Delete from library"
 msgstr "Xóa khỏi thư viện"
 
+#: src/include_once.hpp:56
 msgid "Delete mode"
 msgstr "Chế độ xóa"
 
+#: src/library.cpp:108 src/library.cpp:333
 msgid "Delete selected"
 msgstr "Xóa mục đã chọn"
 
+#: src/include_once.hpp:45
 msgid "Depending on what's in the clipboard, import as drawing commands or background"
 msgstr "Nhập lệnh vẽ hoặc nền tùy theo nội dung bộ nhớ tạm"
 
+#: src/assdraw.cpp:931
 msgid "Do you want to close ASSDraw3 now?"
 msgstr "Đóng ASSDraw3 ngay bây giờ?"
 
+#: src/assdraw.cpp:354
 msgid "Dock all"
 msgstr "Gắn tất cả"
 
+#: src/assdraw.cpp:271
 msgid "Drag"
 msgstr "Kéo"
 
+#: src/localization.cpp:156
 msgid "Drag an image onto the canvas to use it as a tracing background."
 msgstr "Kéo ảnh vào khung vẽ để dùng làm nền đồ hình."
 
+#: src/canvas.cpp:943
 msgid "Drag control point"
 msgstr "Kéo điểm điều khiển"
 
+#: src/include_once.hpp:48
 msgid "Drag mode"
 msgstr "Chế độ kéo"
 
+#: src/canvas.cpp:941
 msgid "Drag point"
 msgstr "Kéo điểm"
 
+#: src/assdraw.cpp:320
 msgid "Draw &B\tF4"
 msgstr "Vẽ &B\tF4"
 
+#: src/assdraw.cpp:319
 msgid "Draw &L\tF3"
 msgstr "Vẽ &L\tF3"
 
+#: src/assdraw.cpp:318
 msgid "Draw &M\tF2"
 msgstr "Vẽ &M\tF2"
 
+#: src/include_once.hpp:52
 msgid "Draw B mode (Cubic Bezier curve)"
 msgstr "Chế độ vẽ B (đường Bézier bậc ba)"
 
+#: src/include_once.hpp:55
 msgid "Draw C mode (Close the last spline)"
 msgstr "Chế độ vẽ C (khép kín đường spline cuối)"
 
+#: src/include_once.hpp:51
 msgid "Draw L mode (Straight line)"
 msgstr "Chế độ vẽ L (đường thẳng)"
 
+#: src/include_once.hpp:49
 msgid "Draw M mode (Close current shape and move the virtual pen to a new point)"
 msgstr "Chế độ vẽ M (khép hình hiện tại và chuyển bút ảo tới điểm mới)"
 
+#: src/include_once.hpp:50
 msgid "Draw N mode (Same as M but doesn't close the shape)"
 msgstr "Chế độ vẽ N (như M nhưng không khép hình)"
 
+#: src/include_once.hpp:54
 msgid "Draw P mode (Extends a spline with another point)"
 msgstr "Chế độ vẽ P (nối dài đường spline bằng điểm mới)"
 
+#: src/include_once.hpp:53
 msgid "Draw S mode (Spline)"
 msgstr "Chế độ vẽ S (đường spline)"
 
+#: src/include_once.hpp:41
 msgid "Draw the shapes without enlarged points and control points"
 msgstr "Vẽ hình mà không phóng to điểm và điểm điều khiển"
 
+#: src/settings.cpp:79 src/settings.cpp:233
 msgid "Drawing"
 msgstr "Hình vẽ"
 
+#: src/settings.cpp:80 src/settings.cpp:234
 msgid "Drawing @"
 msgstr "Độ đục của hình vẽ"
 
+#: src/assdraw.cpp:400 src/assdraw.cpp:411
 msgid "Drawing commands"
 msgstr "Lệnh vẽ"
 
+#: src/include_once.hpp:64
 msgid "Drawing mode"
 msgstr "Chế độ vẽ"
 
+#: src/include_once.hpp:40
 msgid "Edit the source"
 msgstr "Sửa mã nguồn"
 
+#: src/library.cpp:48 src/library.cpp:328
+msgid "Empty drawing"
+msgstr "Bản vẽ trống"
+
+#: src/assdraw.cpp:477 src/canvas.cpp:1186
 msgid "Error"
 msgstr "Lỗi"
 
+#: src/assdraw.cpp:932
 msgid "Exit"
 msgstr "Thoát"
 
+#: src/include_once.hpp:75
 msgid "Flip horizontally at X = 4"
 msgstr "Lật ngang qua X = 4"
 
+#: src/include_once.hpp:76
 msgid "Flip vertically at Y = 3"
 msgstr "Lật dọc qua Y = 3"
 
+#: src/settings.cpp:97 src/settings.cpp:251
 msgid "H ruler"
 msgstr "Thước ngang"
 
+#: src/include_once.hpp:44
 msgid "Help! Help!"
 msgstr "Trợ giúp!"
 
+#: src/assdraw.cpp:353
 msgid "Hide all"
 msgstr "Ẩn tất cả"
 
+#: src/localization.cpp:160
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
 msgstr "Trong chế độ Tô màu, chọn hình con được tô rồi nhấp đúp để chọn màu. Sao chép ASS sẽ sao chép hình vẽ kèm kiểu."
 
+#: src/assdraw.cpp:433
 msgid "Language"
 msgstr "Ngôn ngữ"
 
+#: src/settings.cpp:93 src/settings.cpp:247
 msgid "Library"
 msgstr "Thư viện"
 
+#: src/settings.cpp:94 src/settings.cpp:248
 msgid "Library shapes"
 msgstr "Hình trong thư viện"
 
+#: src/assdraw.cpp:274
 msgid "Line"
 msgstr "Đường thẳng"
 
+#: src/library.cpp:318
 msgid "Load shape from library"
 msgstr "Tải hình từ thư viện"
 
+#: src/library.cpp:216
 msgid "Load to canvas"
 msgstr "Tải vào khung vẽ"
 
+#: src/canvas.cpp:2179
 #, c-format
 msgid "Loading '%s' as canvas background ..."
 msgstr "Đang tải '%s' làm nền khung vẽ..."
 
+#: src/assdraw.cpp:709
 msgid "Manual"
 msgstr "Hướng dẫn"
 
+#: src/localization.cpp:162
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
 msgstr "Maxim Shemanarev: Anti-Grain Geometry. Nhóm wxWidgets: bộ công cụ giao diện. Adrian Secord: wxAGG."
 
+#: src/canvas.cpp:1439
 msgid "Mode: &Delete"
 msgstr "Chế độ: &Xóa"
 
+#: src/canvas.cpp:1441
 msgid "Mode: Bilinear transformation"
 msgstr "Chế độ: Biến đổi song tuyến tính"
 
+#: src/canvas.cpp:1442
 msgid "Mode: Coloring"
 msgstr "Chế độ: Tô màu"
 
+#: src/canvas.cpp:1435
 msgid "Mode: D&rag"
 msgstr "Chế độ: &Kéo"
 
+#: src/canvas.cpp:1438
 msgid "Mode: Draw &B"
 msgstr "Chế độ: Vẽ &B"
 
+#: src/canvas.cpp:1437
 msgid "Mode: Draw &L"
 msgstr "Chế độ: Vẽ &L"
 
+#: src/canvas.cpp:1436
 msgid "Mode: Draw &M"
 msgstr "Chế độ: Vẽ &M"
 
+#: src/canvas.cpp:1440
 msgid "Mode: Scale/Rotate"
 msgstr "Chế độ: Co giãn/Xoay"
 
+#: src/canvas.cpp:256
 msgid "Modify drawing commands"
 msgstr "Sửa lệnh vẽ"
 
+#: src/assdraw.cpp:272
 msgid "Move"
 msgstr "Di chuyển"
 
+#: src/include_once.hpp:70
 msgid "Move 5 units down"
 msgstr "Di chuyển xuống 5 đơn vị"
 
+#: src/include_once.hpp:71
 msgid "Move 5 units right"
 msgstr "Di chuyển sang phải 5 đơn vị"
 
+#: src/canvas.cpp:1433
 msgid "Move [0,0] here"
 msgstr "Chuyển [0,0] tới đây"
 
+#: src/canvas.cpp:957 src/canvas.cpp:1630
 msgid "Move origin"
 msgstr "Di chuyển gốc tọa độ"
 
+#: src/localization.cpp:15
 msgid "No"
 msgstr "Không"
 
+#: src/settings.cpp:105 src/settings.cpp:257
 msgid "No splash screen"
 msgstr "Không hiện màn hình chào"
 
+#: src/dlgctrl.cpp:275
 msgid "OK"
 msgstr "Đồng ý"
 
-msgid "One or more values entered are not real numbers.\nPlease fix."
-msgstr "Một hoặc nhiều giá trị nhập vào không phải số thực.\nVui lòng sửa lại."
+#: src/dlgctrl.cpp:254
+msgid ""
+"One or more values entered are not real numbers.\n"
+"Please fix."
+msgstr ""
+"Một hoặc nhiều giá trị nhập vào không phải số thực.\n"
+"Vui lòng sửa lại."
 
+#: src/settings.cpp:95 src/settings.cpp:249
 msgid "Origin"
 msgstr "Gốc tọa độ"
 
+#: src/settings.cpp:96 src/settings.cpp:250
 msgid "Origin cross size"
 msgstr "Kích thước dấu gốc tọa độ"
 
+#: src/localization.cpp:153
 msgid "Original application: ai-chan (2006-2007)."
 msgstr "Ứng dụng gốc: ai-chan (2006-2007)."
 
+#: src/settings.cpp:83 src/settings.cpp:237
 msgid "Outline"
 msgstr "Viền"
 
+#: src/settings.cpp:84 src/settings.cpp:238
 msgid "Outline @"
 msgstr "Độ đục của viền"
 
+#: src/assdraw.cpp:293
 msgid "Pan background"
 msgstr "Dịch chuyển nền"
 
+#: src/assdraw.cpp:292
 msgid "Pan drawing"
 msgstr "Dịch chuyển hình vẽ"
 
+#: src/assdraw.cpp:327
 msgid "Pan/Zoom &Drawing\tShift+F1"
 msgstr "Dịch chuyển/thu phóng &hình vẽ\tShift+F1"
 
+#: src/assdraw.cpp:328
 msgid "Pan/Zoom Back&ground\tShift+F2"
 msgstr "Dịch chuyển/thu phóng &nền\tShift+F2"
 
+#: src/settings.cpp:104 src/settings.cpp:256
 msgid "Parse S/P/C"
 msgstr "Phân tích lệnh S/P/C"
 
+#: src/settings.cpp:87 src/settings.cpp:241
 msgid "Points"
 msgstr "Điểm"
 
+#: src/settings.cpp:88 src/settings.cpp:242
 msgid "Points @"
 msgstr "Độ đục của điểm"
 
+#: src/assdraw.cpp:251 src/settings.cpp:81 src/settings.cpp:235
 msgid "Preview"
 msgstr "Xem trước"
 
+#: src/settings.cpp:82 src/settings.cpp:236
 msgid "Preview @"
 msgstr "Độ đục khi xem trước"
 
+#: src/assdraw.cpp:875
 msgid "Redo\tCtrl+Y"
 msgstr "Làm lại\tCtrl+Y"
 
+#: src/include_once.hpp:47
 msgid "Redo last undo"
 msgstr "Làm lại thao tác vừa hoàn tác"
 
+#: src/assdraw.cpp:880
 #, c-format
 msgid "Redo: %s\tCtrl+Y"
 msgstr "Làm lại: %s\tCtrl+Y"
 
+#: src/assdraw.cpp:338
 msgid "Remove background\tShift+Del"
 msgstr "Gỡ nền\tShift+Del"
 
+#: src/assdraw.cpp:337 src/assdraw.cpp:362
 msgid "Reposition [&0, 0]"
 msgstr "Đặt lại vị trí [&0, 0]"
 
+#: src/settings.cpp:117 src/settings.cpp:260
 msgid "Revert"
 msgstr "Khôi phục"
 
+#: src/localization.cpp:159
 msgid "Right-double-click opens a context menu. Hold Shift to temporarily switch to Drag mode."
 msgstr "Nhấp đúp chuột phải để mở trình đơn ngữ cảnh. Giữ Shift để tạm chuyển sang chế độ Kéo."
 
+#: src/include_once.hpp:60
 msgid "Right-dragging pans background, mousewheel zooms in/out background"
 msgstr "Kéo chuột phải để dịch chuyển nền; lăn chuột để thu phóng nền"
 
+#: src/include_once.hpp:61
 msgid "Right-dragging pans drawing & background, mousewheel zooms in/out drawing & background"
 msgstr "Kéo chuột phải để dịch chuyển hình vẽ và nền; lăn chuột để thu phóng cả hai"
 
+#: src/include_once.hpp:59
 msgid "Right-dragging pans drawing, mousewheel zooms in/out drawing"
 msgstr "Kéo chuột phải để dịch chuyển hình vẽ; lăn chuột để thu phóng hình vẽ"
 
+#: src/canvas.cpp:1003
 msgid "Rotate"
 msgstr "Xoay"
 
+#: src/include_once.hpp:74
 msgid "Rotate 180° at (0, 0)"
 msgstr "Xoay 180° quanh (0, 0)"
 
+#: src/include_once.hpp:72
 msgid "Rotate 90° clockwise at (1, 2)"
 msgstr "Xoay 90° theo chiều kim đồng hồ quanh (1, 2)"
 
+#: src/include_once.hpp:73
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "Xoay 90° ngược chiều kim đồng hồ quanh (-1, 2)"
 
+#: src/library.cpp:104 src/library.cpp:332
 msgid "Save canvas"
 msgstr "Lưu khung vẽ"
 
+#: src/library.cpp:225
 msgid "Save canvas here"
 msgstr "Lưu khung vẽ tại đây"
 
+#: src/canvas.cpp:909
 msgid "Scale"
 msgstr "Co giãn"
 
+#: src/include_once.hpp:77
 msgid "Scale up horizontally by a factor of 2"
 msgstr "Phóng ngang gấp 2 lần"
 
+#: src/include_once.hpp:78
 msgid "Scale up vertically by a factor of 3"
 msgstr "Phóng dọc gấp 3 lần"
 
+#: src/assdraw.cpp:280
 msgid "Scale/Rotate"
 msgstr "Co giãn/Xoay"
 
+#: src/include_once.hpp:58
 msgid "Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate"
 msgstr "Chế độ Co giãn/Xoay: kéo đỉnh hoặc cạnh để đổi kích thước; kéo chuột phải để xoay"
 
+#: src/localization.cpp:154
 msgid "Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."
 msgstr "Chọn công cụ vẽ rồi nhấp hoặc kéo để thêm đường thẳng và đường cong. Kéo các điểm và tay nắm điều khiển để sửa hình."
 
+#: src/assdraw.cpp:254
 msgid "Select a shape, then double-click it to choose its fill color"
 msgstr "Chọn hình rồi nhấp đúp để chọn màu tô"
 
+#: src/library.cpp:106 src/library.cpp:332
 msgid "Select all"
 msgstr "Chọn tất cả"
 
+#: src/library.cpp:107 src/library.cpp:333
 msgid "Select none"
 msgstr "Bỏ chọn tất cả"
 
+#: src/settings.cpp:91 src/settings.cpp:245
 msgid "Selected points"
 msgstr "Điểm đã chọn"
 
+#: src/settings.cpp:92 src/settings.cpp:246
 msgid "Selected points @"
 msgstr "Độ đục của điểm đã chọn"
 
+#: src/assdraw.cpp:330
 msgid "Set background image opacity"
 msgstr "Đặt độ đục của ảnh nền"
 
+#: src/canvas.cpp:1623
 msgid "Set continuous"
 msgstr "Bật tính liên tục"
 
+#: src/assdraw.cpp:404 src/assdraw.cpp:412
 msgid "Settings"
 msgstr "Cài đặt"
 
+#: src/canvas.cpp:764
 msgid "Shape selected. Double-click to choose its fill color."
 msgstr "Đã chọn hình. Nhấp đúp để chọn màu tô."
 
+#: src/assdraw.cpp:395 src/assdraw.cpp:410
 msgid "Shapes Library"
 msgstr "Thư viện hình"
 
+#: src/include_once.hpp:43
 msgid "Shapes library"
 msgstr "Thư viện hình"
 
+#: src/assdraw.cpp:352
 msgid "Show all"
 msgstr "Hiện tất cả"
 
+#: src/canvas.cpp:1423
 msgid "Smooth connection"
 msgstr "Nối mượt"
 
+#: src/assdraw.cpp:377
 msgid "System Default"
 msgstr "Mặc định hệ thống"
 
+#: src/dlgctrl.cpp:115
 msgid "Templates"
 msgstr "Mẫu"
 
+#: src/localization.cpp:163
 msgid "Thanks to jfs, ArchMageZeratul, RoRo, and the Aegisub community for their suggestions and support."
 msgstr "Cảm ơn jfs, ArchMageZeratul, RoRo và cộng đồng Aegisub vì các đề xuất và sự hỗ trợ."
 
+#: src/assdraw.cpp:709
 msgid "The manual is missing. Please reinstall ASSDraw3."
 msgstr "Không tìm thấy hướng dẫn. Vui lòng cài lại ASSDraw3."
 
+#: src/assdraw.cpp:432
 msgid "The selected language could not be loaded. Please reinstall ASSDraw3."
 msgstr "Không thể tải ngôn ngữ đã chọn. Vui lòng cài lại ASSDraw3."
 
+#: src/localization.cpp:152
 msgid "This version was created by Kerim Demirkaynak."
 msgstr "Phiên bản này do Kerim Demirkaynak tạo."
 
+#: src/localization.cpp:155
 msgid "Tips and shortcuts"
 msgstr "Mẹo và phím tắt"
 
+#: src/assdraw.cpp:341
 msgid "Top left\tCtrl+7"
 msgstr "Trên bên trái\tCtrl+7"
 
+#: src/assdraw.cpp:332
 msgid "Top left\tCtrl+Shift+7"
 msgstr "Trên bên trái\tCtrl+Shift+7"
 
+#: src/assdraw.cpp:342
 msgid "Top right\tCtrl+9"
 msgstr "Trên bên phải\tCtrl+9"
 
+#: src/assdraw.cpp:333
 msgid "Top right\tCtrl+Shift+9"
 msgstr "Trên bên phải\tCtrl+Shift+9"
 
+#: src/assdraw.cpp:634 src/dlgctrl.cpp:100
 msgid "Transform"
 msgstr "Biến đổi"
 
+#: src/include_once.hpp:42
 msgid "Transform the drawing using matrix transformation"
 msgstr "Biến đổi hình vẽ bằng ma trận"
 
+#: src/assdraw.cpp:864
 msgid "Undo\tCtrl+Z"
 msgstr "Hoàn tác\tCtrl+Z"
 
+#: src/include_once.hpp:46
 msgid "Undo last action"
 msgstr "Hoàn tác thao tác cuối"
 
+#: src/assdraw.cpp:869
 #, c-format
 msgid "Undo: %s\tCtrl+Z"
 msgstr "Hoàn tác: %s\tCtrl+Z"
 
+#: src/assdraw.cpp:355
 msgid "Undock all"
 msgstr "Tách tất cả"
 
+#: src/canvas.cpp:1623
 msgid "Unset continuous"
 msgstr "Tắt tính liên tục"
 
+#: src/localization.cpp:157
 msgid "Use the Shapes Library to store drawings. Ctrl+Z undoes a drawing edit; Ctrl+Y redoes it."
 msgstr "Dùng Thư viện hình để lưu hình vẽ. Ctrl+Z hoàn tác chỉnh sửa; Ctrl+Y làm lại."
 
+#: src/localization.cpp:158
 msgid "Use the mouse wheel or PageUp/PageDown to zoom. Right-drag pans the enabled drawing or background layer."
 msgstr "Dùng bánh xe chuột hoặc PageUp/PageDown để thu phóng. Kéo chuột phải để dịch chuyển lớp hình vẽ hoặc nền đang bật."
 
+#: src/settings.cpp:98 src/settings.cpp:252
 msgid "V ruler"
 msgstr "Thước dọc"
 
+#: src/dlgctrl.cpp:254
 msgid "Value error"
 msgstr "Giá trị không hợp lệ"
 
+#: src/dlgctrl.cpp:274
 #, c-format
 msgid "Version: %s"
 msgstr "Phiên bản: %s"
 
+#: src/localization.cpp:15
 msgid "Yes"
 msgstr "Có"
 
+#: src/canvas.cpp:1185
 msgid "You must delete that command/point last"
 msgstr "Bạn phải xóa lệnh hoặc điểm này sau cùng"
 
+#: src/include_once.hpp:66
 msgid "Zoom"
 msgstr "Thu phóng"

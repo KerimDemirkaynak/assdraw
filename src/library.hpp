@@ -60,6 +60,7 @@ protected:
 	ASSDrawShapeLibrary *shapelib;
 	wxString source_ass;
 	wxCheckBox *cb;
+	wxStaticText* empty_label = nullptr;
 	DECLARE_EVENT_TABLE()
 	friend class ASSDrawShapeLibrary;
 };
@@ -83,10 +84,10 @@ public:
 	virtual std::vector< ASSDrawShapePreview *> GetShapePreviews();
 	virtual void LoadToCanvas(ASSDrawShapePreview *preview);
 	
-	wxToolBar* toolbar;
-	wxScrolledWindow* libarea;
-	wxFlexGridSizer *libsizer;
-	wxSizer* sizer;
+	wxToolBar* toolbar = nullptr;
+	wxScrolledWindow* libarea = nullptr;
+	wxFlexGridSizer *libsizer = nullptr;
+	wxSizer* sizer = nullptr;
 	LIBLAYOUT layout;
 protected:
 	ASSDrawFrame *m_frame;

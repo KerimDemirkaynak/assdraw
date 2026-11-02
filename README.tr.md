@@ -25,8 +25,11 @@ sayı biçiminin değiştirilmesi gerekmez. Hakkında penceresinde orijinal katk
 ve “Bu sürüm Kerim Demirkaynak tarafından oluşturuldu.” bilgisi yer alır.
 Uygulama, Windows dosya bilgisi ve kurulum sürümü 3.1 olarak güncellenmiştir.
 
-Orijinal `ASSDraw3.chm` ile taşınabilir HTML hızlı kılavuz pakete dahildir.
-Kılavuz, çalışma klasöründen bağımsız olarak uygulamanın bulunduğu yerde aranır.
+Orijinal `ASSDraw3.chm`, 22 konu ve 14 görsel içeren tam HTML sürümü ve 3.1
+hızlı kılavuzu pakete dahildir. Kılavuz menüsü her platformda çevrimdışı HTML
+sürümünü açar; böylece Windows'un indirilen CHM dosyalarını engellemesinden
+kaynaklanan boş sayfa oluşmaz. Kılavuz, çalışma klasöründen bağımsız olarak
+uygulamanın bulunduğu yerde aranır.
 Windows kurulumu uygulamayı, DLL'leri, dilleri ve kılavuzları `bin` klasöründe
 tutar; taşınabilir paketler kendi klasörlerinden çalışır.
 
@@ -76,7 +79,7 @@ Bu depo, otomatik derleme ve paketleme işlemleri için **GitHub Actions** kulla
 
 * **Tetikleyiciler**: Derlemeler, `master` veya `main` dallarına açılan pull request (çekme isteği) işlemlerinde çalışır. Ayrıca Actions sekmesinden manuel olarak tetikleyebilirsiniz.
 * **Süreç**: İş akışı repoyu klonlar (AGG alt modülü için otomatik bir yedekleme adımı içerir), `vcpkg` önbelleklerini geri yükler, PowerShell derleme betiğini kullanarak uygulamayı derler ve Inno Setup ile çalıştırılabilir bir kurulum dosyası (installer) oluşturur.
-* **Çıktılar (Artifacts)**: `ASSDraw3-Linux-x64`, çalıştırma iznini koruyan `.tar.gz` içinde Linux uygulamasını içerir. `ASSDraw3-Windows-x64`, Windows uygulamasını, gerekli DLL'leri ve belgeleri içerir. Bu iki paket derleme tamamlanınca, testlerden ve kurulum paketi hazırlanmadan önce yüklenir. `ASSDraw3-Windows-Setup` ise paketleme başarılı olduğunda Windows kurulum dosyasını içerir. Paketleri Actions çalışma sayfasından indirebilirsiniz. Linux uygulaması Ubuntu 24.04 x64 içindir ve wxWidgets 3.2 GTK çalışma zamanı gerektirir.
+* **Çıktılar (Artifacts)**: `ASSDraw3-Windows-x64-Setup.exe`, Inno Setup kurulum dosyasıdır. `ASSDraw3-Windows-x64-Portable.zip`, uygulamayı, DLL'leri, dilleri ve kılavuzları içerir. `ASSDraw3-Linux-x64.tar.gz`, Linux çalıştırma iznini korur. Dosyalar ek bir GitHub ZIP arşivi olmadan doğrudan yüklenir. Elle başlatılan derlemelerde Windows için `both` (ikisi, varsayılan), `inno-setup` (kurulum) ve `portable` (taşınabilir) seçenekleri bulunur. CI, kurulum dosyasını geçici bir klasöre sessizce kurup içeriğini de denetler. Paketleri Actions çalışma sayfasından indirebilirsiniz. Linux uygulaması Ubuntu 24.04 x64 içindir ve wxWidgets 3.2 GTK çalışma zamanı gerektirir.
 
 ---
 

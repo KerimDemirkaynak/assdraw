@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Canvas background image</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+body {
+  margin: 5px 5px 5px 5px;
+  background-color: #ffffff;
+}
+/* ========== Text Styles ========== */
+hr { color: #000000}
+body, table /* Font Style */
+{
+ font-size: 10pt;
+ font-family: 'Verdana';
+ font-style: normal;
+ font-weight: normal;
+ color: #000000;
+ text-decoration: none;
+}
+span.rvts1 /* Heading */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts2 /* Subheading */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #000080;
+}
+span.rvts3 /* Keywords */
+{
+ font-family: 'Arial';
+ font-style: italic;
+ color: #800000;
+}
+a.rvts4, span.rvts4 /* Jump 1 */
+{
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+a.rvts5, span.rvts5 /* Jump 2 */
+{
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+span.rvts6 /* Font Hint */
+{
+ font-family: 'Arial';
+ color: #808080;
+}
+span.rvts7 /* Font Hint Title */
+{
+ font-size: 15pt;
+ font-family: 'Tahoma';
+ font-weight: bold;
+ color: #404040;
+}
+span.rvts8 /* Font Hint Bold */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #808080;
+}
+span.rvts9 /* Font Hint Italic */
+{
+ font-family: 'Arial';
+ font-style: italic;
+ color: #808080;
+}
+span.rvts10
+{
+ color: #c0c0c0;
+}
+span.rvts11
+{
+ font-weight: bold;
+}
+span.rvts12 /* Font Style */
+{
+ font-size: 18pt;
+ font-family: 'Tahoma';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts13 /* Font Style */
+{
+ font-style: italic;
+ color: #c0c0c0;
+}
+a.rvts14, span.rvts14 /* Font Style */
+{
+ font-style: italic;
+ color: #6666ff;
+ text-decoration: underline;
+}
+/* ========== Para Styles ========== */
+p,ul,ol /* Paragraph Style */
+{
+ text-align: left;
+ text-indent: 0px;
+ padding: 0px 0px 0px 0px;
+ margin: 0px 0px 0px 0px;
+}
+.rvps1 /* Centered */
+{
+ text-align: center;
+}
+.rvps2 /* Paragraph Style */
+{
+ background: #ffffff;
+ margin: 0px 0px 20px 0px;
+}
+.rvps3 /* Paragraph Style */
+{
+ border-color: #c0c0c0;
+ border-style: solid;
+ border-width: 1px;
+ border-right: none;
+ border-bottom: none;
+ border-left: none;
+ background: #ffffff;
+ padding: 3px 0px 0px 0px;
+ margin: 27px 0px 0px 0px;
+}
+--></style>
+<meta name="generator" content="HelpNDoc Free"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{max-width:1000px;margin:2rem auto;padding:0 1rem}img{max-width:100%;height:auto}.manual-nav{margin-bottom:1.5rem;font:16px/1.6 system-ui,sans-serif}</style></head>
+<body>
+<nav class="manual-nav"><a href="../index.html">ASSDraw3 3.1 guide</a> / <a href="index.html">Original manual contents</a></nav>
+
+<p class=rvps2><span class=rvts12>Canvas background image</span></p>
+<p>Starting from ASSDraw3 <span class=rvts10>(not as if I'm evisioning ASSDraw4 or something though ;))</span>, you can load an image to be displayed as the canvas background so that you can trace the image.</p>
+<p><br></p>
+<p>First, you need the image file, obviously. Drag the file from Explorer (or My Computer if you prefer to call it that way) and drop it onto ASSDraw3's canvas. Voila! The image is set as canvas background!. Once it loaded, you can lower the opacity of the background to make it easier to work with. </p>
+<p><br></p>
+<p><span class=rvts11>Pan background button</span></p>
+<p>Notice that the 'Pan background' button on the toolbar, that was previously disabled, is not clickable.</p>
+<p><br></p>
+<p><img border=0 alt="" hspace=1 vspace=1 src="img_14.jpg"></p>
+<p><br></p>
+<p>Here is how both the 'Pan drawing' and 'Pan background' buttons work. Both buttons are independent toggle buttons, meaning that they can be activated or deactivated independently to each other. If 'Pan drawing' is active then right-dragging the canvas pans the drawing. Likewise, if 'Pan background' is active, right-dragging the canvas pans the background. Since the buttons are not dependent to each other, you can pan both drawing and background at the same time or only one at a time. Take note that these settings also affect zooming.</p>
+<p><br></p>
+<p><span class=rvts11>Loading from clipboard</span></p>
+<p>There are times when you do not have an image as a file, but rather stored temporarily in the clipboard, especially when you just did a 'print screen' action (PrtSc key) or copied (Ctrl+C) a portion of an image in an image editor. Instead of having to save the image to a file to load in ASSDraw3, you can just 'paste' the copied image onto the canvas by selecting menu Canvas &gt; Paste or using the hotkey Ctrl+V.</p>
+<p><br></p>
+<p><span class=rvts11>Aligning drawing to background</span></p>
+<p>You can align the [0,0] coordinate of the drawing to each of the corners or the center of the image by selecting menu Background &gt; Reposition [0,0] or using the hotkeys as displayed in the menu.</p>
+<p><br></p>
+<p><span class=rvts11>Unloading background</span></p>
+<p>Background image can be easily unloaded by selecting menu Background &gt; Remove background.</p>
+<p class=rvps3><span class=rvts13>This help file has been generated by the freeware version of </span><a class=rvts14 href="http://www.ibe-software.com/products/software/helpndoc/" target="_blank">HelpNDoc</a></p>
+
+</body></html>
