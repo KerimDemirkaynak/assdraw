@@ -14,7 +14,13 @@
 #include <wx/settings.h>
 #include <wx/textctrl.h>
 #include <wx/toolbar.h>
+#include <wx/slider.h>
+#include <wx/menu.h>
 #include <wx/wfstream.h>
+
+#ifdef __WXMSW__
+#include <wx/msw/wrapwin.h>
+#endif
 
 #ifdef __WXGTK3__
 #include <gtk/gtk.h>
@@ -118,15 +124,34 @@ wxColour Surface() { return wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE); }
 wxColour Text() { return wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT); }
 
 
-void ApplyControls(wxWindow* window)
+void ApplyMenu(wxMenu* menu)
+{
+#ifdef __WXMSW__
+    if (!menu) return;
+    // Seed the popup's erase brush before TrackPopupMenu paints its first
+    // frame. Keep native item/hover rendering and do not force owner drawing.
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush(
+        wxSystemSettings::GetColour(wxSYS_COLOUR_MENU));
+    MENUINFO info{};
+    info.cbSize = sizeof(info);
+    info.fMask = MIM_BACKGROUND | MIM_APPLYTOSUBMENUS;
+    info.hbrBack = static_cast<HBRUSH>(brush->GetResourceHandle());
+    ::SetMenuInfo(static_cast<HMENU>(menu->GetHMenu()), &info);
+#else
+    wxUnusedVar(menu);
+#endif
+}
+
+void ApplyControls(wxWindow* window, bool refresh_icons)
 {
     if (!window || window->IsBeingDeleted())
         return;
     const bool input = wxDynamicCast(window, wxTextCtrl) != nullptr;
-    // Standard buttons, checkboxes, sliders and native dialogs use wxWidgets'
-    // own dark-mode rendering. Colour only our containers and editors here.
+    // Keep native foreground/hover rendering. Set container, editor, toolbar
+    // and slider erase colours before any native hover or drag repaint.
     if (input || wxDynamicCast(window, wxPanel) || wxDynamicCast(window, wxFrame)
-        || wxDynamicCast(window, wxDialog) || wxDynamicCast(window, wxStatusBar)) {
+        || wxDynamicCast(window, wxDialog) || wxDynamicCast(window, wxStatusBar)
+        || wxDynamicCast(window, wxToolBar) || wxDynamicCast(window, wxSlider)) {
         window->SetBackgroundColour(input ? Background() : Surface());
         window->SetForegroundColour(Text());
     }
@@ -141,14 +166,29 @@ void ApplyControls(wxWindow* window)
         grid->SetSelectionBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT));
         grid->SetSelectionTextColour(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT));
     }
-    if (auto* bar = wxDynamicCast(window, wxToolBar))
-        AssdrawIcons::RefreshToolbar(bar);
+    if (auto* bar = wxDynamicCast(window, wxToolBar)) {
+#ifdef __WXMSW__
+        // The native toolbar and its embedded slider otherwise erase and
+        // repaint separately during hover/drag, exposing a light frame.
+        if (!bar->IsDoubleBuffered()) bar->SetDoubleBuffered(true);
+#endif
+        if (refresh_icons) AssdrawIcons::RefreshToolbar(bar);
+    }
+    if (auto* frame = wxDynamicCast(window, wxFrame)) {
+        if (auto* menus = frame->GetMenuBar()) {
+#ifdef __WXMSW__
+            menus->MSWApplyThemeBackground();
+#endif
+            for (size_t i = 0; i < menus->GetMenuCount(); ++i)
+                ApplyMenu(menus->GetMenu(i));
+        }
+    }
     if (auto* html = wxDynamicCast(window, wxHtmlWindow)) {
         html->SetBackgroundColour(Background());
         html->SetPage(AssdrawI18n::AboutHtml());
     }
     for (wxWindow* child : window->GetChildren())
-        ApplyControls(child);
-    window->Refresh();
+        ApplyControls(child, refresh_icons);
+    window->Refresh(false);
 }
 }

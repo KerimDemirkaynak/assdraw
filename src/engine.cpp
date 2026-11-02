@@ -539,7 +539,7 @@ void ASSDrawEngine::RefreshDisplay()
 {
 	if (!refresh_called)
 	{
-		Refresh();
+		Refresh(false);
 		refresh_called = true;
 	}
 }

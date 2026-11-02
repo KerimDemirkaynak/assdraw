@@ -256,6 +256,7 @@ void ASSDrawShapeLibrary::OnMouseRightClick(wxMouseEvent &event)
 		wxMenu *submenu = new wxMenu;
 		submenu->Append(MENU_DELETE, _("Confirm delete?"));
 		menu->Append(MENU_DUMMY, _("Delete from library"), submenu);
+		AssdrawTheme::ApplyMenu(menu);
 		PopupMenu(menu);
 		delete menu;
 	}

@@ -143,6 +143,13 @@ add_custom_command(OUTPUT "${ASSDRAW_ICON_HEADER}"
     DEPENDS tools/embed_icons.py ${ASSDRAW_ICON_SVGS} VERBATIM)
 add_custom_target(assdraw-icons DEPENDS "${ASSDRAW_ICON_HEADER}")
 
+set(ASSDRAW_BITMAP_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/assdraw_bitmap_data.hpp")
+add_custom_command(OUTPUT "${ASSDRAW_BITMAP_HEADER}"
+    COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/tools/embed_bitmap.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/bitmaps/assdraw3.bmp" "${ASSDRAW_BITMAP_HEADER}"
+    DEPENDS tools/embed_bitmap.py src/bitmaps/assdraw3.bmp VERBATIM)
+add_custom_target(assdraw-bitmaps DEPENDS "${ASSDRAW_BITMAP_HEADER}")
+
 set(ASSDRAW_SOURCES
     src/assdraw.cpp
     src/assdraw_settings.cpp
@@ -266,7 +273,8 @@ endif()
 if(BUILD_TESTING)
     add_executable(assdraw-gui-tests tests/canvas_tests.cpp ${ASSDRAW_SOURCES} ${ASSDRAW_RESOURCES})
     target_include_directories(assdraw-gui-tests PRIVATE src src/wxAGG src/xpm)
-    target_compile_definitions(assdraw-gui-tests PRIVATE ASSDRAW_NO_APP_MAIN NOMINMAX UNICODE _UNICODE)
+    target_compile_definitions(assdraw-gui-tests PRIVATE ASSDRAW_NO_APP_MAIN NOMINMAX UNICODE _UNICODE
+        ASSDRAW_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
     target_link_libraries(assdraw-gui-tests PRIVATE assdraw_agg ${ASSDRAW_WX_LIBRARIES})
     if(MSVC)
         target_compile_options(assdraw-gui-tests PRIVATE /UNDEBUG)
@@ -288,7 +296,7 @@ endif()
 
 foreach(app_target assdraw assdraw-gui-tests)
     if(TARGET ${app_target})
-        add_dependencies(${app_target} assdraw-icons)
+        add_dependencies(${app_target} assdraw-icons assdraw-bitmaps)
         target_include_directories(${app_target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
         if(UNIX AND NOT APPLE)
             target_link_libraries(${app_target} PRIVATE PkgConfig::ASSDRAW_GTK)
