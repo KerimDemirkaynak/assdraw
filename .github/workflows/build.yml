@@ -40,20 +40,6 @@ jobs:
         if-no-files-found: error
     - name: Run regression tests
       run: ctest --test-dir build-linux --output-on-failure
-    - name: Upload theme screenshots
-      if: always()
-      uses: actions/upload-artifact@v7
-      with:
-        name: Theme-preview-Linux
-        path: build-linux/theme-*.png
-        if-no-files-found: ignore
-    - name: Upload Linux GUI failure image
-      if: failure()
-      uses: actions/upload-artifact@v7
-      with:
-        name: GUI-test-diagnostics-Linux
-        path: build-linux/preview-*.png
-        if-no-files-found: ignore
 
   build-windows:
     runs-on: windows-latest
@@ -137,19 +123,3 @@ jobs:
         ctest --test-dir build-dir -C Release --output-on-failure
         if ($LASTEXITCODE -ne 0) { throw 'Regression tests failed.' }
       shell: pwsh
-
-    - name: Upload Windows GUI failure image
-      if: failure()
-      uses: actions/upload-artifact@v7
-      with:
-        name: GUI-test-diagnostics-Windows
-        path: build-dir/preview-*.png
-        if-no-files-found: ignore
-
-    - name: Upload theme screenshots
-      if: always()
-      uses: actions/upload-artifact@v7
-      with:
-        name: Theme-preview-Windows
-        path: build-dir/theme-*.png
-        if-no-files-found: ignore
