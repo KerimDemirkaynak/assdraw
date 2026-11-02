@@ -78,6 +78,12 @@ static void CheckLibraryResize(ASSDrawFrame* frame, ASSDrawShapePreview* drawing
     // Match the reported case with several previews and a vertical scrollbar.
     for (int i = 0; i < 3; ++i)
         library->AddShapePreview("");
+    // Native toolbar metrics differ between GTK and Windows. Measure the
+    // legitimate minimum once, before any widening, then insist that all
+    // later shrink operations can return to this original bound.
+    const int original_minimum = library->libsizer->GetMinSize().x;
+    const int narrow_width = std::max(frame->FromDIP(160), original_minimum + frame->FromDIP(8));
+    assert(narrow_width < frame->FromDIP(300));
     const wxString perspective = frame->m_mgr.SavePerspective();
     frame->m_mgr.GetPane(library).Float().FloatingPosition(40, 40)
         .FloatingSize(frame->FromDIP(wxSize(220, 500)));
@@ -90,7 +96,7 @@ static void CheckLibraryResize(ASSDrawFrame* frame, ASSDrawShapePreview* drawing
     // manually call their layout helper, which would mask a broken size event.
     for (int repeat = 0; repeat < 3; ++repeat) {
         for (int width : {220, 560, 180, 700, 160, 480, 180, 220}) {
-            const wxSize requested = frame->FromDIP(wxSize(width, 500));
+            const wxSize requested(std::max(narrow_width, frame->FromDIP(width)), frame->FromDIP(500));
             host->SetClientSize(requested);
             wxStopWatch elapsed;
             bool fitted = false;
@@ -112,7 +118,8 @@ static void CheckLibraryResize(ASSDrawFrame* frame, ASSDrawShapePreview* drawing
                 wxMilliSleep(10);
             } while (elapsed.Time() < 2000);
             if (!fitted) {
-                std::cerr << "Library resize stuck: requested=" << width
+                std::cerr << "Library resize stuck: requested=" << requested.x
+                    << ", original_minimum=" << original_minimum
                     << ", host=" << host->GetClientSize().x << ", library=" << library->GetSize().x
                     << ", viewport=" << library->libarea->GetClientSize().x
                     << ", virtual=" << library->libarea->GetVirtualSize().x
