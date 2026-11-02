@@ -93,10 +93,12 @@ GitHub Actions; `master`/`main` dallarına açılan pull request'lerde veya elle
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/tgoyne"><img src="https://avatars.githubusercontent.com/u/408944?v=4" width="80" alt="Thomas Goyne"><br><sub><b>Thomas Goyne</b></sub></a></td>
-    <td align="center"><a href="https://github.com/MIRIMIRIM"><img src="https://avatars.githubusercontent.com/u/59959583?v=4" width="80" alt="MIRIMIRIM"><br><sub><b>MIRIMIRIM</b></sub></a></td>
-    <td align="center"><a href="https://github.com/biki-desu"><img src="https://avatars.githubusercontent.com/u/6241180?v=4" width="80" alt="biki-desu"><br><sub><b>biki-desu</b></sub></a></td>
-    <td align="center"><a href="https://github.com/amanosatosi"><img src="https://github.com/amanosatosi.png?size=160" width="80" alt="amanosatosi"><br><sub><b>amanosatosi</b></sub></a></td>
+    <td align="center" valign="top" width="50%"><a href="https://github.com/tgoyne"><img src="https://wsrv.nl/?url=github.com/tgoyne.png&w=96&h=96&fit=cover&mask=circle" width="48" height="48" alt="Thomas Goyne"><br><b>Thomas Goyne</b></a></td>
+    <td align="center" valign="top" width="50%"><a href="https://github.com/MIRIMIRIM"><img src="https://wsrv.nl/?url=github.com/MIRIMIRIM.png&w=96&h=96&fit=cover&mask=circle" width="48" height="48" alt="MIRIMIRIM"><br><b>MIRIMIRIM</b></a></td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="50%"><a href="https://github.com/biki-desu"><img src="https://wsrv.nl/?url=github.com/biki-desu.png&w=96&h=96&fit=cover&mask=circle" width="48" height="48" alt="biki-desu"><br><b>biki-desu</b></a></td>
+    <td align="center" valign="top" width="50%"><a href="https://github.com/amanosatosi"><img src="https://wsrv.nl/?url=github.com/amanosatosi.png&w=96&h=96&fit=cover&mask=circle" width="48" height="48" alt="amanosatosi"><br><b>amanosatosi</b></a></td>
   </tr>
 </table>
 
