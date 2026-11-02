@@ -28,7 +28,7 @@
 
 ## Application Theme
 
-Select Workspace → Theme → System Default / Light / Dark. Themes update the entire UI instantly and are saved. Custom light/dark colors stay separate. Includes 17 DPI-aware Font Awesome SVG icons, six translations, and GTK fallback. Requires wxWidgets 3.3.4.
+Select **Workspace → Theme → System Default / Light / Dark**. Themes update the entire UI instantly and are saved. Custom light/dark colors stay separate. Includes 17 DPI-aware Font Awesome SVG icons, six translations, and GTK fallback. Requires wxWidgets 3.3.4.
 
 ## Languages
 
