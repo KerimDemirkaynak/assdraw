@@ -6,6 +6,7 @@
 #include <wx/string.h>
 
 class wxWindow;
+class wxMenu;
 
 namespace AssdrawTheme {
 wxString ReadPreference();
@@ -16,5 +17,6 @@ bool IsDark();
 wxColour Background();
 wxColour Surface();
 wxColour Text();
-void ApplyControls(wxWindow* window);
+void ApplyControls(wxWindow* window, bool refresh_icons = true);
+void ApplyMenu(wxMenu* menu);
 }

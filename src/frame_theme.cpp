@@ -4,6 +4,7 @@
 #include <array>
 #include <wx/aui/dockart.h>
 #include <wx/settings.h>
+#include <wx/wupdlock.h>
 
 namespace {
 using ViewField = std::pair<const char*, wxColour*>;
@@ -67,7 +68,13 @@ void ASSDrawFrame::OnChooseTheme(wxCommandEvent& event)
 
 bool ASSDrawFrame::ApplyTheme(const wxString& mode)
 {
-    if (!AssdrawTheme::SetAppearance(mode))
+    // Freeze before the native appearance change, which synchronously sends
+    // colour events on Windows, rather than after controls have repainted.
+    wxWindowUpdateLocker updates(this);
+    theme_refreshing = true;
+    const bool applied = AssdrawTheme::SetAppearance(mode);
+    theme_refreshing = false;
+    if (!applied)
         return false;
     RefreshTheme();
     config->Write("/ui/theme", mode);
@@ -82,19 +89,21 @@ bool ASSDrawFrame::ApplyTheme(const wxString& mode)
 void ASSDrawFrame::OnSystemColoursChanged(wxSysColourChangedEvent& event)
 {
     event.Skip();
-    if (!theme_ready || theme_refresh_pending)
+    if (!theme_ready || theme_refresh_pending || theme_refreshing)
         return;
     theme_refresh_pending = true;
     CallAfter([this] {
-        theme_refresh_pending = false;
         if (!IsBeingDeleted()) RefreshTheme();
+        theme_refresh_pending = false;
     });
 }
 
 void ASSDrawFrame::RefreshTheme()
 {
-    if (!theme_ready)
+    if (!theme_ready || theme_refreshing)
         return;
+    theme_refreshing = true;
+    wxWindowUpdateLocker updates(this);
     AssdrawTheme::PreparePalette();
     const bool dark = AssdrawTheme::IsDark();
     const bool changed = dark != view_is_dark;
@@ -104,9 +113,12 @@ void ASSDrawFrame::RefreshTheme()
         view_is_dark = dark;
         settingsdlg->RefreshThemeViewColors();
     }
-    Freeze();
-    AssdrawTheme::ApplyControls(this);
-    copy_button->SetBitmap(ASSDRAW_ICON(Copy));
+    const bool refresh_icons = theme_icon_colour != AssdrawTheme::Text();
+    AssdrawTheme::ApplyControls(this, refresh_icons);
+    if (refresh_icons) {
+        copy_button->SetBitmap(ASSDRAW_ICON(Copy));
+        theme_icon_colour = AssdrawTheme::Text();
+    }
     auto* art = m_mgr.GetArtProvider();
     const wxColour surface = AssdrawTheme::Surface(), text = AssdrawTheme::Text();
     art->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, surface);
@@ -127,6 +139,6 @@ void ASSDrawFrame::RefreshTheme()
     for (auto* preview : shapelib->GetShapePreviews())
         preview->UpdateTheme();
     m_mgr.Update();
-    Thaw();
-    Refresh();
+    theme_refreshing = false;
+    Refresh(false);
 }

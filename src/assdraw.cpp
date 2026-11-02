@@ -43,6 +43,8 @@
 #include <wx/dynlib.h>
 #include <wx/stdpaths.h>
 #include <wx/iconbndl.h>
+#include <wx/mstream.h>
+#include <wx/log.h>
 
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
@@ -127,6 +129,8 @@ bool ASSDrawApp::OnInit()
 ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
        : wxFrame(NULL, wxID_ANY, title, pos, size, style)
 {
+	SetBackgroundColour(AssdrawTheme::Surface());
+	SetForegroundColour(AssdrawTheme::Text());
 	SetSize(FromDIP(wxSize(640, 480)));
 	m_app = app;
     m_mgr.SetManagedWindow(this);
@@ -657,23 +661,42 @@ void ASSDrawFrame::_Transform()
 
 void ASSDrawFrame::_Paste()
 {
-	if (wxTheClipboard->Open())
+	wxImage image;
+	wxString text;
+	bool has_text = false;
 	{
-		if (wxTheClipboard->IsSupported( wxDF_BITMAP ))
-		{
+		wxClipboardLocker clipboard;
+		if (!clipboard) return;
+		// Browsers and image editors commonly provide PNG in addition to DIB.
+		// Prefer it to preserve alpha instead of relying on native bitmap depth.
+#ifdef __WXMSW__
+		for (const char* format : {"image/png", "PNG"}) {
+			wxCustomDataObject data{wxDataFormat(format)};
+			if (wxTheClipboard->IsSupported(data.GetFormat())
+				&& wxTheClipboard->GetData(data) && data.GetSize()) {
+				wxMemoryInputStream stream(data.GetData(), data.GetSize());
+				wxLogNull suppress_invalid_optional_format;
+				if (image.LoadFile(stream, wxBITMAP_TYPE_PNG)) break;
+			}
+		}
+#endif
+		// wxGTK's bitmap data object already transfers PNG. Its standard PNG
+		// format must not be requested as a private/custom data format.
+		if (!image.IsOk() && wxTheClipboard->IsSupported(wxDF_BITMAP)) {
 			wxBitmapDataObject data;
-			wxTheClipboard->GetData( data );
-			m_canvas->SetBackgroundImage( data.GetBitmap().ConvertToImage() );
-			//m_canvas->AskUserForBackgroundAlpha();
+			if (wxTheClipboard->GetData(data) && data.GetBitmap().IsOk())
+				image = data.GetBitmap().ConvertToImage();
 		}
-		else if (wxTheClipboard->IsSupported( wxDF_TEXT ))
-		{
+		if (!image.IsOk() && wxTheClipboard->IsSupported(wxDF_TEXT)) {
 			wxTextDataObject data;
-			wxTheClipboard->GetData( data );
-			UpdateASSCommandStringToSrcTxtCtrl( data.GetText() );
+			has_text = wxTheClipboard->GetData(data);
+			if (has_text) text = data.GetText();
 		}
-		wxTheClipboard->Close();
 	}
+	// Release the clipboard before changing controls or opening the opacity
+	// dialog; these actions can dispatch native window/clipboard messages.
+	if (image.IsOk()) m_canvas->SetBackgroundImage(image);
+	else if (has_text) UpdateASSCommandStringToSrcTxtCtrl(text);
 }
 
 void ASSDrawFrame::OnChoose_Recenter(wxCommandEvent& event)
@@ -775,6 +798,7 @@ void ASSDrawFrame::OnToolRClick(wxCommandEvent& event)
 		|| modetbar->FindById(id) != NULL
 		|| bgimgtbar->FindById(id) != NULL)
 	{
+		AssdrawTheme::ApplyMenu(tbarMenu);
 		PopupMenu(tbarMenu);
 	}
 }

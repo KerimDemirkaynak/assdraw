@@ -45,6 +45,7 @@
 #include "agghelper.hpp"
 #include <algorithm>
 #include <math.h>
+#include <cmath>
 #include <wx/colordlg.h>
 #include <wx/image.h>
 #include <wx/filename.h>
@@ -190,7 +191,6 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 	hilite_point = NULL;
 	capturemouse_left = false;
 	capturemouse_right = false;
-	bgimg.bgbmp = NULL;
 	bgimg.bgimg = NULL;
 	bgimg.alpha = 0.5;
 	rectbound2upd = -1, rectbound2upd2 = -1;
@@ -216,7 +216,6 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 
 	// for background image loading
 	::wxInitAllImageHandlers();
-	bgimg.bgbmp = NULL;
 	bgimg.bgimg = NULL;
 	// drag image background file
 	SetDropTarget(new ASSDrawFileDropTarget(this));
@@ -246,7 +245,6 @@ ASSDrawCanvas::ASSDrawCanvas(wxWindow *parent, ASSDrawFrame *frame, int extrafla
 ASSDrawCanvas::~ASSDrawCanvas()
 {
 	ASSDrawEngine::ResetEngine(false);
-	if (bgimg.bgbmp) delete bgimg.bgbmp;
 	if (bgimg.bgimg) delete bgimg.bgimg;
 }
 
@@ -1448,6 +1446,7 @@ void ASSDrawCanvas::OnMouseRightDClick(wxMouseEvent& event)
 		SetHighlighted(NULL, NULL);
 		mousedownAt_point = NULL;
 		RefreshDisplay();
+		AssdrawTheme::ApplyMenu(menu);
 		PopupMenu(menu);
 	}
 	delete menu;
@@ -1823,11 +1822,11 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 	const auto scale_ui = [dpi_scale](double value) { return value * dpi_scale; };
 	const auto dip = [this](int value) { return FromDIP(value); };
 
-	if (bgimg.bgbmp)
+	if (HasBackgroundImage())
 	{
 		rasterizer.reset();
 	    interpolator_type interpolator(bgimg.img_mtx);
-	    PixelFormat::AGGType ipixfmt(bgimg.ibuf);
+	    BackgroundPixelFormat ipixfmt(bgimg.ibuf);
 		span_gen_type spangen(ipixfmt, agg::rgba_pre(0, 0, 0, 0), interpolator);
 		agg::conv_transform< agg::path_storage > bg_border(bgimg.bg_path, bgimg.path_mtx);
 		agg::conv_clip_polygon< agg::conv_transform< agg::path_storage > > bg_clip(bg_border);
@@ -2175,23 +2174,24 @@ void ASSDrawCanvas::DoDraw( RendererBase& rbase, RendererPrimitives& rprim, Rend
 
 void ASSDrawCanvas::ReceiveBackgroundImageFileDropEvent(const wxString& filename)
 {
-	const wxChar *shortfname = wxFileName::FileName(filename).GetFullName().c_str();
+	const wxString shortfname = wxFileName::FileName(filename).GetFullName();
 	m_frame->SetStatusText(wxString::Format(_("Loading '%s' as canvas background ..."), shortfname), 1);
 	wxImage img;
 	img.LoadFile(filename);
 	if (img.IsOk())
 	{
 		SetBackgroundImage(img, filename);
+		m_frame->SetStatusText(_("Canvas background loaded"), 1);
 	}
-	m_frame->SetStatusText(_("Canvas background loaded"), 1);
+	else m_frame->SetStatusText(wxString(), 1);
 }
 
 void ASSDrawCanvas::RemoveBackgroundImage()
 {
 	if (bgimg.bgimg) delete bgimg.bgimg;
 	bgimg.bgimg = NULL;
-	if (bgimg.bgbmp) delete bgimg.bgbmp;
-	bgimg.bgbmp = NULL;
+	bgimg.pixels.clear();
+	bgimg.ibuf.attach(nullptr, 0, 0, 0);
 	bgimg.bgimgfile = _T("");
 	RefreshDisplay();
 	drag_mode = DRAGMODE();
@@ -2201,8 +2201,12 @@ void ASSDrawCanvas::RemoveBackgroundImage()
 
 void ASSDrawCanvas::SetBackgroundImage(const wxImage& img, wxString fname, bool ask4alpha)
 {
+	if (!img.IsOk()) return;
+	// Copy before deleting the previous image, including for a caller passing it
+	// back to us. Opacity/theme changes must never modify these source pixels.
+	wxImage* replacement = new wxImage(img.Copy());
 	if (bgimg.bgimg) delete bgimg.bgimg;
-	bgimg.bgimg = new wxImage(img);
+	bgimg.bgimg = replacement;
 	bgimg.bgimgfile = fname;
 	const long opacity = std::clamp(m_frame->alphas.dfltimgopac, 0L, 255L);
 	PrepareBackgroundBitmap(1.0 - opacity / 255.0);
@@ -2218,6 +2222,7 @@ void ASSDrawCanvas::AskUserForBackgroundAlpha()
 	bgimg.alpha_slider->SetValue((int) (100 - bgimg.alpha * 100));
 	bgimg.alpha_slider->SetMinSize(wxSize(FromDIP(280), -1));
 	bgimg.alpha_dlg->Fit();
+	AssdrawTheme::ApplyControls(bgimg.alpha_dlg);
 	bgimg.alpha_dlg->Show();
 	SetFocus();
 }
@@ -2225,32 +2230,37 @@ void ASSDrawCanvas::AskUserForBackgroundAlpha()
 void ASSDrawCanvas::PrepareBackgroundBitmap(double alpha)
 {
 	if (alpha >= 0.0 && alpha <= 1.0) bgimg.alpha = alpha;
-	if (bgimg.bgimg == NULL) return;
-	if (bgimg.bgbmp) delete bgimg.bgbmp;
-	bgimg.bgbmp = new wxBitmap(*bgimg.bgimg);
-    PixelData data(*bgimg.bgbmp);
-    wxAlphaPixelFormat::ChannelType* pd = (wxAlphaPixelFormat::ChannelType*) &data.GetPixels().Data();
-    const int stride = data.GetRowStride();
-    if (stride < 0)
-        pd += (data.GetHeight() - 1) * stride;
-    bgimg.ibuf.attach(pd, data.GetWidth(), data.GetHeight(), stride);
-
-    // apply alpha
-	rasterizer.reset();
-	unsigned w = bgimg.bgbmp->GetWidth(), h = bgimg.bgbmp->GetHeight();
+	if (!bgimg.bgimg || !bgimg.bgimg->IsOk()) return;
+	const wxImage& image = *bgimg.bgimg;
+	const unsigned w = image.GetWidth(), h = image.GetHeight();
+	const size_t count = size_t(w) * h;
+	bgimg.pixels.resize(count * 3);
+	const unsigned char* source = image.GetData();
+	const unsigned char* source_alpha = image.HasAlpha() ? image.GetAlpha() : nullptr;
+	const bool masked = image.HasMask();
+	const int opacity = int(std::lround(255.0 * (1.0 - bgimg.alpha)));
+	const int background[] = {color_bg.r, color_bg.g, color_bg.b};
+	for (size_t i = 0; i < count; ++i) {
+		int a = source_alpha ? source_alpha[i] : 255;
+		if (masked && source[i * 3] == image.GetMaskRed()
+			&& source[i * 3 + 1] == image.GetMaskGreen()
+			&& source[i * 3 + 2] == image.GetMaskBlue()) a = 0;
+		a = (a * opacity + 127) / 255;
+		for (size_t channel = 0; channel < 3; ++channel)
+			bgimg.pixels[i * 3 + channel] =
+				(source[i * 3 + channel] * a + background[channel] * (255 - a) + 127) / 255;
+	}
+	// AGG retains this pointer between paints. Never attach it to wxPixelData:
+	// unlocking a native bitmap can release or relocate its temporary buffer.
+	bgimg.ibuf.attach(bgimg.pixels.data(), w, h, int(w) * 3);
 	bgimg.bg_path = agghelper::RectanglePath(0, w, 0, h);
-    agg::conv_contour< agg::path_storage > cont(bgimg.bg_path);
-	rasterizer.add_path(cont);
-	PixelFormat::AGGType pxt(bgimg.ibuf);
-	RendererBase rpxt(pxt);
-	agg::render_scanlines_aa_solid(rasterizer, scanline, rpxt, agg::rgba(color_bg.r / 255.0, color_bg.g / 255.0, color_bg.b / 255.0, bgimg.alpha));
 }
 
 void ASSDrawCanvas::UpdateBackgroundImgScalePosition(bool firsttime)
 {
-	if (bgimg.bgbmp == NULL) return;
+	if (!HasBackgroundImage()) return;
 	// transform the enclosing polygon
-	unsigned w = bgimg.bgbmp->GetWidth(), h = bgimg.bgbmp->GetHeight();
+	unsigned w = bgimg.bgimg->GetWidth(), h = bgimg.bgimg->GetHeight();
 	bgimg.bg_path = agghelper::RectanglePath(0, w, 0, h);
     // linear interpolation on image buffer
     wxRealPoint center, disp;
@@ -2304,7 +2314,7 @@ void ASSDrawCanvas::UpdateBackgroundImgScalePosition(bool firsttime)
 bool ASSDrawCanvas::GetBackgroundInfo(unsigned& w, unsigned& h, wxRealPoint& disp, double& scale)
 {
 	if (!HasBackgroundImage()) return false;
-	w = bgimg.bgbmp->GetWidth(), h = bgimg.bgbmp->GetHeight();
+	w = bgimg.bgimg->GetWidth(), h = bgimg.bgimg->GetHeight();
 	double t, l;
 	agg::conv_transform<agg::path_storage, agg::trans_affine> trr(bgimg.bg_path, bgimg.path_mtx);
 	trr.rewind(0);

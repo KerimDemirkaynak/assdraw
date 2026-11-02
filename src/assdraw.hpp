@@ -111,6 +111,8 @@ public:
 	bool view_is_dark = false;
 	bool theme_ready = false;
 	bool theme_refresh_pending = false;
+	bool theme_refreshing = false;
+	wxColour theme_icon_colour;
 
 	void UpdateASSCommandStringToSrcTxtCtrl(wxString cmds);
 	void UpdateASSCommandStringFromSrcTxtCtrl(wxString cmds);

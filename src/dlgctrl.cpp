@@ -35,17 +35,16 @@
 
 #include "assdraw.hpp"
 
-#include "xpm/res.h"
+#include "assdraw_bitmap_data.hpp"
+#include <wx/mstream.h>
+#include <wx/dcbuffer.h>
 
 static wxBitmapBundle LoadAboutBannerBitmapBundle()
 {
-#if defined(__WXMSW__)
-	wxBitmapBundle bundle = wxBitmapBundle::FromResources(_T("ASSDRAW3_"));
-	if (bundle.IsOk())
-		return bundle;
-#endif
-
-	return wxBitmapBundle::FromBitmap(wxBitmap(assdraw3__xpm));
+	// FromResources() only accepts PNG RCDATA, not the BITMAP in assdraw.rc.
+	// Build directly from the same BMP on all platforms, with no stale XPM fallback.
+	wxMemoryInputStream stream(AssdrawBitmapData::About, sizeof(AssdrawBitmapData::About));
+	return wxBitmapBundle::FromBitmap(wxBitmap(wxImage(stream, wxBITMAP_TYPE_BMP)));
 }
 
 BEGIN_EVENT_TABLE(ASSDrawSrcTxtCtrl, wxTextCtrl)
@@ -189,6 +188,7 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
     sizer_stdbutt->Realize();
 
 	sizer_main->Fit(this);
+	AssdrawTheme::ApplyControls(this);
 
 }
 
@@ -277,6 +277,7 @@ ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	Bind(wxEVT_DPI_CHANGED, &ASSDrawAboutDlg::OnDPIChanged, this);
 	Connect(wxEVT_TIMER, wxTimerEventHandler(ASSDrawAboutDlg::OnTimeout));
 	Connect(wxEVT_ENTER_WINDOW, wxMouseEventHandler(ASSDrawAboutDlg::OnMouseEnterWindow));
+	AssdrawTheme::ApplyControls(this);
 }
 
 ASSDrawAboutDlg::~ASSDrawAboutDlg()
@@ -359,7 +360,7 @@ BigStaticBitmapCtrl::~BigStaticBitmapCtrl()
 
 void BigStaticBitmapCtrl::OnPaint(wxPaintEvent& event)
 {
-	wxPaintDC dc(this);
+	wxAutoBufferedPaintDC dc(this);
 	dc.SetBackground(wxBrush(GetBackgroundColour()));
 	dc.Clear();
 	if (bitmap.IsOk())

@@ -17,6 +17,7 @@ namespace GUI {
                        const wxPoint& pos, const wxSize& size, long style):
         wxWindow(parent, id, pos, size, style, wxT("AGGWindow")),
         bitmap(NULL) {
+        SetBackgroundStyle(wxBG_STYLE_PAINT);
     }
 
     void AGGWindow::init(const int width, const int height) {

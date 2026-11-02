@@ -12,6 +12,7 @@
 #include <wx/stopwatch.h>
 #include <wx/utils.h>
 #include <wx/settings.h>
+#include <wx/mstream.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -27,6 +28,210 @@
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
 #endif
+
+static wxImage CaptureWindow(wxWindow* window)
+{
+    const wxSize size = window->GetClientSize();
+    wxBitmap bitmap(size.x, size.y);
+    wxMemoryDC output(bitmap);
+    wxClientDC input(window);
+    assert(output.Blit(0, 0, size.x, size.y, &input, 0, 0));
+    output.SelectObject(wxNullBitmap);
+    return bitmap.ConvertToImage();
+}
+
+static void CheckReferencePixels(ASSDrawCanvas* canvas, const wxImage& source,
+    const wxColour& background, int opacity, int dx = 0, int dy = 0, double scale = 1.0)
+{
+    static unsigned check_number = 0;
+    ++check_number;
+    // Ruler labels can cover these pixels at platform-specific font metrics
+    // and DPI. Isolate the tracing image without changing its pixel data.
+    const agg::rgba ruler_h = canvas->rgba_ruler_h, ruler_v = canvas->rgba_ruler_v;
+    canvas->rgba_ruler_h.a = canvas->rgba_ruler_v.a = 0;
+    const std::array<wxPoint, 4> samples = {wxPoint(20, 20), wxPoint(100, 20),
+        wxPoint(20, 60), wxPoint(100, 60)};
+    wxImage actual;
+    wxStopWatch elapsed;
+    bool matches = false;
+    do {
+        // Exercise fresh native allocations between image preparation and use.
+        wxBitmap churn(121, 81, 32);
+        canvas->Refresh(false);
+        canvas->Update();
+        wxTheApp->Yield(true);
+        actual = CaptureWindow(canvas);
+        matches = true;
+        for (const auto& point : samples) {
+            int a = source.HasAlpha() ? source.GetAlpha(point.x, point.y) : 255;
+            if (source.HasMask() && source.GetRed(point.x, point.y) == source.GetMaskRed()
+                && source.GetGreen(point.x, point.y) == source.GetMaskGreen()
+                && source.GetBlue(point.x, point.y) == source.GetMaskBlue()) a = 0;
+            a = (a * opacity + 127) / 255;
+            const int expected[] = {
+                (source.GetRed(point.x, point.y) * a + background.Red() * (255 - a) + 127) / 255,
+                (source.GetGreen(point.x, point.y) * a + background.Green() * (255 - a) + 127) / 255,
+                (source.GetBlue(point.x, point.y) * a + background.Blue() * (255 - a) + 127) / 255};
+            const int x = dx + int(point.x * scale), y = dy + int(point.y * scale);
+            matches = matches && std::abs(int(actual.GetRed(x, y)) - expected[0]) <= 3
+                && std::abs(int(actual.GetGreen(x, y)) - expected[1]) <= 3
+                && std::abs(int(actual.GetBlue(x, y)) - expected[2]) <= 3;
+        }
+        if (matches) break;
+        wxMilliSleep(10);
+    } while (elapsed.Time() < 2000);
+    canvas->rgba_ruler_h = ruler_h;
+    canvas->rgba_ruler_v = ruler_v;
+    canvas->Refresh(false);
+    if (!matches) {
+        unsigned width = 0, height = 0;
+        wxRealPoint displacement;
+        double image_scale = 0;
+        const bool has_image = canvas->GetBackgroundInfo(width, height, displacement, image_scale);
+        std::cerr << "Reference pixels failed at check " << check_number
+            << ", opacity=" << opacity << ", canvas=" << canvas->GetClientSize().x
+            << "x" << canvas->GetClientSize().y << ", dpi=" << canvas->GetDPIScaleFactor()
+            << ", image=" << has_image << " " << width << "x" << height
+            << ", position=" << displacement.x << "," << displacement.y
+            << ", scale=" << image_scale << ", background="
+            << background.GetAsString(wxC2S_CSS_SYNTAX).ToStdString() << '\n';
+        for (const auto& point : samples) {
+            const int x = dx + int(point.x * scale), y = dy + int(point.y * scale);
+            std::cerr << "  pixel " << x << "," << y << ": actual="
+                << int(actual.GetRed(x, y)) << "," << int(actual.GetGreen(x, y))
+                << "," << int(actual.GetBlue(x, y)) << "; source="
+                << int(source.GetRed(point.x, point.y)) << ","
+                << int(source.GetGreen(point.x, point.y)) << ","
+                << int(source.GetBlue(point.x, point.y)) << "; alpha="
+                << (source.HasAlpha() ? int(source.GetAlpha(point.x, point.y)) : 255) << '\n';
+        }
+        actual.SaveFile("reference-image-failure.png", wxBITMAP_TYPE_PNG);
+    }
+    assert(matches);
+}
+
+static void CheckClipboardImages(ASSDrawFrame* frame)
+{
+    auto* canvas = frame->m_canvas;
+    wxImage image(121, 81); // Odd width also catches native row-padding mistakes.
+    image.SetRGB(wxRect(0, 0, 121, 40), 220, 40, 60);
+    image.SetRGB(wxRect(0, 40, 121, 41), 30, 80, 210);
+    const long saved_opacity = frame->alphas.dfltimgopac;
+    const bool saved_ask = frame->behaviors.autoaskimgopac;
+    frame->alphas.dfltimgopac = 255;
+    frame->behaviors.autoaskimgopac = true;
+    for (int depth : {24, 32}) {
+        {
+            wxClipboardLocker clipboard;
+            assert(!!clipboard);
+            assert(wxTheClipboard->SetData(new wxBitmapDataObject(wxBitmap(image, depth))));
+        }
+        frame->_Paste();
+        auto* slider = wxDynamicCast(wxWindow::FindWindowById(TB_BGALPHA_SLIDER, canvas), wxSlider);
+        assert(slider && slider->GetParent()->IsShown());
+        slider->GetParent()->Hide();
+        CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+        for (int opacity : {0, 50, 100}) {
+            slider->SetValue(opacity);
+            wxScrollEvent event(wxEVT_SCROLL_THUMBTRACK, TB_BGALPHA_SLIDER, opacity);
+            slider->GetEventHandler()->ProcessEvent(event);
+            CheckReferencePixels(canvas, image, frame->colors.canvas_bg,
+                int(std::lround(opacity * 2.55)));
+        }
+    }
+    frame->behaviors.autoaskimgopac = false;
+    image.InitAlpha();
+    for (int y = 0; y < image.GetHeight(); ++y)
+        for (int x = 0; x < image.GetWidth(); ++x)
+            image.SetAlpha(x, y, x < 60 ? (y < 40 ? 255 : 0) : (y < 40 ? 128 : 64));
+#ifdef __WXMSW__
+    wxMemoryOutputStream png;
+    assert(image.SaveFile(png, wxBITMAP_TYPE_PNG));
+    auto* data = new wxCustomDataObject(wxDataFormat("PNG"));
+    std::vector<unsigned char> bytes(png.GetSize());
+    png.CopyTo(bytes.data(), bytes.size());
+    assert(data->SetData(bytes.size(), bytes.data()));
+#else
+    // wxGTK represents its standard bitmap clipboard format as image/png.
+    auto* data = new wxBitmapDataObject(wxBitmap(image));
+#endif
+    {
+        wxClipboardLocker clipboard;
+        assert(!!clipboard && wxTheClipboard->SetData(data));
+    }
+    frame->_Paste();
+    CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+    // Repeat paints and change image transforms after the clipboard owner and
+    // all its temporary bitmap objects have been destroyed.
+    canvas->MoveCanvasBackground(15, 19);
+    canvas->ChangeBackgroundZoomLevel(1.5, wxRealPoint(0, 0));
+    unsigned width, height;
+    wxRealPoint displacement;
+    double scale;
+    assert(canvas->GetBackgroundInfo(width, height, displacement, scale));
+    assert(width == 121 && height == 81 && scale == 1.5);
+    CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255,
+        int(displacement.x), int(displacement.y), scale);
+    canvas->SetBackgroundImage(wxImage(), "invalid", false);
+    assert(canvas->GetBackgroundInfo(width, height, displacement, scale));
+    assert(width == 121 && height == 81); // Invalid input keeps the previous image.
+    canvas->SetBackgroundImage(image, "alpha", false);
+    for (const char* theme : {"dark", "light"}) {
+        assert(frame->ApplyTheme(theme));
+        wxTheApp->Yield(true);
+        frame->RefreshTheme();
+        CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+    }
+    image.ClearAlpha();
+    image.SetMaskColour(220, 40, 60);
+    canvas->SetBackgroundImage(image, "mask", false);
+    CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+    // Source mutation must not alter the retained tracing image.
+    wxImage changed = image.Copy();
+    canvas->SetBackgroundImage(changed, "owned", false);
+    changed.SetRGB(wxRect(0, 0, 121, 81), 0, 255, 0);
+    canvas->PrepareBackgroundBitmap(-1.0);
+    CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+    const wxString filename = wxFileName::CreateTempFileName("assdraw-reference-");
+    assert(image.SaveFile(filename, wxBITMAP_TYPE_PNG));
+    canvas->ReceiveBackgroundImageFileDropEvent(filename);
+    CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+    assert(wxRemoveFile(filename));
+    {
+        wxLogNull suppress_missing_file;
+        canvas->ReceiveBackgroundImageFileDropEvent(filename);
+    }
+    assert(frame->GetStatusBar()->GetStatusText(1).empty());
+    CheckReferencePixels(canvas, image, frame->colors.canvas_bg, 255);
+    canvas->RemoveBackgroundImage();
+    assert(!canvas->HasBackgroundImage());
+    frame->alphas.dfltimgopac = saved_opacity;
+    frame->behaviors.autoaskimgopac = saved_ask;
+}
+
+static void CheckAboutBanner(ASSDrawFrame* frame)
+{
+    wxImage expected(wxString::FromUTF8(ASSDRAW_SOURCE_DIR) + "/src/bitmaps/assdraw3.bmp", wxBITMAP_TYPE_BMP);
+    assert(expected.IsOk());
+    auto* about = new ASSDrawAboutDlg(frame, 0);
+    BigStaticBitmapCtrl* banner = nullptr;
+    for (wxWindow* child : about->GetChildren())
+        if ((banner = dynamic_cast<BigStaticBitmapCtrl*>(child))) break;
+    assert(banner && banner->GetSize() == banner->FromDIP(expected.GetSize()));
+    about->Show();
+    wxTheApp->Yield(true);
+    banner->Update();
+    const wxImage actual = CaptureWindow(banner);
+    expected.Rescale(actual.GetWidth(), actual.GetHeight(), wxIMAGE_QUALITY_HIGH);
+    // Compare the rendered banner, not just metadata or presence of a resource.
+    size_t matches = 0;
+    const size_t count = size_t(actual.GetWidth()) * actual.GetHeight() * 3;
+    for (size_t i = 0; i < count; ++i)
+        if (std::abs(int(actual.GetData()[i]) - expected.GetData()[i]) <= 5) ++matches;
+    assert(matches > count * 0.95);
+    about->Destroy();
+    wxTheApp->Yield(true);
+}
 
 static void CheckPreviewPixels(ASSDrawShapePreview* preview, const char* stage)
 {
@@ -229,6 +434,8 @@ int main(int argc, char** argv)
     wxTheApp->Yield(true);
     assert(frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
     assert(frame->viewMenu->IsChecked(MENU_SETTINGS));
+    CheckClipboardImages(frame);
+    CheckAboutBanner(frame);
 
 #ifdef __WXMSW__
     // A valid title-bar icon doesn't guarantee that Windows has a taskbar icon.
@@ -397,6 +604,27 @@ int main(int argc, char** argv)
         assert(AssdrawTheme::ReadPreference() == "dark");
         assert(frame->colors.canvas_bg.Red() < 100);
         assert(frame->srctxtctrl->GetBackgroundColour() == AssdrawTheme::Background());
+        assert(frame->drawtbar->GetBackgroundColour() == AssdrawTheme::Surface());
+        assert(frame->zoomslider->GetBackgroundColour() == AssdrawTheme::Surface());
+#ifdef __WXMSW__
+        assert(frame->drawtbar->IsDoubleBuffered());
+        // Both prebuilt and freshly created popup menus have their erase brush
+        // set before opening; otherwise their first frame uses COLOR_MENU.
+        wxMenu popup;
+        popup.Append(wxID_ANY, "Test");
+        AssdrawTheme::ApplyMenu(&popup);
+        for (wxMenu* menu : {frame->drawMenu, &popup}) {
+            MENUINFO info{};
+            info.cbSize = sizeof(info);
+            info.fMask = MIM_BACKGROUND;
+            assert(::GetMenuInfo(static_cast<HMENU>(menu->GetHMenu()), &info));
+            assert(info.hbrBack);
+            LOGBRUSH brush{};
+            assert(::GetObject(info.hbrBack, sizeof(brush), &brush));
+            assert(GetRValue(brush.lbColor) < 100 && GetGValue(brush.lbColor) < 100
+                && GetBValue(brush.lbColor) < 100);
+        }
+#endif
         assert(frame->settingsdlg->propgrid->GetCellBackgroundColour() == AssdrawTheme::Background());
         assert(frame->settingsdlg->propgrid->GetPropertyValueAsLong(frame->settingsdlg->alphas_dfltimgopac_pgid) == 77);
         wxColour origin_value;

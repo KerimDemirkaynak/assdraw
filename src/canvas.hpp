@@ -154,7 +154,7 @@ public:
 	virtual wxString GetTopRedo();
 	virtual void RefreshUndocmds();
 
-	virtual bool HasBackgroundImage() { return bgimg.bgimg != NULL; }
+	virtual bool HasBackgroundImage() { return bgimg.bgimg != NULL && !bgimg.pixels.empty(); }
 	virtual void RemoveBackgroundImage();
 	virtual void ReceiveBackgroundImageFileDropEvent(const wxString& filename);
 	virtual void SetBackgroundImage(const wxImage& img, wxString fname = _T("<clipboard>"), bool ask4alpha = true);
@@ -170,7 +170,10 @@ protected:
 
 	typedef PixelFormat::AGGType::color_type color_type;
 	typedef agg::span_interpolator_linear<> interpolator_type;
-	typedef agg::span_image_filter_rgb_bilinear_clip<PixelFormat::AGGType, interpolator_type> span_gen_type;
+	// Reference images use owned RGB bytes, independent of native bitmap depth,
+	// channel order, row direction, and raw-bitmap lock lifetime.
+	typedef agg::pixfmt_rgb24 BackgroundPixelFormat;
+	typedef agg::span_image_filter_rgb_bilinear_clip<BackgroundPixelFormat, interpolator_type> span_gen_type;
 	
     // The GUI window
 	ASSDrawFrame* m_frame;
@@ -228,7 +231,7 @@ protected:
 	{
 		agg::rendering_buffer ibuf;
 		wxImage *bgimg;
-		wxBitmap *bgbmp;
+		std::vector<unsigned char> pixels;
 		wxString bgimgfile;
 		agg::path_storage bg_path;		
 		agg::span_allocator<color_type> spanalloc;
