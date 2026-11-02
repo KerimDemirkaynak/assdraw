@@ -100,8 +100,6 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
  : wxDialog(parent, -1, wxString(_("Transform")))
 {
 	m_frame = parent;
-	transform_bitmap = NULL;
-	transform_bitmap_logical_size = wxSize(224, 56);
 	Bind(wxEVT_DPI_CHANGED, &ASSDrawTransformDlg::OnDPIChanged, this);
 
     wxBoxSizer* sizer_main = new wxBoxSizer(wxVERTICAL);
@@ -175,8 +173,9 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
     txtctrl_ny = new wxTextCtrl( this, -1, _T("0.0"), __DPDS__ , wxTE_RIGHT );
     sizer_fields->Add(txtctrl_ny, 0, flag_txtctrl, border);
 
-    transform_bitmap = new wxStaticBitmap(this, -1, ASSDRAW_BITMAP_BUNDLE(transform), wxDefaultPosition, FromDIP(transform_bitmap_logical_size), 0);
-    sizer_main->Add(transform_bitmap, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, border);
+    auto* formula = new wxStaticText(this, wxID_ANY,
+        "x' = m11(x - mx) + m12(y - my) + nx\ny' = m21(x - mx) + m22(y - my) + ny");
+    sizer_main->Add(formula, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, border);
 
     wxStdDialogButtonSizer* sizer_stdbutt = new wxStdDialogButtonSizer;
 
@@ -195,12 +194,6 @@ ASSDrawTransformDlg::ASSDrawTransformDlg(ASSDrawFrame* parent)
 
 void ASSDrawTransformDlg::UpdateDpiLayout()
 {
-	if (transform_bitmap)
-	{
-		const wxSize bitmap_size = FromDIP(transform_bitmap_logical_size);
-		transform_bitmap->SetMinSize(bitmap_size);
-		transform_bitmap->SetSize(bitmap_size);
-	}
 
 	Layout();
 	Fit();

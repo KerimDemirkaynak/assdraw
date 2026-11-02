@@ -41,6 +41,10 @@ geri alma geçmişi ve uygulanmamış komut metni değişmez. Tema menüsü alt�
 de çevrilmiştir. Anında yerel tema değişimi için wxWidgets 3.3.4 kullanılır;
 varsayılan derleme, sağlama toplamı sabitlenmiş resmi kaynağı derler.
 
+Araç çubukları, uygulamaya gömülü 17 Font Awesome Free SVG ikon kullanır.
+İkonlar renklerini yerel temadan alır ve geçerli DPI'da keskin çizilir; ek
+font veya internet bağlantısı gerekmez. Uygulama logosu korunur.
+
 ## Diller
 
 English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt. Dil, **Dil** menüsünden çizim kaybolmadan anında değiştirilebilir ve bir sonraki açılış için kaydedilir.

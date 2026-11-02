@@ -1,5 +1,6 @@
 #include "theme.hpp"
 #include "localization.hpp"
+#include "icons.hpp"
 
 #include <wx/app.h>
 #include <wx/fileconf.h>
@@ -9,32 +10,18 @@
 #include <wx/panel.h>
 #include <wx/statusbr.h>
 #include <wx/html/htmlwin.h>
-#include <wx/image.h>
 #include <wx/propgrid/propgrid.h>
 #include <wx/settings.h>
 #include <wx/textctrl.h>
 #include <wx/toolbar.h>
 #include <wx/wfstream.h>
 
+#ifdef __WXGTK3__
+#include <gtk/gtk.h>
+#endif
+
 namespace {
 wxString requested = "system";
-
-wxBitmap InvertGreys(const wxBitmap& bitmap)
-{
-    if (!bitmap.IsOk())
-        return bitmap;
-    wxImage image = bitmap.ConvertToImage();
-    if (!image.HasAlpha()) image.InitAlpha();
-    unsigned char* pixels = image.GetData();
-    for (int i = 0; i < image.GetWidth() * image.GetHeight(); ++i) {
-        unsigned char* p = pixels + i * 3;
-        if (p[0] == p[1] && p[1] == p[2])
-            p[0] = p[1] = p[2] = 255 - p[0];
-    }
-    wxBitmap result(image);
-    result.SetScaleFactor(bitmap.GetScaleFactor());
-    return result;
-}
 }
 
 namespace AssdrawTheme {
@@ -60,6 +47,12 @@ bool SetAppearance(const wxString& mode)
     else return false;
     if (wxTheApp->SetAppearance(appearance) != wxApp::AppearanceResult::Ok)
         return false;
+#ifdef __WXGTK3__
+    // GTK invalidates widget styles asynchronously. Recompute before reading
+    // the palette for our custom controls, then invalidate wxGTK's colour cache.
+    gtk_style_context_reset_widgets(gdk_screen_get_default());
+    g_object_notify(G_OBJECT(gtk_settings_get_default()), "gtk-theme-name");
+#endif
     requested = mode;
     return true;
 }
@@ -69,22 +62,8 @@ wxColour Background() { return wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
 wxColour Surface() { return wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE); }
 wxColour Text() { return wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT); }
 
-wxBitmapBundle ToolBitmap(const wxBitmap& bitmap)
-{
-    wxImage image = bitmap.ConvertToImage();
-    // Windows BMP resources use this matte; XPM resources already have alpha.
-    if (!image.HasAlpha() && !image.HasMask()) {
-        const wxColour corner(image.GetRed(0, 0), image.GetGreen(0, 0), image.GetBlue(0, 0));
-        if (corner == wxColour(192, 192, 192))
-            image.SetMaskColour(192, 192, 192);
-    }
-    if (!image.HasAlpha()) image.InitAlpha();
-    wxBitmap result(image);
-    result.SetScaleFactor(bitmap.GetScaleFactor());
-    return wxBitmapBundle::FromBitmap(IsDark() ? InvertGreys(result) : result);
-}
 
-void ApplyControls(wxWindow* window, bool invert_tool_icons)
+void ApplyControls(wxWindow* window)
 {
     if (!window || window->IsBeingDeleted())
         return;
@@ -107,24 +86,14 @@ void ApplyControls(wxWindow* window, bool invert_tool_icons)
         grid->SetSelectionBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT));
         grid->SetSelectionTextColour(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT));
     }
-    if (auto* bar = wxDynamicCast(window, wxToolBar)) {
-        if (invert_tool_icons) {
-            for (size_t i = 0; i < bar->GetToolsCount(); ++i) {
-                auto* tool = bar->GetToolByPos(i);
-                if (tool->IsButton()) {
-                    const wxBitmap bitmap = tool->GetNormalBitmapBundle().GetBitmapFor(bar);
-                    bar->SetToolNormalBitmap(tool->GetId(), wxBitmapBundle::FromBitmap(InvertGreys(bitmap)));
-                }
-            }
-        }
-        bar->Realize();
-    }
+    if (auto* bar = wxDynamicCast(window, wxToolBar))
+        AssdrawIcons::RefreshToolbar(bar);
     if (auto* html = wxDynamicCast(window, wxHtmlWindow)) {
         html->SetBackgroundColour(Background());
         html->SetPage(AssdrawI18n::AboutHtml());
     }
     for (wxWindow* child : window->GetChildren())
-        ApplyControls(child, invert_tool_icons);
+        ApplyControls(child);
     window->Refresh();
 }
 }

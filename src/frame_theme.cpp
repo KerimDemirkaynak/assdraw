@@ -104,7 +104,8 @@ void ASSDrawFrame::RefreshTheme()
         settingsdlg->RefreshThemeViewColors();
     }
     Freeze();
-    AssdrawTheme::ApplyControls(this, changed);
+    AssdrawTheme::ApplyControls(this);
+    copy_button->SetBitmap(ASSDRAW_ICON(Copy));
     auto* art = m_mgr.GetArtProvider();
     const wxColour surface = AssdrawTheme::Surface(), text = AssdrawTheme::Text();
     art->SetColour(wxAUI_DOCKART_BACKGROUND_COLOUR, surface);

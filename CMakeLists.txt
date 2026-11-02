@@ -130,6 +130,19 @@ else()
     set(ASSDRAW_WX_LIBRARIES ${wxWidgets_LIBRARIES})
 endif()
 
+if(UNIX AND NOT APPLE)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ASSDRAW_GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+endif()
+
+file(GLOB_RECURSE ASSDRAW_ICON_SVGS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/vendor/fontawesome/svgs/*.svg")
+set(ASSDRAW_ICON_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/assdraw_icons_data.hpp")
+add_custom_command(OUTPUT "${ASSDRAW_ICON_HEADER}"
+    COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/tools/embed_icons.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/vendor/fontawesome" "${ASSDRAW_ICON_HEADER}"
+    DEPENDS tools/embed_icons.py ${ASSDRAW_ICON_SVGS} VERBATIM)
+add_custom_target(assdraw-icons DEPENDS "${ASSDRAW_ICON_HEADER}")
+
 set(ASSDRAW_SOURCES
     src/assdraw.cpp
     src/assdraw_settings.cpp
@@ -145,6 +158,7 @@ set(ASSDRAW_SOURCES
     src/localization.cpp
     src/theme.cpp
     src/frame_theme.cpp
+    src/icons.cpp
     src/wxAGG/AGGWindow.cpp
     src/xpm/res.cpp
 )
@@ -168,6 +182,7 @@ set(ASSDRAW_HEADERS
     src/styled_ass.hpp
     src/localization.hpp
     src/theme.hpp
+    src/icons.hpp
     src/wxAGG/AGGWindow.h
     src/wxAGG/PixelFormatConvertor.h
     src/xpm/res.h
@@ -238,6 +253,8 @@ add_custom_target(assdraw-translations ALL DEPENDS ${ASSDRAW_MO_FILES})
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/locale" DESTINATION .)
 install(FILES docs/ASSDraw3.chm LICENSE NOTICE.md README.md README.tr.md DESTINATION .)
 install(FILES vendor/wxlocale/LICENSE.wxWidgets.txt vendor/wxlocale/COPYING.LIB.txt DESTINATION .)
+install(FILES vendor/fontawesome/LICENSE.txt DESTINATION licenses RENAME FontAwesome.txt)
+install(FILES vendor/fontawesome/README.md DESTINATION licenses RENAME FontAwesome-attribution.md)
 install(DIRECTORY docs/help DESTINATION .)
 
 if(MSVC)
@@ -271,6 +288,11 @@ endif()
 
 foreach(app_target assdraw assdraw-gui-tests)
     if(TARGET ${app_target})
+        add_dependencies(${app_target} assdraw-icons)
+        target_include_directories(${app_target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+        if(UNIX AND NOT APPLE)
+            target_link_libraries(${app_target} PRIVATE PkgConfig::ASSDRAW_GTK)
+        endif()
         if(WIN32)
             target_link_libraries(${app_target} PRIVATE shell32)
         endif()

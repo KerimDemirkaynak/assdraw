@@ -18,6 +18,10 @@
 #include <clocale>
 #include <cmath>
 
+#ifdef __WXGTK3__
+#include <gtk/gtk.h>
+#endif
+
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
 #endif
@@ -70,6 +74,32 @@ static void CheckPreviewPixels(ASSDrawShapePreview* preview, const char* stage)
         << ", ink=" << ink << ", scale=" << preview->_PointSystem()->scale
         << ", origin=" << preview->_PointSystem()->originx << "," << preview->_PointSystem()->originy << "\n";
     assert(ink > 50);
+}
+
+static void CheckVectorIcons()
+{
+    const wxColour foreground = AssdrawTheme::Text();
+    for (int icon = 0; icon < static_cast<int>(AssdrawIcons::Icon::Count); ++icon) {
+        const auto bundle = AssdrawIcons::Bitmap(static_cast<AssdrawIcons::Icon>(icon));
+        assert(bundle.IsOk());
+        for (int size : {20, 40, 80}) {
+            const wxBitmap bitmap = bundle.GetBitmap(wxSize(size, size));
+            assert(bitmap.GetSize() == wxSize(size, size));
+            const wxImage image = bitmap.ConvertToImage();
+            assert(image.HasAlpha() && image.GetAlpha(0, 0) == 0);
+            int ink = 0;
+            for (int y = 0; y < size; ++y) {
+                for (int x = 0; x < size; ++x) {
+                    if (image.GetAlpha(x, y) < 250) continue;
+                    assert(std::abs(int(image.GetRed(x, y)) - foreground.Red()) <= 1);
+                    assert(std::abs(int(image.GetGreen(x, y)) - foreground.Green()) <= 1);
+                    assert(std::abs(int(image.GetBlue(x, y)) - foreground.Blue()) <= 1);
+                    ++ink;
+                }
+            }
+            assert(ink > 5);
+        }
+    }
 }
 
 static void CheckLibraryResize(ASSDrawFrame* frame, ASSDrawShapePreview* drawing)
@@ -299,6 +329,19 @@ int main(int argc, char** argv)
         }
         wxTheApp->Yield(true);
         frame->RefreshTheme();
+        if (AssdrawTheme::IsDark() != dark) {
+            std::cerr << "Theme did not settle: requested=" << dark
+                << " background=" << AssdrawTheme::Background().GetAsString().ToStdString()
+                << " text=" << AssdrawTheme::Text().GetAsString().ToStdString() << '\n';
+#ifdef __WXGTK3__
+            gchar* name = nullptr;
+            gboolean prefer_dark = FALSE;
+            g_object_get(gtk_settings_get_default(), "gtk-theme-name", &name,
+                "gtk-application-prefer-dark-theme", &prefer_dark, nullptr);
+            std::cerr << "GTK theme=" << (name ? name : "") << " prefer-dark=" << prefer_dark << '\n';
+            g_free(name);
+#endif
+        }
         assert(AssdrawTheme::IsDark() == dark);
         assert(frame->view_is_dark == dark);
     };
@@ -315,6 +358,7 @@ int main(int argc, char** argv)
     for (int repeat = 0; repeat < 3; ++repeat) {
         assert(frame->ApplyTheme("dark"));
         settle_theme(true);
+        CheckVectorIcons();
         assert(frame->themeMenu->IsChecked(6102));
         assert(AssdrawTheme::ReadPreference() == "dark");
         assert(frame->colors.canvas_bg.Red() < 100);
@@ -347,6 +391,7 @@ int main(int argc, char** argv)
         }
         assert(frame->ApplyTheme("light"));
         settle_theme(false);
+        CheckVectorIcons();
         assert(frame->themeMenu->IsChecked(6101));
         assert(frame->colors.canvas_bg == light_canvas);
         assert(frame->colors.library_libarea == light_library);

@@ -108,13 +108,13 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 	layout = VERTICAL;
 
 	toolbar = new wxToolBar(this, wxID_ANY, __DPDS__ , wxTB_HORIZONTAL | wxNO_BORDER | wxTB_FLAT | wxTB_NODIVIDER);
-	toolbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
+	toolbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
 	toolbar->SetMargins(0, FromDIP(3));
-	toolbar->AddTool(TOOL_SAVE, _("Save canvas"), ASSDRAW_BITMAP_BUNDLE(add));
+	toolbar->AddTool(TOOL_SAVE, _("Save canvas"), ASSDRAW_ICON(Save));
 	toolbar->AddSeparator();
-	toolbar->AddTool(TOOL_CHECK, _("Select all"), ASSDRAW_BITMAP_BUNDLE(check));
-	toolbar->AddTool(TOOL_UNCHECK, _("Select none"), ASSDRAW_BITMAP_BUNDLE(uncheck));
-	toolbar->AddTool(TOOL_DELETE, _("Delete selected"), ASSDRAW_BITMAP_BUNDLE(delcross));
+	toolbar->AddTool(TOOL_CHECK, _("Select all"), ASSDRAW_ICON(SelectAll));
+	toolbar->AddTool(TOOL_UNCHECK, _("Select none"), ASSDRAW_ICON(SelectNone));
+	toolbar->AddTool(TOOL_DELETE, _("Delete selected"), ASSDRAW_ICON(DeleteShapes));
 
 	libarea = new wxScrolledWindow(this, wxID_ANY, __DPDS__ , wxScrolledWindowStyle | wxSIMPLE_BORDER);
 	libarea->SetBackgroundColour(wxColour(0xFF, 0xFF, 0x99));
@@ -173,7 +173,7 @@ void ASSDrawShapeLibrary::UpdateDpiLayout()
 {
 	if (toolbar)
 	{
-		toolbar->SetToolBitmapSize(FromDIP(wxSize(16, 16)));
+		toolbar->SetToolBitmapSize(FromDIP(wxSize(20, 20)));
 		toolbar->SetMargins(0, FromDIP(3));
 		toolbar->Realize();
 	}
@@ -218,7 +218,7 @@ void ASSDrawShapeLibrary::UpdatePreviewDisplays()
 	// Avoid fitting at an intermediate hidden or zero-width layout.
 	const int dim = std::max(FromDIP(32), siz.x - FromDIP(10));
 	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
-	while (node != NULL)
+	while (node)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
 		sizer->SetItemMinSize(shprvw, dim, dim);
@@ -303,7 +303,7 @@ void ASSDrawShapeLibrary::CheckUncheckAllPreviews(wxCommandEvent &event)
 {
 	bool checked = event.GetId() == TOOL_CHECK;
 	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
-	while (node != NULL)
+	while (node)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
 		shprvw->cb->SetValue(checked);
@@ -314,7 +314,7 @@ void ASSDrawShapeLibrary::CheckUncheckAllPreviews(wxCommandEvent &event)
 void ASSDrawShapeLibrary::DeleteChecked(wxCommandEvent& WXUNUSED(event))
 {
 	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
-	while (node != NULL)
+	while (node)
 	{
 		wxSizerItemList::compatibility_iterator next = node->GetNext();
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
@@ -334,7 +334,7 @@ std::vector< ASSDrawShapePreview *> ASSDrawShapeLibrary::GetShapePreviews()
 {
 	std::vector< ASSDrawShapePreview *> out;
 	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
-	while (node != NULL)
+	while (node)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
 		out.push_back(shprvw);

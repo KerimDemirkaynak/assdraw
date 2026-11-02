@@ -15,6 +15,5 @@ bool IsDark();
 wxColour Background();
 wxColour Surface();
 wxColour Text();
-wxBitmapBundle ToolBitmap(const wxBitmap& bitmap);
-void ApplyControls(wxWindow* window, bool invert_tool_icons = false);
+void ApplyControls(wxWindow* window);
 }

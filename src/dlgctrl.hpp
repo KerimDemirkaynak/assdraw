@@ -71,8 +71,6 @@ public:
 	wxTextCtrl* txtctrl_my;
 	wxTextCtrl* txtctrl_nx;
 	wxTextCtrl* txtctrl_ny;
-	wxStaticBitmap* transform_bitmap;
-	wxSize transform_bitmap_logical_size;
 	EightDouble xformvals;
 
 	static const char* const combo_templatesStrings[];

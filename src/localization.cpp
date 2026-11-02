@@ -154,6 +154,8 @@ wxString AboutHtml()
     const auto paragraph = [&html](const wxString& text) { html += "<p>" + HtmlEscape(text) + "</p>"; };
     paragraph(_("ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."));
     paragraph(_("This version was created by Kerim Demirkaynak."));
+    html += "<p><a href=\"https://fontawesome.com/\">Font Awesome Free 7.2.0</a>"
+        " — Fonticons, Inc. — <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a></p>";
     paragraph(_("Original application: ai-chan (2006-2007)."));
     paragraph(_("Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."));
     paragraph(_("Tips and shortcuts"));

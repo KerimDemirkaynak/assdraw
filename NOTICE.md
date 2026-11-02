@@ -34,3 +34,9 @@ the official source archive by SHA-256 and links wxWidgets statically. Its
 wxWindows license and bundled library notices are installed under `licenses/`.
 The MSVC runtime is redistributed with Windows packages.
 This software is based in part on the work of the Independent JPEG Group.
+
+Toolbar icons are from Font Awesome Free 7.2.0, copyright 2026 Fonticons, Inc.,
+https://fontawesome.com, under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/.
+Source commit: `337dd2045d5621ce0f8567c33c256f3dedeed55d`. Original SVG files and
+license are retained in `vendor/fontawesome`. Embedding adds uniform padding
+and changes `currentColor` to the native theme's text colour; paths are unchanged.

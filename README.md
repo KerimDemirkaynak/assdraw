@@ -40,6 +40,10 @@ unapplied command text remain intact. All six translations include the theme
 menu. Native runtime switching requires wxWidgets 3.3.4, built by default from
 the checksum-pinned official release.
 
+Toolbars use 17 embedded Font Awesome Free SVG icons. They take their colour
+from the native theme and render sharply at the current DPI, without an icon
+font or internet access. The application logo is preserved.
+
 ## Languages
 
 English, Türkçe, Français, Deutsch, Español, 繁體中文, and Tiếng Việt. The language can be switched at runtime from the **Language** menu without losing your drawing, and the choice is remembered on the next launch.
