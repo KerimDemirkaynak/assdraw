@@ -32,7 +32,12 @@ def check_manual(directory):
         raise ValueError("The original CHM manual differs from the HTML export's source")
     for name, digest in manifest["files"].items():
         path = directory / "original" / name
-        if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+        content = path.read_bytes()
+        # Git's Windows checkout may use CRLF. Preserve the integrity check
+        # while accepting the same HTML text with either native newline form.
+        if path.suffix.lower() == ".html":
+            content = content.replace(b"\r\n", b"\n")
+        if hashlib.sha256(content).hexdigest() != digest:
             raise ValueError(f"Missing or damaged manual content: {path}")
     for page in directory.rglob("*.html"):
         content = page.read_text(encoding="utf-8")

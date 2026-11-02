@@ -70,6 +70,7 @@ def export(source):
         "source_sha256": hashlib.sha256((ROOT / "docs/ASSDraw3.chm").read_bytes()).hexdigest(),
         "topics": len(names),
         "images": len(list(destination.glob("*.jpg"))),
+        "html_hash_newlines": "LF",
         "files": {file.name: hashlib.sha256(file.read_bytes()).hexdigest() for file in files},
     }
     (destination / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

@@ -64,7 +64,8 @@ jobs:
       shell: pwsh
 
     - name: Cache vcpkg archives
-      uses: actions/cache@v4
+      id: vcpkg-cache
+      uses: actions/cache/restore@v4
       with:
         path: ~\AppData\Local\vcpkg\archives
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
@@ -78,6 +79,13 @@ jobs:
     - name: Build with PowerShell helper
       run: .\build\build-win-vcpkg.ps1 -Fresh
       shell: pwsh
+
+    - name: Save compiled dependencies
+      if: steps.vcpkg-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ~\AppData\Local\vcpkg\archives
+        key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
 
     - name: Package Windows build
       run: |

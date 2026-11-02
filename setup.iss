@@ -7,7 +7,8 @@ DefaultGroupName=ASSDraw3
 OutputDir=installer
 OutputBaseFilename=ASSDraw3-Windows-x64-Setup
 ArchitecturesAllowed=x64compatible
-ArchitecturesInstallIn64BitMode=x64compatible
+; Keep the legacy registry view so existing installations upgrade in place.
+ArchitecturesInstallIn64BitMode=
 UninstallDisplayIcon={app}\bin\assdraw3.exe
 Compression=lzma
 SolidCompression=yes

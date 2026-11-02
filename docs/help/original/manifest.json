@@ -3,6 +3,7 @@
   "source_sha256": "56659daced0e8e3d7fa170cff6f505e5dbeab14ad3f00f17d2d9d12f429496f1",
   "topics": 22,
   "images": 14,
+  "html_hash_newlines": "LF",
   "files": {
     "assdraw3.html": "6a307e7303caed86d642f66a6ad27e75e7ea3b20d7143d4edd5a70351c799c08",
     "basic-interface.html": "622d90a084f547febb8a9f10cd432fb70e15b356317f56fbb6bb54962e9811f8",
