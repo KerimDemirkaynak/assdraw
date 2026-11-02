@@ -44,6 +44,13 @@ English, Türkçe, Français, Deutsch, Español, 繁體中文, and Tiếng Việ
 | Windows x64 | `ASSDraw3-Windows-x64-Setup.exe` (installer) or `ASSDraw3-Windows-x64-Portable.zip` |
 | Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04, uses the GTK 3 runtime) |
 
+### Code signing policy
+
+Development builds are unsigned. The manual build workflow supports timestamped
+Windows code signing after a signing provider has approved and configured the
+project. See [Windows code signing](docs/windows-code-signing.md) for setup,
+maintainer roles, privacy, and verification instructions.
+
 ## Building
 
 ### Windows (CMake + MSVC)
