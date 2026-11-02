@@ -17,6 +17,7 @@
 #include <iostream>
 #include <clocale>
 #include <cmath>
+#include <cstdlib>
 
 #ifdef __WXGTK3__
 #include <gtk/gtk.h>
@@ -184,6 +185,12 @@ int main(int argc, char** argv)
 {
     if (!wxEntryStart(argc, argv))
         return 1;
+    wxSetAssertHandler([](const wxString& file, int line, const wxString& function,
+        const wxString& condition, const wxString& message) {
+        std::cerr << file.ToStdString() << ':' << line << ' ' << function.ToStdString()
+            << ": " << condition.ToStdString() << ' ' << message.ToStdString() << std::endl;
+        std::abort();
+    });
     wxTheApp->SetAppName(wxString::Format("ASSDraw3-tests-%lu", wxGetProcessId()));
     assert(wxTheApp->CallOnInit());
     assert(AssdrawI18n::SetLanguage("en"));
@@ -374,9 +381,9 @@ int main(int argc, char** argv)
         assert(frame->srctxtctrl->GetBackgroundColour() == AssdrawTheme::Background());
         assert(frame->settingsdlg->propgrid->GetCellBackgroundColour() == AssdrawTheme::Background());
         assert(frame->settingsdlg->propgrid->GetPropertyValueAsLong(frame->settingsdlg->alphas_dfltimgopac_pgid) == 77);
-        wxColourPropertyValue origin_value;
+        wxColour origin_value;
         origin_value << frame->settingsdlg->propgrid->GetPropertyValue(frame->settingsdlg->colors_origin_pgid);
-        assert(origin_value.m_colour == pending_origin);
+        assert(origin_value == pending_origin);
         assert(canvas->GenerateASS() == theme_document);
         assert(frame->srctxtctrl->GetValue() == theme_pending);
         assert(canvas->GetTopUndo() == theme_undo && canvas->GetTopRedo() == theme_redo);
