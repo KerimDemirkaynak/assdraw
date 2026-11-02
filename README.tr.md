@@ -26,27 +26,15 @@
 - **Dönüşümler** – ölçekleme/döndürme ve bilineer dönüşüm; wxGTK çizim düzeltmeleri.
 - **Yerleşik yardım** – resimli kılavuzun tamamı (çevrimdışı HTML ve orijinal CHM) her platformda açılır.
 
-## Uygulama teması
+### Uygulama Teması
 
-**Çalışma alanı → Tema → Sistem Varsayılanı / Açık / Koyu** menüsünden seçim
-yapabilirsiniz. wxWidgets'in yerel tema desteği menüleri, başlık çubuklarını,
-araç çubuklarını, durum çubuğunu, metin alanlarını, ayarları, iletişim kutularını
-ve sabitlenmiş veya yüzen panelleri anında günceller. Tuval, cetveller, şekil
-önizlemeleri, simgeler ve Hakkında sayfası da temaya uyar. Sistem Varsayılanı,
-işletim sistemindeki tema değişikliklerini izler. Tercih kaydedilir.
+**Çalışma Alanı → Tema → Sistem Varsayılanı / Açık / Koyu** yolunu izleyin.
 
-Açık ve koyu temaların görünüm renkleri ayrı saklanır; geri döndüğünüzde özel
-renkleriniz korunur. Çizimin dolgu ve kenarlık renkleri, arka plan görseli,
-geri alma geçmişi ve uygulanmamış komut metni değişmez. Tema menüsü altı dilde
-de çevrilmiştir. Anında yerel tema değişimi için wxWidgets 3.3.4 kullanılır;
-varsayılan derleme, sağlama toplamı sabitlenmiş resmi kaynağı derler.
+Tema değişiklikleri anında tüm kullanıcı arayüzüne uygulanır ve kaydedilir. Özelleştirilebilir açık ve koyu tema renkleri birbirinden bağımsız olarak saklanır.
 
-Araç çubukları, uygulamaya gömülü 17 Font Awesome Free SVG ikon kullanır.
-İkonlar renklerini yerel temadan alır ve geçerli DPI'da keskin çizilir; ek
-font veya internet bağlantısı gerekmez. Uygulama logosu korunur.
-GTK teması koyu tercihini desteklemiyorsa kurulu koyu varyantı veya yerleşik
-Adwaita bu uygulama için kullanılır. Açık temaya dönünce özgün GTK teması
-geri yüklenir.
+17 adet DPI duyarlı Font Awesome SVG simgesi, altı dil çevirisi ve GTK için alternatif destek içerir.
+
+**wxWidgets 3.3.4 gerektirir.**
 
 ## Diller
 
