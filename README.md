@@ -26,26 +26,9 @@
 - **Transforms** – scale/rotate and bilinear transforms, with painting fixes for wxGTK.
 - **Built-in help** – the full illustrated manual (offline HTML, plus the original CHM) opens on every platform.
 
-## Application theme
+## Application Theme
 
-Choose **Workspace → Theme → System Default / Light / Dark**. The native
-wxWidgets appearance applies immediately to menus, title bars, toolbars, status
-bars, editors, settings, dialogs, and docked or floating panes. The canvas,
-rulers, shape previews, icons, and About page also follow the theme. System
-Default follows operating-system appearance changes. The selection is saved.
-
-Light and dark view colors are stored separately, so switching back restores
-custom colors. Drawing fill/outline colors, tracing images, undo history, and
-unapplied command text remain intact. All six translations include the theme
-menu. Native runtime switching requires wxWidgets 3.3.4, built by default from
-the checksum-pinned official release.
-
-Toolbars use 17 embedded Font Awesome Free SVG icons. They take their colour
-from the native theme and render sharply at the current DPI, without an icon
-font or internet access. The application logo is preserved.
-On GTK, a theme without a usable dark variant uses its installed dark theme
-or built-in Adwaita for this application. Returning to light restores the
-original GTK theme.
+Select Workspace → Theme → System Default / Light / Dark. Themes update the entire UI instantly and are saved. Custom light/dark colors stay separate. Includes 17 DPI-aware Font Awesome SVG icons, six translations, and GTK fallback. Requires wxWidgets 3.3.4.
 
 ## Languages
 
