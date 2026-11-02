@@ -2,6 +2,8 @@
 AppName=ASSDraw3
 AppId=ASSDraw3
 AppVersion=3.1
+VersionInfoProductName=ASSDraw3
+VersionInfoProductVersion=3.1
 DefaultDirName={autopf}\ASSDraw3
 DefaultGroupName=ASSDraw3
 OutputDir=installer

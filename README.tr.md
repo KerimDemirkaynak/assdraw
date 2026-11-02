@@ -50,6 +50,13 @@ English, Türkçe, Français, Deutsch, Español, 繁體中文 ve Tiếng Việt.
 | Windows x64 | `ASSDraw3-Windows-x64-Setup.exe` (kurulum) veya `ASSDraw3-Windows-x64-Portable.zip` (taşınabilir) |
 | Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04; GTK 3 çalışma zamanını kullanır) |
 
+### Kod imzalama politikası
+
+Geliştirme derlemeleri imzasızdır. Elle başlatılan derleme akışı, imzalama hizmeti
+projeyi onaylayıp yapılandırıldığında Windows dosyalarını zaman damgalı olarak
+imzalayabilir. Kurulum, sorumlular, gizlilik ve doğrulama bilgileri için
+[Windows kod imzalama](docs/windows-code-signing.md) belgesine bakın.
+
 ## Derleme
 
 ### Windows (CMake + MSVC)
