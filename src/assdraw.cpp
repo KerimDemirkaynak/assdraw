@@ -61,6 +61,8 @@ IMPLEMENT_APP(ASSDrawApp)
 #endif
 
 BEGIN_EVENT_TABLE(ASSDrawFrame, wxFrame)
+    EVT_MENU_RANGE(6100, 6102, ASSDrawFrame::OnChooseTheme)
+    EVT_SYS_COLOUR_CHANGED(ASSDrawFrame::OnSystemColoursChanged)
     EVT_MENU_RANGE(6000, 6007, ASSDrawFrame::OnChooseLanguage)
     EVT_TOOL(TB_CLEAR, ASSDrawFrame::OnSelect_Clear)
     EVT_TOOL(TB_PREVIEW, ASSDrawFrame::OnSelect_Preview)
@@ -101,6 +103,8 @@ END_EVENT_TABLE()
 bool ASSDrawApp::OnInit()
 {
 	SetAppName(TITLE);
+	if (!AssdrawTheme::SetAppearance(AssdrawTheme::ReadPreference()))
+		AssdrawTheme::SetAppearance("system");
 #ifdef __WXMSW__
 	SetCurrentProcessExplicitAppUserModelID(L"KerimDemirkaynak.ASSDraw3");
 #endif
@@ -169,6 +173,10 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 
 	// config
 	LoadSettings();
+	if (!config->HasGroup("/ui/theme_colors/light"))
+		SaveThemeViewColors(false);
+	view_is_dark = AssdrawTheme::IsDark();
+	LoadThemeViewColors(view_is_dark);
 
 	// THE CANVAS
     m_canvas = new ASSDrawCanvas( this , this );
@@ -239,6 +247,8 @@ ASSDrawFrame::ASSDrawFrame( wxApp *app, const wxString& title, const wxPoint& po
 
 	UpdateFrameUI();
 	ApplySettings();
+	theme_ready = true;
+	RefreshTheme();
 
 	if (firsttime)
 		_About();
@@ -365,6 +375,14 @@ void ASSDrawFrame::SetMenus()
 	if (settingsdlg)
 		viewMenu->Append(MENU_SETTINGS, _("&Settings"), _T(""), wxITEM_CHECK);
 	viewMenu->Append(MENU_TBAR, _("&Toolbars"), tbarMenu);
+	themeMenu = new wxMenu;
+	themeMenu->AppendRadioItem(6100, _("System Default"));
+	themeMenu->AppendRadioItem(6101, _("Light"));
+	themeMenu->AppendRadioItem(6102, _("Dark"));
+	const int theme_id = AssdrawTheme::Requested() == "dark" ? 6102 :
+		AssdrawTheme::Requested() == "light" ? 6101 : 6100;
+	themeMenu->Check(theme_id, true);
+	viewMenu->AppendSubMenu(themeMenu, _("Theme"));
 	viewMenu->Append(MENU_RECENTER, _("Reposition [&0, 0]"), reposMenu);
 	viewMenu->AppendSeparator();
 	viewMenu->Append(MENU_RESETPERSPECTIVE, _("&Reset workspace"));
@@ -477,6 +495,7 @@ bool ASSDrawFrame::ApplyLanguage(const wxString& code)
 	ApplyDpiLayout();
 	SetStatusText(wxEmptyString, 1);
 	Thaw();
+	RefreshTheme();
 	config->Write("/ui/language", code);
 	SaveSettings();
 	if (!AssdrawI18n::SaveConfig(*config, configfile))

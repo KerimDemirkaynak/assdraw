@@ -259,7 +259,7 @@ void ASSDrawTransformDlg::EndModal(int retCode)
 ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	: wxDialog(parent, wxID_ANY, wxString(TITLE), __DPDS__ , wxSIMPLE_BORDER), time_out(timeout)
 {
-	SetBackgroundColour(*wxWHITE);
+	SetBackgroundColour(AssdrawTheme::Surface());
 	html_logical_size = wxSize(396, 200);
 	htmlwin = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, FromDIP(html_logical_size), wxHW_DEFAULT_STYLE | wxSIMPLE_BORDER);
 	htmlwin->SetPage(AssdrawI18n::AboutHtml());
@@ -269,7 +269,7 @@ ASSDrawAboutDlg::ASSDrawAboutDlg(ASSDrawFrame *parent, unsigned timeout)
 	sizer->AddGrowableCol(0);
 	//sizer->AddGrowableRow(1);
 
-	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), *wxWHITE, this), 1, wxEXPAND);
+	sizer->Add(new BigStaticBitmapCtrl(this, LoadAboutBannerBitmapBundle(), AssdrawTheme::Surface(), this), 1, wxEXPAND);
 	sizer->Add(htmlwin, 1, wxLEFT | wxRIGHT, FromDIP(2));
 	sizer->Add(new wxStaticText(this, wxID_ANY, wxString::Format(_("Version: %s"), VERSION)), 1, wxEXPAND | wxALL, FromDIP(2));
 	sizer->Add(new wxButton(this, wxID_OK, _("OK")), 0, wxALIGN_CENTER | wxBOTTOM, FromDIP(10));

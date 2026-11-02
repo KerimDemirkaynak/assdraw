@@ -102,6 +102,15 @@ public:
 	void OnClose(wxCloseEvent &event);
 	void OnChooseLanguage(wxCommandEvent& event);
 	bool ApplyLanguage(const wxString& code);
+	void OnChooseTheme(wxCommandEvent& event);
+	void OnSystemColoursChanged(wxSysColourChangedEvent& event);
+	bool ApplyTheme(const wxString& mode);
+	void RefreshTheme();
+	void SaveThemeViewColors(bool dark);
+	void LoadThemeViewColors(bool dark);
+	bool view_is_dark = false;
+	bool theme_ready = false;
+	bool theme_refresh_pending = false;
 
 	void UpdateASSCommandStringToSrcTxtCtrl(wxString cmds);
 	void UpdateASSCommandStringFromSrcTxtCtrl(wxString cmds);
@@ -154,6 +163,7 @@ public:
     wxMenu *viewMenu;
     wxMenu *tbarMenu;
 	wxMenu *languageMenu;
+	wxMenu *themeMenu;
 #endif
 
 	// dialogs
@@ -208,6 +218,7 @@ public:
 	void SaveSettings();
 	void InitializeDefaultSettings();
 	void ApplySettings();
+	void ApplyViewColours();
 	static void wxColourToAggRGBA(wxColour &colour, agg::rgba &rgba);
 	static void wxColourSetAlpha(wxColour &colour, long alpha);
 

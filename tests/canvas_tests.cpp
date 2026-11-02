@@ -11,6 +11,7 @@
 #include <wx/iconbndl.h>
 #include <wx/stopwatch.h>
 #include <wx/utils.h>
+#include <wx/settings.h>
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -141,7 +142,7 @@ static void CheckLibraryResize(ASSDrawFrame* frame, ASSDrawShapePreview* drawing
 
 class ASSDrawTestApp : public wxApp {
 public:
-    bool OnInit() override { wxInitAllImageHandlers(); return true; }
+    bool OnInit() override { wxInitAllImageHandlers(); return AssdrawTheme::SetAppearance("light"); }
 };
 wxIMPLEMENT_APP_NO_MAIN(ASSDrawTestApp);
 
@@ -150,7 +151,7 @@ int main(int argc, char** argv)
     if (!wxEntryStart(argc, argv))
         return 1;
     wxTheApp->SetAppName(wxString::Format("ASSDraw3-tests-%lu", wxGetProcessId()));
-    wxTheApp->CallOnInit();
+    assert(wxTheApp->CallOnInit());
     assert(AssdrawI18n::SetLanguage("en"));
     const wxString directory = wxStandardPaths::Get().GetUserDataDir();
     wxFileName::Mkdir(directory, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
@@ -278,6 +279,83 @@ int main(int argc, char** argv)
     assert(copied.GetText().Find('\n') == wxNOT_FOUND);
     assert(copied.GetText().Find('\t') == wxNOT_FOUND);
 
+    // Exercise the actual wxWidgets native appearance API, including controls
+    // created before the switch, and keep the document, image and pending edits.
+    const wxString theme_document = canvas->GenerateASS();
+    const wxString theme_pending = frame->srctxtctrl->GetValue();
+    const wxString theme_undo = canvas->GetTopUndo();
+    const wxString theme_redo = canvas->GetTopRedo();
+    const wxColour light_canvas = frame->colors.canvas_bg;
+    const wxColour light_library = frame->colors.library_libarea;
+    frame->settingsdlg->propgrid->SetPropertyValue(frame->settingsdlg->alphas_dfltimgopac_pgid, 77L);
+    wxColour pending_origin(10, 120, 190);
+    frame->settingsdlg->propgrid->SetPropertyValue(frame->settingsdlg->colors_origin_pgid, pending_origin);
+    frame->settingsdlg->colors_origin_pgid->SetModifiedStatus(true);
+    const auto settle_theme = [frame](bool dark) {
+        wxStopWatch elapsed;
+        while (AssdrawTheme::IsDark() != dark && elapsed.Time() < 2000) {
+            wxTheApp->Yield(true);
+            wxMilliSleep(10);
+        }
+        wxTheApp->Yield(true);
+        frame->RefreshTheme();
+        assert(AssdrawTheme::IsDark() == dark);
+        assert(frame->view_is_dark == dark);
+    };
+    const auto snapshot = [frame](const char* name) {
+        frame->Refresh(); frame->Update(); wxTheApp->Yield(true);
+        const wxSize size = frame->GetClientSize();
+        wxBitmap bitmap(size.x, size.y);
+        wxMemoryDC target(bitmap);
+        wxClientDC source(frame);
+        assert(target.Blit(0, 0, size.x, size.y, &source, 0, 0));
+        target.SelectObject(wxNullBitmap);
+        assert(bitmap.SaveFile(wxString::FromUTF8(name), wxBITMAP_TYPE_PNG));
+    };
+    for (int repeat = 0; repeat < 3; ++repeat) {
+        assert(frame->ApplyTheme("dark"));
+        settle_theme(true);
+        assert(frame->themeMenu->IsChecked(6102));
+        assert(AssdrawTheme::ReadPreference() == "dark");
+        assert(frame->colors.canvas_bg.Red() < 100);
+        assert(frame->srctxtctrl->GetBackgroundColour() == AssdrawTheme::Background());
+        assert(frame->settingsdlg->propgrid->GetCellBackgroundColour() == AssdrawTheme::Background());
+        assert(frame->settingsdlg->propgrid->GetPropertyValueAsLong(frame->settingsdlg->alphas_dfltimgopac_pgid) == 77);
+        wxColourPropertyValue origin_value;
+        origin_value << frame->settingsdlg->propgrid->GetPropertyValue(frame->settingsdlg->colors_origin_pgid);
+        assert(origin_value.m_colour == pending_origin);
+        assert(canvas->GenerateASS() == theme_document);
+        assert(frame->srctxtctrl->GetValue() == theme_pending);
+        assert(canvas->GetTopUndo() == theme_undo && canvas->GetTopRedo() == theme_redo);
+        assert(canvas->GetBackgroundInfo(width, height, after, after_scale));
+        assert(after == displacement && after_scale == scale);
+        if (repeat == 0) snapshot("theme-dark.png");
+        assert(frame->ApplyTheme("light"));
+        settle_theme(false);
+        assert(frame->themeMenu->IsChecked(6101));
+        assert(frame->colors.canvas_bg == light_canvas);
+        assert(frame->colors.library_libarea == light_library);
+        assert(canvas->GenerateASS() == theme_document);
+        assert(frame->srctxtctrl->GetValue() == theme_pending);
+        if (repeat == 0) snapshot("theme-light.png");
+    }
+    assert(frame->ApplyTheme("dark")); settle_theme(true);
+    const wxColour custom_dark(20, 30, 40);
+    frame->colors.canvas_bg = custom_dark;
+    frame->ApplyViewColours();
+    assert(frame->ApplyTheme("light")); settle_theme(false);
+    assert(frame->colors.canvas_bg == light_canvas);
+    assert(frame->ApplyTheme("dark")); settle_theme(true);
+    assert(frame->colors.canvas_bg == custom_dark);
+    assert(frame->ApplyTheme("system"));
+    wxTheApp->Yield(true);
+    assert(frame->themeMenu->IsChecked(6100));
+    assert(AssdrawTheme::ReadPreference() == "system");
+    assert(!frame->ApplyTheme("invalid-theme"));
+    assert(frame->ApplyTheme("light")); settle_theme(false);
+    frame->settingsdlg->RefreshSettingsDisplay();
+    frame->settingsdlg->propgrid->ClearModifiedStatus();
+
     // Changing language updates existing UI without changing document/view state.
     const wxString document = canvas->GenerateASS();
     const wxString typed_commands = frame->srctxtctrl->GetValue();
@@ -372,11 +450,22 @@ int main(int argc, char** argv)
     frame->_ResetPerspective();
     assert(frame->m_mgr.GetPane(frame->settingsdlg).IsShown());
     assert(frame->viewMenu->IsChecked(MENU_SETTINGS));
+    assert(frame->ApplyTheme("dark"));
+    frame->Destroy();
+    wxTheApp->Yield(true);
+    // The next launch selects the saved native theme before creating controls.
+    assert(AssdrawTheme::ReadPreference() == "dark");
+    assert(AssdrawTheme::SetAppearance(AssdrawTheme::ReadPreference()));
+    frame = new ASSDrawFrame(wxTheApp, TITLE, wxDefaultPosition, wxSize(800, 600));
+    wxTheApp->SetTopWindow(frame);
+    wxTheApp->Yield(true);
+    assert(frame->view_is_dark && frame->themeMenu->IsChecked(6102));
+    assert(frame->colors.canvas_bg == custom_dark);
     frame->Destroy();
     wxTheApp->Yield(true);
     wxTheApp->OnExit();
     wxEntryCleanup();
     wxFileName::Rmdir(directory, wxPATH_RMDIR_RECURSIVE);
-    std::cout << "Canvas, styling, library, transforms, language switching, catalogs, manuals, clipboard, and history passed.\n";
+    std::cout << "Canvas, styling, library, transforms, native themes, language switching, catalogs, manuals, clipboard, and history passed.\n";
     return 0;
 }

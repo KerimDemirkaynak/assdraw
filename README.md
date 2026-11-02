@@ -26,6 +26,20 @@
 - **Transforms** – scale/rotate and bilinear transforms, with painting fixes for wxGTK.
 - **Built-in help** – the full illustrated manual (offline HTML, plus the original CHM) opens on every platform.
 
+## Application theme
+
+Choose **Workspace → Theme → System Default / Light / Dark**. The native
+wxWidgets appearance applies immediately to menus, title bars, toolbars, status
+bars, editors, settings, dialogs, and docked or floating panes. The canvas,
+rulers, shape previews, icons, and About page also follow the theme. System
+Default follows operating-system appearance changes. The selection is saved.
+
+Light and dark view colors are stored separately, so switching back restores
+custom colors. Drawing fill/outline colors, tracing images, undo history, and
+unapplied command text remain intact. All six translations include the theme
+menu. Native runtime switching requires wxWidgets 3.3.4, built by default from
+the checksum-pinned official release.
+
 ## Languages
 
 English, Türkçe, Français, Deutsch, Español, 繁體中文, and Tiếng Việt. The language can be switched at runtime from the **Language** menu without losing your drawing, and the choice is remembered on the next launch.
@@ -38,17 +52,16 @@ English, Türkçe, Français, Deutsch, Español, 繁體中文, and Tiếng Việ
 | Platform | Package |
 | --- | --- |
 | Windows x64 | `ASSDraw3-Windows-x64-Setup.exe` (installer) or `ASSDraw3-Windows-x64-Portable.zip` |
-| Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04, requires the wxWidgets 3.2 GTK runtime) |
+| Linux x64 | `ASSDraw3-Linux-x64.tar.gz` (Ubuntu 24.04, uses the GTK 3 runtime) |
 
 ## Building
 
-### Windows (CMake + vcpkg)
+### Windows (CMake + MSVC)
 
-Requirements: Visual Studio 2022 or newer (MSVC), [vcpkg](https://github.com/microsoft/vcpkg), and Git.
+Requirements: Visual Studio 2022 or newer (MSVC), CMake 3.25+, Python 3, and Git.
 
 ```powershell
 git submodule update --init --recursive vendor/agg
-$env:VCPKG_ROOT = 'F:\vcpkg'
 .\build\build-win-vcpkg.ps1 -Fresh
 ```
 
@@ -61,7 +74,7 @@ cmake --build --preset release-x64 --config Release
 
 ### Linux
 
-Requirements: CMake 3.25+, a C++17 compiler, Git, Ninja, and wxWidgets development packages (on Ubuntu: `libwxgtk3.2-dev ninja-build xvfb`).
+Requirements: CMake 3.25+, a C++17 compiler, Git, Ninja, and GTK 3 development packages (on Ubuntu: `libgtk-3-dev pkg-config ninja-build xvfb`).
 
 ```sh
 cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -71,9 +84,14 @@ ctest --test-dir build-linux --output-on-failure
 
 GUI tests run under Xvfb when available. Use `-DASSDRAW_BUILD_APP=OFF` to build only the core tests (no wxWidgets or AGG needed). For offline builds, point `ASSDRAW_AGG_ROOT` to an existing `agg-src` directory.
 
+CMake builds the same wxWidgets version on both platforms. For offline builds,
+set `FETCHCONTENT_SOURCE_DIR_WXWIDGETS` to an extracted official wxWidgets 3.3.4
+source tree. Use `-DASSDRAW_BUNDLED_WX=OFF` for an installed wxWidgets 3.3.4+.
+Windows packages include MSVC runtime DLLs and third-party notices.
+
 ### Dependencies
 
-- wxWidgets 3.3.1 (via vcpkg, dynamically linked)
+- wxWidgets 3.3.4 (official release verified by SHA-256, built and linked statically)
 - AGG 2.6, pinned as the `vendor/agg` submodule ([ghaerr/agg-2.6](https://github.com/ghaerr/agg-2.6), commit `c4f36b4`)
 
 ## Translating

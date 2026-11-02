@@ -46,7 +46,7 @@ ASSDrawShapePreview::ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary 
 	shapelib = _shapelib;
 	cb = new wxCheckBox(this, wxID_ANY, _T(""));
 	empty_label = new wxStaticText(this, wxID_ANY, _("Empty drawing"));
-	empty_label->SetBackgroundColour(*wxWHITE);
+	UpdateTheme();
 	if (ParseASS(initialcmds) > 0)
 		SetFitToViewPointOnNextPaint(FromDIP(5), FromDIP(5));
 }
@@ -69,6 +69,15 @@ int ASSDrawShapePreview::ParseASS(wxString str)
 wxString ASSDrawShapePreview::GenerateASS()
 {
 	return source_ass;
+}
+
+void ASSDrawShapePreview::UpdateTheme()
+{
+	const wxColour bg = AssdrawTheme::Background();
+	color_bg = PixelFormat::AGGType::color_type(bg.Red(), bg.Green(), bg.Blue());
+	empty_label->SetBackgroundColour(bg);
+	empty_label->SetForegroundColour(AssdrawTheme::Text());
+	Refresh(false);
 }
 
 void ASSDrawShapePreview::OnSize(wxSizeEvent& event)
@@ -180,12 +189,8 @@ void ASSDrawShapeLibrary::UpdateDpiLayout()
 
 	if (sizer)
 	{
-		wxwxSizerItemListNode *node = sizer->GetChildren().GetFirst();
-		while (node != NULL)
-		{
-			node->GetData()->SetBorder(FromDIP(5));
-			node = node->GetNext();
-		}
+		for (auto* item : sizer->GetChildren())
+			item->SetBorder(FromDIP(5));
 	}
 
 	UpdatePreviewDisplays();

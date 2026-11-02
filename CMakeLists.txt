@@ -91,11 +91,44 @@ add_library(assdraw_agg STATIC ${ASSDRAW_AGG_SOURCES})
 target_include_directories(assdraw_agg PUBLIC "${ASSDRAW_AGG_ROOT}/include")
 target_compile_definitions(assdraw_agg PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
 
-set(wxWidgets_USE_STATIC OFF)
-set(ASSDRAW_WX_COMPONENTS base core adv aui html propgrid)
-find_package(wxWidgets REQUIRED COMPONENTS ${ASSDRAW_WX_COMPONENTS})
-include(${wxWidgets_USE_FILE})
-set(ASSDRAW_WX_LIBRARIES ${wxWidgets_LIBRARIES})
+option(ASSDRAW_BUNDLED_WX "Build the pinned wxWidgets with native runtime dark mode" ON)
+if(ASSDRAW_BUNDLED_WX)
+    include(FetchContent)
+    set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE)
+    set(wxBUILD_USE_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
+    set(wxBUILD_INSTALL OFF CACHE BOOL "" FORCE)
+    set(wxBUILD_SAMPLES OFF CACHE STRING "" FORCE)
+    set(wxBUILD_TESTS OFF CACHE STRING "" FORCE)
+    set(wxBUILD_DEMOS OFF CACHE BOOL "" FORCE)
+    set(wxBUILD_LOCALES OFF CACHE BOOL "" FORCE)
+    foreach(feature WEBVIEW MEDIACTRL OPENGL STC RICHTEXT XRC LIBNOTIFY LIBSDL SOUND)
+        set(wxUSE_${feature} OFF CACHE BOOL "" FORCE)
+    endforeach()
+    foreach(library ZLIB EXPAT LIBJPEG LIBPNG LIBTIFF REGEX NANOSVG)
+        set(wxUSE_${library} builtin CACHE STRING "" FORCE)
+    endforeach()
+    set(wxUSE_LIBWEBP OFF CACHE STRING "" FORCE)
+    FetchContent_Declare(wxwidgets
+        URL https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.4/wxWidgets-3.3.4.tar.bz2
+        URL_HASH SHA256=815c16cafa4fcbfcf25c5c0a3418309c62257b8a3b6f91d85a1367a134f98c98
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+    FetchContent_MakeAvailable(wxwidgets)
+    set(ASSDRAW_WX_LIBRARIES wx::base wx::core wx::aui wx::html wx::propgrid)
+    install(FILES "${wxwidgets_SOURCE_DIR}/docs/licence.txt" DESTINATION licenses RENAME wxWidgets.txt)
+    install(FILES "${wxwidgets_SOURCE_DIR}/src/jpeg/README" DESTINATION licenses RENAME jpeg.txt)
+    foreach(thirdparty_license src/expat/COPYING src/zlib/LICENSE src/tiff/LICENSE.md
+            src/png/LICENSE 3rdparty/pcre/COPYING 3rdparty/nanosvg/LICENSE.txt)
+        get_filename_component(license_directory "${thirdparty_license}" DIRECTORY)
+        get_filename_component(license_name "${license_directory}" NAME)
+        install(FILES "${wxwidgets_SOURCE_DIR}/${thirdparty_license}"
+            DESTINATION licenses RENAME "${license_name}.txt")
+    endforeach()
+else()
+    set(wxWidgets_USE_STATIC OFF)
+    find_package(wxWidgets 3.3.4 REQUIRED COMPONENTS base core adv aui html propgrid)
+    include(${wxWidgets_USE_FILE})
+    set(ASSDRAW_WX_LIBRARIES ${wxWidgets_LIBRARIES})
+endif()
 
 set(ASSDRAW_SOURCES
     src/assdraw.cpp
@@ -110,6 +143,8 @@ set(ASSDRAW_SOURCES
     src/shape_style.cpp
     src/styled_ass.cpp
     src/localization.cpp
+    src/theme.cpp
+    src/frame_theme.cpp
     src/wxAGG/AGGWindow.cpp
     src/xpm/res.cpp
 )
@@ -132,6 +167,7 @@ set(ASSDRAW_HEADERS
     src/shape_style.hpp
     src/styled_ass.hpp
     src/localization.hpp
+    src/theme.hpp
     src/wxAGG/AGGWindow.h
     src/wxAGG/PixelFormatConvertor.h
     src/xpm/res.h
@@ -204,6 +240,12 @@ install(FILES docs/ASSDraw3.chm LICENSE NOTICE.md README.md README.tr.md DESTINA
 install(FILES vendor/wxlocale/LICENSE.wxWidgets.txt vendor/wxlocale/COPYING.LIB.txt DESTINATION .)
 install(DIRECTORY docs/help DESTINATION .)
 
+if(MSVC)
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+    include(InstallRequiredSystemLibraries)
+    install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
+endif()
+
 if(BUILD_TESTING)
     add_executable(assdraw-gui-tests tests/canvas_tests.cpp ${ASSDRAW_SOURCES} ${ASSDRAW_RESOURCES})
     target_include_directories(assdraw-gui-tests PRIVATE src src/wxAGG src/xpm)
@@ -235,6 +277,10 @@ foreach(app_target assdraw assdraw-gui-tests)
         add_dependencies(${app_target} assdraw-translations)
         if(MSVC)
             target_compile_options(${app_target} PRIVATE /utf-8)
+            add_custom_command(TARGET ${app_target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} "$<TARGET_FILE_DIR:${app_target}>"
+                COMMAND_EXPAND_LISTS VERBATIM)
         endif()
         foreach(language IN LISTS ASSDRAW_LANGUAGES)
             add_custom_command(TARGET ${app_target} POST_BUILD

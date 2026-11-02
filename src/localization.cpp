@@ -1,4 +1,5 @@
 #include "localization.hpp"
+#include "theme.hpp"
 
 #include <memory>
 #include <wx/fileconf.h>
@@ -146,7 +147,10 @@ wxString ManualPath()
 
 wxString AboutHtml()
 {
-    wxString html = "<html><body>";
+    const wxString bg = AssdrawTheme::Background().GetAsString(wxC2S_HTML_SYNTAX);
+    const wxString fg = AssdrawTheme::Text().GetAsString(wxC2S_HTML_SYNTAX);
+    const wxString link = AssdrawTheme::IsDark() ? "#80bfff" : "#175ab5";
+    wxString html = "<html><body bgcolor=\"" + bg + "\" text=\"" + fg + "\" link=\"" + link + "\">";
     const auto paragraph = [&html](const wxString& text) { html += "<p>" + HtmlEscape(text) + "</p>"; };
     paragraph(_("ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."));
     paragraph(_("This version was created by Kerim Demirkaynak."));

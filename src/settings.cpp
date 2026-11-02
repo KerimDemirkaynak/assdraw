@@ -179,12 +179,33 @@ void ASSDrawSettingsDialog::OnSettingsApplyButtonClicked(wxCommandEvent &event)
 	wxCommandEvent evento( wxEVT_SETTINGS_CHANGED, event.GetId() );
 	evento.SetEventObject(event_object);
     m_frame->GetEventHandler()->ProcessEvent( evento );
+	propgrid->ClearModifiedStatus();
 
 }
 
 void ASSDrawSettingsDialog::OnSettingsRevertButtonClicked(wxCommandEvent &event)
 {
 	RefreshSettingsDisplay();
+	propgrid->ClearModifiedStatus();
+}
+
+void ASSDrawSettingsDialog::RefreshThemeViewColors()
+{
+	std::pair<wxPGId, wxColour> fields[] = {
+		{colors_canvas_bg_pgid, m_frame->colors.canvas_bg},
+		{colors_canvas_shape_controlpoint_pgid, m_frame->colors.canvas_shape_controlpoint},
+		{colors_canvas_shape_guideline_pgid, m_frame->colors.canvas_shape_guideline},
+		{colors_canvas_shape_mainpoint_pgid, m_frame->colors.canvas_shape_mainpoint},
+		{colors_canvas_shape_selectpoint_pgid, m_frame->colors.canvas_shape_selectpoint},
+		{colors_library_libarea_pgid, m_frame->colors.library_libarea},
+		{colors_library_shape_pgid, m_frame->colors.library_shape},
+		{colors_origin_pgid, m_frame->colors.origin},
+		{colors_ruler_h_pgid, m_frame->colors.ruler_h},
+		{colors_ruler_v_pgid, m_frame->colors.ruler_v}
+	};
+	for (auto& field : fields)
+		if (!field.first->HasFlag(wxPGFlags::Modified))
+			propgrid->SetPropertyValue(field.first, field.second);
 }
 
 void ASSDrawSettingsDialog::RefreshSettingsDisplay()

@@ -52,6 +52,7 @@ Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "NOTICE.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "vendor\wxlocale\LICENSE.wxWidgets.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "vendor\wxlocale\COPYING.LIB.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "package\ASSDraw3-Windows-x64\licenses\*"; DestDir: "{app}\licenses"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\ASSDraw3"; Filename: "{app}\bin\assdraw3.exe"; WorkingDir: "{app}\bin"; IconFilename: "{app}\bin\assdraw3.exe"; AppUserModelID: "KerimDemirkaynak.ASSDraw3"

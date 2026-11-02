@@ -51,6 +51,7 @@ public:
 	virtual void OnSettingsRevertButtonClicked(wxCommandEvent &event);
 	virtual void RefreshSettingsDisplay();
 	void UpdateTranslations();
+	void RefreshThemeViewColors();
 	wxPGId appearance_category;
 	wxPGId behavior_category;
 	wxButton* apply_button;
