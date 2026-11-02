@@ -96,6 +96,7 @@ def extract(destination):
     subprocess.run([program, "--language=C++", "--from-code=UTF-8", "--keyword=_",
                     "--keyword=wxTRANSLATE", "--keyword=wxGetTranslation:1",
                     "--sort-output", "--no-wrap", "--package-name=ASSDraw3",
+                    "--msgid-bugs-address=https://github.com/KerimDemirkaynak/assdraw/issues",
                     "--package-version=3.1", "-o", str(destination), *sources], cwd=ROOT, check=True)
 
 
@@ -135,6 +136,7 @@ def check():
 
 
 def check_package(directory):
+    from check_manual import check_manual
     directory = Path(directory)
     for language in LANGUAGES:
         path = directory / f"locale/{language}/LC_MESSAGES/assdraw.mo"
@@ -149,6 +151,7 @@ def check_package(directory):
         raise ValueError("The original CHM manual is missing or invalid")
     if not (directory / "help/index.html").is_file():
         raise ValueError("The portable HTML guide is missing")
+    check_manual(directory / "help")
     print("Packaged application includes all six language catalogs and both manuals.")
 
 
@@ -170,7 +173,7 @@ def main():
         if not merge:
             parser.error("Install GNU gettext to merge catalogs.")
         for language in LANGUAGES:
-            subprocess.run([merge, "--update", "--backup=off", "--no-fuzzy-matching",
+            subprocess.run([merge, "--update", "--backup=off", "--no-fuzzy-matching", "--no-wrap",
                             str(ROOT / f"po/{language}.po"), str(ROOT / "po/assdraw.pot")], check=True)
     else:
         check()

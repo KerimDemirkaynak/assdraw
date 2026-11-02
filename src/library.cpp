@@ -30,6 +30,7 @@
 #include "library.hpp"
 
 #include <wx/clipbrd.h>
+#include <algorithm>
 
 #if !defined(__WINDOWS__)
 #include "xpm/res.h"
@@ -43,9 +44,11 @@ ASSDrawShapePreview::ASSDrawShapePreview( wxWindow *parent, ASSDrawShapeLibrary 
 	: ASSDrawEngine(parent, wxSIMPLE_BORDER)
 {
 	shapelib = _shapelib;
+	cb = new wxCheckBox(this, wxID_ANY, _T(""));
+	empty_label = new wxStaticText(this, wxID_ANY, _("Empty drawing"));
+	empty_label->SetBackgroundColour(*wxWHITE);
 	if (ParseASS(initialcmds) > 0)
 		SetFitToViewPointOnNextPaint(FromDIP(5), FromDIP(5));
-	cb = new wxCheckBox(this, wxID_ANY, _T(""));
 }
 
 int ASSDrawShapePreview::ParseASS(wxString str)
@@ -54,7 +57,13 @@ int ASSDrawShapePreview::ParseASS(wxString str)
 	// Preview geometry uses the same shared coordinate system as the canvas.
 	source_ass = str;
 	const StyledAssImport imported = ImportStyledAss(std::string(str.mb_str(wxConvUTF8)), ShapeStyle());
-	return ASSDrawEngine::ParseASS(wxString(imported.drawing_text.c_str(), wxConvUTF8));
+	const int commands = ASSDrawEngine::ParseASS(wxString(imported.drawing_text.c_str(), wxConvUTF8));
+	if (empty_label) {
+		// Keep pre-existing empty library entries instead of deleting user data.
+		empty_label->Show(commands < 2);
+		empty_label->Centre();
+	}
+	return commands;
 }
 
 wxString ASSDrawShapePreview::GenerateASS()
@@ -64,14 +73,13 @@ wxString ASSDrawShapePreview::GenerateASS()
 
 void ASSDrawShapePreview::OnSize(wxSizeEvent& event)
 {
-	return;
-	wxSize siz = event.GetSize();
-
-	if (shapelib->layout == HORIZONTAL)
-		SetSize(siz.x, siz.x);
-	else
-		SetSize(siz.y, siz.y);
 	SetFitToViewPointOnNextPaint(FromDIP(10), FromDIP(10));
+	if (empty_label)
+		empty_label->Centre();
+	Refresh(false);
+	// Let AGGWindow resize its backing bitmap too. Swallowing this event left
+	// previews painting into an old, sometimes one-pixel, buffer on Windows.
+	event.Skip();
 }
 
 BEGIN_EVENT_TABLE(ASSDrawShapeLibrary, wxScrolledWindow)
@@ -104,7 +112,7 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 	sizer = new wxFlexGridSizer(0, 1, 0, 0);
 	((wxFlexGridSizer*) sizer)->AddGrowableCol(0);
 	libarea->SetSizer(sizer);
-	libarea->SetScrollbars(FromDIP(20), FromDIP(20), 50, 50);
+	libarea->SetScrollRate(0, FromDIP(20));
 	libsizer = new wxFlexGridSizer(2, 1, 0, 0);
 	libsizer->AddGrowableCol(0);
 	libsizer->AddGrowableRow(1);
@@ -124,11 +132,9 @@ void ASSDrawShapeLibrary::OnDPIChanged(wxDPIChangedEvent& event)
 
 void ASSDrawShapeLibrary::OnSize(wxSizeEvent& event)
 {
-	if (sizer == NULL || sizer->GetChildren().size() == 0) return;
-
-	wxSize siz = GetClientSize();
-	libsizer->SetDimension(0, 0, siz.x, siz.y);
-
+	event.Skip();
+	if (!libsizer || !sizer) return;
+	Layout();
 	UpdatePreviewDisplays();
 }
 
@@ -145,7 +151,7 @@ void ASSDrawShapeLibrary::UpdateDpiLayout()
 		libsizer->GetItem((size_t)0)->SetBorder(FromDIP(2));
 
 	if (libarea)
-		libarea->SetScrollbars(FromDIP(20), FromDIP(20), 50, 50);
+		libarea->SetScrollRate(0, FromDIP(20));
 
 	if (sizer)
 	{
@@ -178,23 +184,20 @@ ASSDrawShapePreview* ASSDrawShapeLibrary::AddShapePreview(wxString cmds, bool ad
 void ASSDrawShapeLibrary::UpdatePreviewDisplays()
 {
 	wxSize siz = libarea->GetClientSize();
-	int dim = siz.x - FromDIP(15);
-	if (dim < 1)
-		dim = 1;
-	libarea->Show(false);
+	// The sizer owns the actual window size, including after scrolling/docking.
+	// Avoid fitting at an intermediate hidden or zero-width layout.
+	const int dim = std::max(FromDIP(32), siz.x - FromDIP(10));
 	wxSizerItemList::compatibility_iterator node = sizer->GetChildren().GetFirst();
 	while (node != NULL)
 	{
 		ASSDrawShapePreview *shprvw = (ASSDrawShapePreview *) node->GetData()->GetWindow();
-		shprvw->SetSize(dim, dim);
-		sizer->SetItemMinSize(shprvw, dim - FromDIP(20), dim - FromDIP(20));
+		sizer->SetItemMinSize(shprvw, dim, dim);
 		shprvw->SetFitToViewPointOnNextPaint(FromDIP(10), FromDIP(10));
 		shprvw->Refresh();
 		node = node->GetNext();
 	}
 	sizer->Layout();
 	sizer->FitInside(libarea);
-	libarea->Show(true);
 }
 
 void ASSDrawShapeLibrary::OnMouseLeftDClick(wxMouseEvent &event)
@@ -321,6 +324,10 @@ void ASSDrawShapeLibrary::LoadToCanvas(ASSDrawShapePreview *preview)
 
 void ASSDrawShapeLibrary::UpdateTranslations()
 {
+    for (auto* preview : GetShapePreviews()) {
+        preview->empty_label->SetLabel(_("Empty drawing"));
+        preview->empty_label->Centre();
+    }
     const std::pair<int, wxString> labels[] = {
         {TOOL_SAVE, _("Save canvas")}, {TOOL_CHECK, _("Select all")},
         {TOOL_UNCHECK, _("Select none")}, {TOOL_DELETE, _("Delete selected")}

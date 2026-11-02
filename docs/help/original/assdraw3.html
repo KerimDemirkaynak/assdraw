@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>ASSDraw3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+body {
+  margin: 5px 5px 5px 5px;
+  background-color: #ffffff;
+}
+/* ========== Text Styles ========== */
+hr { color: #000000}
+body, table /* Font Style */
+{
+ font-size: 10pt;
+ font-family: 'Verdana';
+ font-style: normal;
+ font-weight: normal;
+ color: #000000;
+ text-decoration: none;
+}
+span.rvts1 /* Heading */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts2 /* Subheading */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #000080;
+}
+span.rvts3 /* Keywords */
+{
+ font-family: 'Arial';
+ font-style: italic;
+ color: #800000;
+}
+a.rvts4, span.rvts4 /* Jump 1 */
+{
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+a.rvts5, span.rvts5 /* Jump 2 */
+{
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+span.rvts6 /* Font Hint */
+{
+ font-family: 'Arial';
+ color: #808080;
+}
+span.rvts7 /* Font Hint Title */
+{
+ font-size: 15pt;
+ font-family: 'Tahoma';
+ font-weight: bold;
+ color: #404040;
+}
+span.rvts8 /* Font Hint Bold */
+{
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #808080;
+}
+span.rvts9 /* Font Hint Italic */
+{
+ font-family: 'Arial';
+ font-style: italic;
+ color: #808080;
+}
+span.rvts10
+{
+ font-weight: bold;
+}
+span.rvts11 /* Font Style */
+{
+ font-size: 18pt;
+ font-family: 'Tahoma';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts12 /* Font Style */
+{
+ font-style: italic;
+ color: #c0c0c0;
+}
+a.rvts13, span.rvts13 /* Font Style */
+{
+ font-style: italic;
+ color: #6666ff;
+ text-decoration: underline;
+}
+/* ========== Para Styles ========== */
+p,ul,ol /* Paragraph Style */
+{
+ text-align: left;
+ text-indent: 0px;
+ padding: 0px 0px 0px 0px;
+ margin: 0px 0px 0px 0px;
+}
+.rvps1 /* Centered */
+{
+ text-align: center;
+}
+.rvps2 /* Paragraph Style */
+{
+ background: #ffffff;
+ margin: 0px 0px 20px 0px;
+}
+.rvps3 /* Paragraph Style */
+{
+ border-color: #c0c0c0;
+ border-style: solid;
+ border-width: 1px;
+ border-right: none;
+ border-bottom: none;
+ border-left: none;
+ background: #ffffff;
+ padding: 3px 0px 0px 0px;
+ margin: 27px 0px 0px 0px;
+}
+--></style>
+<meta name="generator" content="HelpNDoc Free"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{max-width:1000px;margin:2rem auto;padding:0 1rem}img{max-width:100%;height:auto}.manual-nav{margin-bottom:1.5rem;font:16px/1.6 system-ui,sans-serif}</style></head>
+<body>
+<nav class="manual-nav"><a href="../index.html">ASSDraw3 3.1 guide</a> / <a href="index.html">Original manual contents</a></nav>
+
+<p class=rvps2><span class=rvts11>ASSDraw3 overview</span></p>
+<p>ASSDraw3 is a tool for designing shapes to be used in ASS subtitle file. The main feature of ASSDraw3 is that you can design the shapes you want using mouse and ASSDraw3 automatically generates the drawing commands, which are basically vector drawing commands.</p>
+<p><br></p>
+<p><span class=rvts10>ASS subtitle</span></p>
+<p><br></p>
+<p>It is a format of subtitle file that can be used to embed subtitles to a video. It is very flexible format that supports stylings, text animation (e.g. karaoke), shapes etc. ASSDraw3 focuses on the shapes feature that ASS subtitle format supports. It does not care at all about subtitle.</p>
+<p><br></p>
+<p><span class=rvts10>Drawing commands</span></p>
+<p><br></p>
+<p>Imagine drawing a shape using a pen (real world pen that uses ink). To draw a square on a piece of paper, you first position your pen above a particular position on the paper. Then you press the pen tip lightly on the paper surface and start moving the pen in a straight path to produce, well, a straight line on the paper. Then you do the same for three other edges of the square. Once the tip of the pen reaches the starting point, you get a square.</p>
+<p><br></p>
+<p>That is basically how shapes are drawn in ASS subtitle. There are commands to instruct the renderer to move to a specific point, draw a line to that point, draw a bezier curve etc. A string of cleverly-choreographed commands renders shapes ranging from as simple as a square to more complex shapes like a snow speck or a christmas tree. Commands for a square can be easily written by hand but it takes lots of imagination to design a complex logo without visual aids.</p>
+<p><br></p>
+<p>Commands fully supported by ASSDraw3: </p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li>M x y
+<br>Move to point (x,y), closing the current shape using a line connecting the current point to the previous M</li>
+<li>L x y
+<br>Draw a straight line from current point to (x,y)</li>
+<li>B x1 y1 x2 y2 x y
+<br>Draw a Bezier curve begining from current point and ending at (x,y) with (x1,y1) and (x2,y2) being the internal guide/control points</li>
+</ul>
+<p><br></p>
+<p>N x y (move to point (x,y) without closing the current shape) entered in the Drawing Commands input field will be converted to L command.</p>
+<p><br></p>
+<p>S (spline), P (extend spline) and C (close spline) commands are not supported.</p>
+<p class=rvps3><span class=rvts12>This help file has been generated by the freeware version of </span><a class=rvts13 href="http://www.ibe-software.com/products/software/helpndoc/" target="_blank">HelpNDoc</a></p>
+
+</body></html>

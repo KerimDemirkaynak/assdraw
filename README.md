@@ -26,8 +26,10 @@ to numeric formatting is required. The About window includes the original
 credits and the localized statement “This version was created by Kerim
 Demirkaynak.” Windows file and installer versions are 3.1.
 
-The original `ASSDraw3.chm` and a portable HTML quick guide are included. Manual
-paths are resolved relative to the executable, independent of the working
+The original `ASSDraw3.chm`, its full illustrated HTML edition (22 topics and
+14 images), and a 3.1 quick guide are included. Manual opens the offline HTML
+edition on every platform, avoiding Windows' blank pane for blocked downloaded
+CHM files. Paths are relative to the executable, independent of the working
 directory. The Windows installer keeps the executable, DLLs, catalogs, and
 manuals in its `bin` directory; portable packages remain self-contained folders.
 
@@ -75,7 +77,7 @@ This repository uses **GitHub Actions** for automated builds and packaging.
 
 * **Triggers**: Builds run on pull requests to `master` or `main`, or manually from the Actions tab.
 * **Process**: The workflow checks out the repository (with an automated fallback for the AGG submodule), restores `vcpkg` caches, compiles the application using the PowerShell build script, and creates an executable installer using Inno Setup.
-* **Artifacts**: `ASSDraw3-Linux-x64` contains the Linux executable in a `.tar.gz` that preserves its executable permission. `ASSDraw3-Windows-x64` contains the Windows executable, required DLLs, and documentation. Both are uploaded immediately after compilation, before regression tests and installer packaging. `ASSDraw3-Windows-Setup` contains the Windows installer after packaging succeeds. Download them from the Actions run page. The Linux binary targets Ubuntu 24.04 x64 and requires the wxWidgets 3.2 GTK runtime.
+* **Artifacts**: `ASSDraw3-Windows-x64-Setup.exe` is the Inno Setup installer. `ASSDraw3-Windows-x64-Portable.zip` contains the executable, runtime DLLs, languages, and manuals. `ASSDraw3-Linux-x64.tar.gz` preserves the Linux executable's permission. Files are uploaded directly, without an additional GitHub ZIP wrapper. Manual runs offer `both` (default), `inno-setup`, and `portable` Windows package choices. The installer is also silently installed into a temporary CI directory and its resources checked. Download packages from the Actions run page. The Linux binary targets Ubuntu 24.04 x64 and requires the wxWidgets 3.2 GTK runtime.
 
 ---
 

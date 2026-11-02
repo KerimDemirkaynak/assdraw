@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 02:28+0300\n"
+"Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
+"POT-Creation-Date: 2026-11-02 03:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,63 +17,63 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/assdraw.cpp:352
+#: src/assdraw.cpp:368
 msgid "&About"
 msgstr ""
 
-#: src/assdraw.cpp:357
+#: src/assdraw.cpp:373
 msgid "&Background"
 msgstr ""
 
-#: src/assdraw.cpp:307
+#: src/assdraw.cpp:323
 msgid "&Bilinear transformation\tF7"
 msgstr ""
 
-#: src/dlgctrl.cpp:186
+#: src/dlgctrl.cpp:187
 msgid "&Cancel"
 msgstr ""
 
-#: src/assdraw.cpp:355
+#: src/assdraw.cpp:371
 msgid "&Canvas"
 msgstr ""
 
-#: src/assdraw.cpp:327
+#: src/assdraw.cpp:343
 msgid "&Center\tCtrl+5"
 msgstr ""
 
-#: src/assdraw.cpp:318
+#: src/assdraw.cpp:334
 msgid "&Center\tCtrl+Shift+5"
 msgstr ""
 
-#: src/assdraw.cpp:289
+#: src/assdraw.cpp:305
 msgid "&Clear\tCtrl+N"
 msgstr ""
 
-#: src/assdraw.cpp:308
+#: src/assdraw.cpp:324
 msgid "&Coloring"
 msgstr ""
 
-#: src/assdraw.cpp:305
+#: src/assdraw.cpp:321
 msgid "&Delete\tF5"
 msgstr ""
 
-#: src/assdraw.cpp:359
+#: src/assdraw.cpp:375
 msgid "&Help"
 msgstr ""
 
-#: src/assdraw.cpp:371
+#: src/assdraw.cpp:387
 msgid "&Language"
 msgstr ""
 
-#: src/assdraw.cpp:342
+#: src/assdraw.cpp:358
 msgid "&Library"
 msgstr ""
 
-#: src/assdraw.cpp:351
+#: src/assdraw.cpp:367
 msgid "&Manual"
 msgstr ""
 
-#: src/assdraw.cpp:356
+#: src/assdraw.cpp:372
 msgid "&Mode"
 msgstr ""
 
@@ -81,47 +81,47 @@ msgstr ""
 msgid "&No"
 msgstr ""
 
-#: src/dlgctrl.cpp:183
+#: src/dlgctrl.cpp:184
 msgid "&OK"
 msgstr ""
 
-#: src/assdraw.cpp:293
+#: src/assdraw.cpp:309
 msgid "&Paste\tCtrl+V"
 msgstr ""
 
-#: src/assdraw.cpp:291
+#: src/assdraw.cpp:307
 msgid "&Preview\tCtrl+P"
 msgstr ""
 
-#: src/assdraw.cpp:296
+#: src/assdraw.cpp:312
 msgid "&Redo\tCtrl+Y"
 msgstr ""
 
-#: src/assdraw.cpp:348
+#: src/assdraw.cpp:364
 msgid "&Reset workspace"
 msgstr ""
 
-#: src/assdraw.cpp:306
+#: src/assdraw.cpp:322
 msgid "&Scale/Rotate\tF6"
 msgstr ""
 
-#: src/assdraw.cpp:344
+#: src/assdraw.cpp:360
 msgid "&Settings"
 msgstr ""
 
-#: src/assdraw.cpp:345
+#: src/assdraw.cpp:361
 msgid "&Toolbars"
 msgstr ""
 
-#: src/assdraw.cpp:292
+#: src/assdraw.cpp:308
 msgid "&Transform"
 msgstr ""
 
-#: src/assdraw.cpp:295
+#: src/assdraw.cpp:311
 msgid "&Undo\tCtrl+Z"
 msgstr ""
 
-#: src/assdraw.cpp:358
+#: src/assdraw.cpp:374
 msgid "&Workspace"
 msgstr ""
 
@@ -133,15 +133,15 @@ msgstr ""
 msgid "<Select>"
 msgstr ""
 
-#: src/assdraw.cpp:812
+#: src/assdraw.cpp:837
 msgid "ASS drawing copied to clipboard."
 msgstr ""
 
-#: src/localization.cpp:141
+#: src/localization.cpp:151
 msgid "ASSDraw3 is a tool for designing vector shapes for ASS subtitle files."
 msgstr ""
 
-#: src/localization.cpp:151
+#: src/localization.cpp:161
 msgid "Acknowledgements"
 msgstr ""
 
@@ -189,11 +189,11 @@ msgstr ""
 msgid "Behaviors"
 msgstr ""
 
-#: src/assdraw.cpp:259
+#: src/assdraw.cpp:275
 msgid "Bezier"
 msgstr ""
 
-#: src/assdraw.cpp:265
+#: src/assdraw.cpp:281
 msgid "Bilinear"
 msgstr ""
 
@@ -205,23 +205,23 @@ msgstr ""
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr ""
 
-#: src/assdraw.cpp:328
+#: src/assdraw.cpp:344
 msgid "Bottom left\tCtrl+1"
 msgstr ""
 
-#: src/assdraw.cpp:319
+#: src/assdraw.cpp:335
 msgid "Bottom left\tCtrl+Shift+1"
 msgstr ""
 
-#: src/assdraw.cpp:329
+#: src/assdraw.cpp:345
 msgid "Bottom right\tCtrl+3"
 msgstr ""
 
-#: src/assdraw.cpp:320
+#: src/assdraw.cpp:336
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr ""
 
-#: src/assdraw.cpp:907
+#: src/assdraw.cpp:932
 msgid "Cancel"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Canvas"
 msgstr ""
 
-#: src/canvas.cpp:2183
+#: src/canvas.cpp:2186
 msgid "Canvas background loaded"
 msgstr ""
 
@@ -245,11 +245,11 @@ msgstr ""
 msgid "Choose fill color"
 msgstr ""
 
-#: src/assdraw.cpp:233
+#: src/assdraw.cpp:249
 msgid "Clear"
 msgstr ""
 
-#: src/assdraw.cpp:547
+#: src/assdraw.cpp:571
 msgid "Clear canvas"
 msgstr ""
 
@@ -257,7 +257,7 @@ msgstr ""
 msgid "Clear the canvas and create a new drawing"
 msgstr ""
 
-#: src/assdraw.cpp:542
+#: src/assdraw.cpp:566
 msgid "Clear the canvas and create a new drawing?"
 msgstr ""
 
@@ -265,7 +265,7 @@ msgstr ""
 msgid "Click a filled part of the shape (not a hole)."
 msgstr ""
 
-#: src/assdraw.cpp:268 src/assdraw.cpp:308
+#: src/assdraw.cpp:284 src/assdraw.cpp:324
 msgid "Click a filled shape to select it; double-click to choose its fill color"
 msgstr ""
 
@@ -273,11 +273,11 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/assdraw.cpp:237 src/assdraw.cpp:267
+#: src/assdraw.cpp:253 src/assdraw.cpp:283
 msgid "Coloring"
 msgstr ""
 
-#: src/library.cpp:224
+#: src/library.cpp:227
 msgid "Confirm delete?"
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 msgid "Confirm quit"
 msgstr ""
 
-#: src/assdraw.cpp:543
+#: src/assdraw.cpp:567
 msgid "Confirmation"
 msgstr ""
 
@@ -321,19 +321,19 @@ msgstr ""
 msgid "Convert to line (L command)"
 msgstr ""
 
-#: src/assdraw.cpp:166 src/assdraw.cpp:437
+#: src/assdraw.cpp:182 src/assdraw.cpp:460
 msgid "Copy ASS"
 msgstr ""
 
-#: src/library.cpp:221
+#: src/library.cpp:224
 msgid "Copy commands to clipboard"
 msgstr ""
 
-#: src/assdraw.cpp:168 src/assdraw.cpp:438
+#: src/assdraw.cpp:184 src/assdraw.cpp:461
 msgid "Copy the command text, including ASS style tags"
 msgstr ""
 
-#: src/assdraw.cpp:453
+#: src/assdraw.cpp:477
 msgid "Could not save the language preference."
 msgstr ""
 
@@ -349,7 +349,7 @@ msgstr ""
 msgid "Custom colours"
 msgstr ""
 
-#: src/assdraw.cpp:301
+#: src/assdraw.cpp:317
 msgid "D&rag\tF1"
 msgstr ""
 
@@ -357,7 +357,7 @@ msgstr ""
 msgid "Default image opacity (0-255)"
 msgstr ""
 
-#: src/assdraw.cpp:263
+#: src/assdraw.cpp:279
 msgid "Delete"
 msgstr ""
 
@@ -373,7 +373,7 @@ msgstr ""
 msgid "Delete a M"
 msgstr ""
 
-#: src/library.cpp:225
+#: src/library.cpp:228
 msgid "Delete from library"
 msgstr ""
 
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Delete mode"
 msgstr ""
 
-#: src/library.cpp:100 src/library.cpp:326
+#: src/library.cpp:108 src/library.cpp:333
 msgid "Delete selected"
 msgstr ""
 
@@ -389,19 +389,19 @@ msgstr ""
 msgid "Depending on what's in the clipboard, import as drawing commands or background"
 msgstr ""
 
-#: src/assdraw.cpp:906
+#: src/assdraw.cpp:931
 msgid "Do you want to close ASSDraw3 now?"
 msgstr ""
 
-#: src/assdraw.cpp:338
+#: src/assdraw.cpp:354
 msgid "Dock all"
 msgstr ""
 
-#: src/assdraw.cpp:255
+#: src/assdraw.cpp:271
 msgid "Drag"
 msgstr ""
 
-#: src/localization.cpp:146
+#: src/localization.cpp:156
 msgid "Drag an image onto the canvas to use it as a tracing background."
 msgstr ""
 
@@ -417,15 +417,15 @@ msgstr ""
 msgid "Drag point"
 msgstr ""
 
-#: src/assdraw.cpp:304
+#: src/assdraw.cpp:320
 msgid "Draw &B\tF4"
 msgstr ""
 
-#: src/assdraw.cpp:303
+#: src/assdraw.cpp:319
 msgid "Draw &L\tF3"
 msgstr ""
 
-#: src/assdraw.cpp:302
+#: src/assdraw.cpp:318
 msgid "Draw &M\tF2"
 msgstr ""
 
@@ -469,7 +469,7 @@ msgstr ""
 msgid "Drawing @"
 msgstr ""
 
-#: src/assdraw.cpp:384 src/assdraw.cpp:395
+#: src/assdraw.cpp:400 src/assdraw.cpp:411
 msgid "Drawing commands"
 msgstr ""
 
@@ -481,11 +481,15 @@ msgstr ""
 msgid "Edit the source"
 msgstr ""
 
-#: src/assdraw.cpp:453 src/canvas.cpp:1186
+#: src/library.cpp:48 src/library.cpp:328
+msgid "Empty drawing"
+msgstr ""
+
+#: src/assdraw.cpp:477 src/canvas.cpp:1186
 msgid "Error"
 msgstr ""
 
-#: src/assdraw.cpp:907
+#: src/assdraw.cpp:932
 msgid "Exit"
 msgstr ""
 
@@ -505,15 +509,15 @@ msgstr ""
 msgid "Help! Help!"
 msgstr ""
 
-#: src/assdraw.cpp:337
+#: src/assdraw.cpp:353
 msgid "Hide all"
 msgstr ""
 
-#: src/localization.cpp:150
+#: src/localization.cpp:160
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
 msgstr ""
 
-#: src/assdraw.cpp:417
+#: src/assdraw.cpp:433
 msgid "Language"
 msgstr ""
 
@@ -525,28 +529,28 @@ msgstr ""
 msgid "Library shapes"
 msgstr ""
 
-#: src/assdraw.cpp:258
+#: src/assdraw.cpp:274
 msgid "Line"
 msgstr ""
 
-#: src/library.cpp:315
+#: src/library.cpp:318
 msgid "Load shape from library"
 msgstr ""
 
-#: src/library.cpp:213
+#: src/library.cpp:216
 msgid "Load to canvas"
 msgstr ""
 
-#: src/canvas.cpp:2176
+#: src/canvas.cpp:2179
 #, c-format
 msgid "Loading '%s' as canvas background ..."
 msgstr ""
 
-#: src/assdraw.cpp:684
+#: src/assdraw.cpp:709
 msgid "Manual"
 msgstr ""
 
-#: src/localization.cpp:152
+#: src/localization.cpp:162
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
 msgstr ""
 
@@ -586,7 +590,7 @@ msgstr ""
 msgid "Modify drawing commands"
 msgstr ""
 
-#: src/assdraw.cpp:256
+#: src/assdraw.cpp:272
 msgid "Move"
 msgstr ""
 
@@ -614,11 +618,11 @@ msgstr ""
 msgid "No splash screen"
 msgstr ""
 
-#: src/dlgctrl.cpp:279
+#: src/dlgctrl.cpp:275
 msgid "OK"
 msgstr ""
 
-#: src/dlgctrl.cpp:258
+#: src/dlgctrl.cpp:254
 msgid ""
 "One or more values entered are not real numbers.\n"
 "Please fix."
@@ -632,7 +636,7 @@ msgstr ""
 msgid "Origin cross size"
 msgstr ""
 
-#: src/localization.cpp:143
+#: src/localization.cpp:153
 msgid "Original application: ai-chan (2006-2007)."
 msgstr ""
 
@@ -644,19 +648,19 @@ msgstr ""
 msgid "Outline @"
 msgstr ""
 
-#: src/assdraw.cpp:277
+#: src/assdraw.cpp:293
 msgid "Pan background"
 msgstr ""
 
-#: src/assdraw.cpp:276
+#: src/assdraw.cpp:292
 msgid "Pan drawing"
 msgstr ""
 
-#: src/assdraw.cpp:311
+#: src/assdraw.cpp:327
 msgid "Pan/Zoom &Drawing\tShift+F1"
 msgstr ""
 
-#: src/assdraw.cpp:312
+#: src/assdraw.cpp:328
 msgid "Pan/Zoom Back&ground\tShift+F2"
 msgstr ""
 
@@ -672,7 +676,7 @@ msgstr ""
 msgid "Points @"
 msgstr ""
 
-#: src/assdraw.cpp:235 src/settings.cpp:81 src/settings.cpp:235
+#: src/assdraw.cpp:251 src/settings.cpp:81 src/settings.cpp:235
 msgid "Preview"
 msgstr ""
 
@@ -680,7 +684,7 @@ msgstr ""
 msgid "Preview @"
 msgstr ""
 
-#: src/assdraw.cpp:850
+#: src/assdraw.cpp:875
 msgid "Redo\tCtrl+Y"
 msgstr ""
 
@@ -688,16 +692,16 @@ msgstr ""
 msgid "Redo last undo"
 msgstr ""
 
-#: src/assdraw.cpp:855
+#: src/assdraw.cpp:880
 #, c-format
 msgid "Redo: %s\tCtrl+Y"
 msgstr ""
 
-#: src/assdraw.cpp:322
+#: src/assdraw.cpp:338
 msgid "Remove background\tShift+Del"
 msgstr ""
 
-#: src/assdraw.cpp:321 src/assdraw.cpp:346
+#: src/assdraw.cpp:337 src/assdraw.cpp:362
 msgid "Reposition [&0, 0]"
 msgstr ""
 
@@ -705,7 +709,7 @@ msgstr ""
 msgid "Revert"
 msgstr ""
 
-#: src/localization.cpp:149
+#: src/localization.cpp:159
 msgid "Right-double-click opens a context menu. Hold Shift to temporarily switch to Drag mode."
 msgstr ""
 
@@ -737,11 +741,11 @@ msgstr ""
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr ""
 
-#: src/library.cpp:96 src/library.cpp:325
+#: src/library.cpp:104 src/library.cpp:332
 msgid "Save canvas"
 msgstr ""
 
-#: src/library.cpp:222
+#: src/library.cpp:225
 msgid "Save canvas here"
 msgstr ""
 
@@ -757,7 +761,7 @@ msgstr ""
 msgid "Scale up vertically by a factor of 3"
 msgstr ""
 
-#: src/assdraw.cpp:264
+#: src/assdraw.cpp:280
 msgid "Scale/Rotate"
 msgstr ""
 
@@ -765,19 +769,19 @@ msgstr ""
 msgid "Scale/Rotate mode: Drag a vertex or an edge to rescale the shape; Right-drag to rotate"
 msgstr ""
 
-#: src/localization.cpp:144
+#: src/localization.cpp:154
 msgid "Select a drawing tool, then click or drag to add lines and curves. Drag points and control handles to modify the drawing."
 msgstr ""
 
-#: src/assdraw.cpp:238
+#: src/assdraw.cpp:254
 msgid "Select a shape, then double-click it to choose its fill color"
 msgstr ""
 
-#: src/library.cpp:98 src/library.cpp:325
+#: src/library.cpp:106 src/library.cpp:332
 msgid "Select all"
 msgstr ""
 
-#: src/library.cpp:99 src/library.cpp:326
+#: src/library.cpp:107 src/library.cpp:333
 msgid "Select none"
 msgstr ""
 
@@ -789,7 +793,7 @@ msgstr ""
 msgid "Selected points @"
 msgstr ""
 
-#: src/assdraw.cpp:314
+#: src/assdraw.cpp:330
 msgid "Set background image opacity"
 msgstr ""
 
@@ -797,7 +801,7 @@ msgstr ""
 msgid "Set continuous"
 msgstr ""
 
-#: src/assdraw.cpp:388 src/assdraw.cpp:396
+#: src/assdraw.cpp:404 src/assdraw.cpp:412
 msgid "Settings"
 msgstr ""
 
@@ -805,7 +809,7 @@ msgstr ""
 msgid "Shape selected. Double-click to choose its fill color."
 msgstr ""
 
-#: src/assdraw.cpp:379 src/assdraw.cpp:394
+#: src/assdraw.cpp:395 src/assdraw.cpp:410
 msgid "Shapes Library"
 msgstr ""
 
@@ -813,7 +817,7 @@ msgstr ""
 msgid "Shapes library"
 msgstr ""
 
-#: src/assdraw.cpp:336
+#: src/assdraw.cpp:352
 msgid "Show all"
 msgstr ""
 
@@ -821,7 +825,7 @@ msgstr ""
 msgid "Smooth connection"
 msgstr ""
 
-#: src/assdraw.cpp:361
+#: src/assdraw.cpp:377
 msgid "System Default"
 msgstr ""
 
@@ -829,43 +833,43 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#: src/localization.cpp:153
+#: src/localization.cpp:163
 msgid "Thanks to jfs, ArchMageZeratul, RoRo, and the Aegisub community for their suggestions and support."
 msgstr ""
 
-#: src/assdraw.cpp:684
+#: src/assdraw.cpp:709
 msgid "The manual is missing. Please reinstall ASSDraw3."
 msgstr ""
 
-#: src/assdraw.cpp:416
+#: src/assdraw.cpp:432
 msgid "The selected language could not be loaded. Please reinstall ASSDraw3."
 msgstr ""
 
-#: src/localization.cpp:142
+#: src/localization.cpp:152
 msgid "This version was created by Kerim Demirkaynak."
 msgstr ""
 
-#: src/localization.cpp:145
+#: src/localization.cpp:155
 msgid "Tips and shortcuts"
 msgstr ""
 
-#: src/assdraw.cpp:325
+#: src/assdraw.cpp:341
 msgid "Top left\tCtrl+7"
 msgstr ""
 
-#: src/assdraw.cpp:316
+#: src/assdraw.cpp:332
 msgid "Top left\tCtrl+Shift+7"
 msgstr ""
 
-#: src/assdraw.cpp:326
+#: src/assdraw.cpp:342
 msgid "Top right\tCtrl+9"
 msgstr ""
 
-#: src/assdraw.cpp:317
+#: src/assdraw.cpp:333
 msgid "Top right\tCtrl+Shift+9"
 msgstr ""
 
-#: src/assdraw.cpp:609 src/dlgctrl.cpp:100
+#: src/assdraw.cpp:634 src/dlgctrl.cpp:100
 msgid "Transform"
 msgstr ""
 
@@ -873,7 +877,7 @@ msgstr ""
 msgid "Transform the drawing using matrix transformation"
 msgstr ""
 
-#: src/assdraw.cpp:839
+#: src/assdraw.cpp:864
 msgid "Undo\tCtrl+Z"
 msgstr ""
 
@@ -881,12 +885,12 @@ msgstr ""
 msgid "Undo last action"
 msgstr ""
 
-#: src/assdraw.cpp:844
+#: src/assdraw.cpp:869
 #, c-format
 msgid "Undo: %s\tCtrl+Z"
 msgstr ""
 
-#: src/assdraw.cpp:339
+#: src/assdraw.cpp:355
 msgid "Undock all"
 msgstr ""
 
@@ -894,11 +898,11 @@ msgstr ""
 msgid "Unset continuous"
 msgstr ""
 
-#: src/localization.cpp:147
+#: src/localization.cpp:157
 msgid "Use the Shapes Library to store drawings. Ctrl+Z undoes a drawing edit; Ctrl+Y redoes it."
 msgstr ""
 
-#: src/localization.cpp:148
+#: src/localization.cpp:158
 msgid "Use the mouse wheel or PageUp/PageDown to zoom. Right-drag pans the enabled drawing or background layer."
 msgstr ""
 
@@ -906,11 +910,11 @@ msgstr ""
 msgid "V ruler"
 msgstr ""
 
-#: src/dlgctrl.cpp:258
+#: src/dlgctrl.cpp:254
 msgid "Value error"
 msgstr ""
 
-#: src/dlgctrl.cpp:278
+#: src/dlgctrl.cpp:274
 #, c-format
 msgid "Version: %s"
 msgstr ""

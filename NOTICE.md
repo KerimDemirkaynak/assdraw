@@ -22,3 +22,9 @@ this repository continues to use the pinned external AGG 2.6 spline code.
 Standard widget translations in `vendor/wxlocale` come from wxWidgets v3.3.1.
 Their original source files, contributor notices, wxWindows license, and LGPL
 text are retained there. They are separate from the application catalogs in `po`.
+
+`docs/help/original` is an HTML export of ai-chan's included `docs/ASSDraw3.chm`,
+with all 22 original topics and 14 illustrations. Original text and credits are
+retained; encoding, local links, and navigation are adapted for offline browsers.
+`tools/export_manual.py` documents the export; the manifest records source and
+exported-file hashes. Normal application builds do not need a CHM extractor.

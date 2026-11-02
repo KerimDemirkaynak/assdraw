@@ -29,6 +29,8 @@ if(BUILD_TESTING)
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/pan_drag_wiring_tests.py)
         add_test(NAME assdraw-translations-check
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/translations.py --check)
+        add_test(NAME assdraw-manual-check
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_manual.py)
     endif()
 endif()
 
@@ -227,6 +229,9 @@ endif()
 
 foreach(app_target assdraw assdraw-gui-tests)
     if(TARGET ${app_target})
+        if(WIN32)
+            target_link_libraries(${app_target} PRIVATE shell32)
+        endif()
         add_dependencies(${app_target} assdraw-translations)
         if(MSVC)
             target_compile_options(${app_target} PRIVATE /utf-8)
