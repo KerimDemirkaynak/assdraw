@@ -11,6 +11,7 @@ namespace AssdrawTheme {
 wxString ReadPreference();
 const wxString& Requested();
 bool SetAppearance(const wxString& mode);
+void PreparePalette();
 bool IsDark();
 wxColour Background();
 wxColour Surface();

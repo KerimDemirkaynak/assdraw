@@ -90,12 +90,16 @@ static void CheckVectorIcons()
             int ink = 0;
             for (int y = 0; y < size; ++y) {
                 for (int x = 0; x < size; ++x) {
-                    if (image.GetAlpha(x, y) < 250) continue;
-                    assert(std::abs(int(image.GetRed(x, y)) - foreground.Red()) <= 1);
-                    assert(std::abs(int(image.GetGreen(x, y)) - foreground.Green()) <= 1);
-                    assert(std::abs(int(image.GetBlue(x, y)) - foreground.Blue()) <= 1);
+                    if (image.GetAlpha(x, y) < 128) continue;
+                    assert(std::abs(int(image.GetRed(x, y)) - foreground.Red()) <= 2);
+                    assert(std::abs(int(image.GetGreen(x, y)) - foreground.Green()) <= 2);
+                    assert(std::abs(int(image.GetBlue(x, y)) - foreground.Blue()) <= 2);
                     ++ink;
                 }
+            }
+            if (ink <= 5) {
+                std::cerr << "Empty SVG icon=" << icon << " size=" << size << '\n';
+                image.SaveFile(wxString::Format("theme-icon-%d-%d.png", icon, size), wxBITMAP_TYPE_PNG);
             }
             assert(ink > 5);
         }
@@ -317,6 +321,12 @@ int main(int argc, char** argv)
     const wxString theme_redo = canvas->GetTopRedo();
     const wxColour light_canvas = frame->colors.canvas_bg;
     const wxColour light_library = frame->colors.library_libarea;
+#ifdef __WXGTK3__
+    gchar* initial_gtk_name = nullptr;
+    g_object_get(gtk_settings_get_default(), "gtk-theme-name", &initial_gtk_name, nullptr);
+    const wxString light_gtk_theme = wxString::FromUTF8(initial_gtk_name);
+    g_free(initial_gtk_name);
+#endif
     frame->settingsdlg->propgrid->SetPropertyValue(frame->settingsdlg->alphas_dfltimgopac_pgid, 77L);
     wxColour pending_origin(10, 120, 190);
     frame->settingsdlg->propgrid->SetPropertyValue(frame->settingsdlg->colors_origin_pgid, pending_origin);
@@ -358,7 +368,6 @@ int main(int argc, char** argv)
     for (int repeat = 0; repeat < 3; ++repeat) {
         assert(frame->ApplyTheme("dark"));
         settle_theme(true);
-        CheckVectorIcons();
         assert(frame->themeMenu->IsChecked(6102));
         assert(AssdrawTheme::ReadPreference() == "dark");
         assert(frame->colors.canvas_bg.Red() < 100);
@@ -389,12 +398,19 @@ int main(int argc, char** argv)
             transform->Destroy();
             wxTheApp->Yield(true);
         }
+        CheckVectorIcons();
         assert(frame->ApplyTheme("light"));
         settle_theme(false);
         CheckVectorIcons();
         assert(frame->themeMenu->IsChecked(6101));
         assert(frame->colors.canvas_bg == light_canvas);
         assert(frame->colors.library_libarea == light_library);
+#ifdef __WXGTK3__
+        gchar* restored_gtk_name = nullptr;
+        g_object_get(gtk_settings_get_default(), "gtk-theme-name", &restored_gtk_name, nullptr);
+        assert(wxString::FromUTF8(restored_gtk_name) == light_gtk_theme);
+        g_free(restored_gtk_name);
+#endif
         assert(canvas->GenerateASS() == theme_document);
         assert(frame->srctxtctrl->GetValue() == theme_pending);
         if (repeat == 0) snapshot(frame, "theme-light.png");

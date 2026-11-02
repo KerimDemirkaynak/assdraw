@@ -43,6 +43,9 @@ the checksum-pinned official release.
 Toolbars use 17 embedded Font Awesome Free SVG icons. They take their colour
 from the native theme and render sharply at the current DPI, without an icon
 font or internet access. The application logo is preserved.
+On GTK, a theme without a usable dark variant uses its installed dark theme
+or built-in Adwaita for this application. Returning to light restores the
+original GTK theme.
 
 ## Languages
 

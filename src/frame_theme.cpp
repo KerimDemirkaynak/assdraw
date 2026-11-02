@@ -95,6 +95,7 @@ void ASSDrawFrame::RefreshTheme()
 {
     if (!theme_ready)
         return;
+    AssdrawTheme::PreparePalette();
     const bool dark = AssdrawTheme::IsDark();
     const bool changed = dark != view_is_dark;
     if (changed) {

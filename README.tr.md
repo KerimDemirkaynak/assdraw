@@ -44,6 +44,9 @@ varsayılan derleme, sağlama toplamı sabitlenmiş resmi kaynağı derler.
 Araç çubukları, uygulamaya gömülü 17 Font Awesome Free SVG ikon kullanır.
 İkonlar renklerini yerel temadan alır ve geçerli DPI'da keskin çizilir; ek
 font veya internet bağlantısı gerekmez. Uygulama logosu korunur.
+GTK teması koyu tercihini desteklemiyorsa kurulu koyu varyantı veya yerleşik
+Adwaita bu uygulama için kullanılır. Açık temaya dönünce özgün GTK teması
+geri yüklenir.
 
 ## Diller
 
