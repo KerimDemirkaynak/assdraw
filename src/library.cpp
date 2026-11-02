@@ -109,10 +109,18 @@ ASSDrawShapeLibrary::ASSDrawShapeLibrary( wxWindow *parent, ASSDrawFrame *frame 
 
 	libarea = new wxScrolledWindow(this, wxID_ANY, __DPDS__ , wxScrolledWindowStyle | wxSIMPLE_BORDER);
 	libarea->SetBackgroundColour(wxColour(0xFF, 0xFF, 0x99));
+	// Preview dimensions describe scrollable content, never the minimum width
+	// of the viewport. Otherwise a wide thumbnail locks the dock at that width
+	// and subsequent resizes feed the inflated minimum back into the layout.
+	libarea->SetMinSize(FromDIP(wxSize(32, 32)));
 	sizer = new wxFlexGridSizer(0, 1, 0, 0);
 	((wxFlexGridSizer*) sizer)->AddGrowableCol(0);
 	libarea->SetSizer(sizer);
 	libarea->SetScrollRate(0, FromDIP(20));
+	// Keep the available thumbnail width stable as the content gains/loses
+	// vertical overflow, instead of alternating between two scrollbar widths.
+	libarea->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
+	libarea->Bind(wxEVT_SIZE, &ASSDrawShapeLibrary::OnPreviewAreaSize, this);
 	libsizer = new wxFlexGridSizer(2, 1, 0, 0);
 	libsizer->AddGrowableCol(0);
 	libsizer->AddGrowableRow(1);
@@ -138,6 +146,20 @@ void ASSDrawShapeLibrary::OnSize(wxSizeEvent& event)
 	UpdatePreviewDisplays();
 }
 
+void ASSDrawShapeLibrary::OnPreviewAreaSize(wxSizeEvent& event)
+{
+	event.Skip();
+	if (preview_layout_pending)
+		return;
+	preview_layout_pending = true;
+	// Let the scroll helper finish changing the client/virtual rectangles first.
+	CallAfter([this] {
+		preview_layout_pending = false;
+		if (!IsBeingDeleted() && libarea && !libarea->IsBeingDeleted())
+			UpdatePreviewDisplays();
+	});
+}
+
 void ASSDrawShapeLibrary::UpdateDpiLayout()
 {
 	if (toolbar)
@@ -151,7 +173,10 @@ void ASSDrawShapeLibrary::UpdateDpiLayout()
 		libsizer->GetItem((size_t)0)->SetBorder(FromDIP(2));
 
 	if (libarea)
+	{
+		libarea->SetMinSize(FromDIP(wxSize(32, 32)));
 		libarea->SetScrollRate(0, FromDIP(20));
+	}
 
 	if (sizer)
 	{

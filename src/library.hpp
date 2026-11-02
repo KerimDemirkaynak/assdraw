@@ -72,6 +72,7 @@ public:
 	virtual ASSDrawShapePreview* AddShapePreview(wxString cmds, bool addtotop = false);
 	virtual void OnDPIChanged(wxDPIChangedEvent &event);
 	virtual void OnSize(wxSizeEvent& event);
+	void OnPreviewAreaSize(wxSizeEvent& event);
 	virtual void OnMouseLeftDClick(wxMouseEvent &event);
 	virtual void OnMouseRightClick(wxMouseEvent &event);
 	virtual void OnPopupMenuClicked(wxCommandEvent &event);
@@ -92,6 +93,7 @@ public:
 protected:
 	ASSDrawFrame *m_frame;
 	ASSDrawShapePreview *activepreview;
+	bool preview_layout_pending = false;
 
 	DECLARE_EVENT_TABLE()
 };
