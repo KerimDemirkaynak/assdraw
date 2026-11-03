@@ -26,6 +26,16 @@
 - **Transforms** – scale/rotate and bilinear transforms, with painting fixes for wxGTK.
 - **Built-in help** – the full illustrated manual (offline HTML, plus the original CHM) opens on every platform.
 
+<div align="left">
+  <img
+    src="https://github.com/user-attachments/assets/3d71c12a-763e-4b61-93e0-26d74e654b8f"
+    width="400"
+    alt="Application Screenshot"
+    style="border: 2px solid #444; border-radius: 12px; padding: 5px;"
+  />
+  <p><b>Application Screenshot</b></p>
+</div>
+
 ## Application Theme
 
 Select **Workspace → Theme → System Default / Light / Dark**. Themes update the entire UI instantly and are saved. Custom light/dark colors stay separate. Includes 17 DPI-aware Font Awesome SVG icons, six translations, and GTK fallback. Requires wxWidgets 3.3.4.
