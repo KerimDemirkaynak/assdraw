@@ -26,6 +26,16 @@
 - **Dönüşümler** – ölçekleme/döndürme ve bilineer dönüşüm; wxGTK çizim düzeltmeleri.
 - **Yerleşik yardım** – resimli kılavuzun tamamı (çevrimdışı HTML ve orijinal CHM) her platformda açılır.
 
+<div align="left">
+  <img
+    src="https://github.com/user-attachments/assets/3d71c12a-763e-4b61-93e0-26d74e654b8f"
+    width="400"
+    alt="Application Screenshot"
+    style="border: 2px solid #444; border-radius: 12px; padding: 5px;"
+  />
+  <p><b>Uygulamanın Ekran Görüntüsü</b></p>
+</div>
+
 ### Uygulama Teması
 
 **Çalışma Alanı → Tema → Sistem Varsayılanı / Açık / Koyu** yolunu izleyin.
