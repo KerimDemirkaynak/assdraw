@@ -1,6 +1,19 @@
 <!DOCTYPE html>
-<html lang="tr" data-bs-theme="light">
+<html lang="tr" data-theme="light" data-bs-theme="light">
 <head>
+    <!-- Tema'yı sayfa çizilmeden önce uygula (beyaz parlamayı önler) -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (t !== 'dark' && t !== 'light') {
+                    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+                document.documentElement.setAttribute('data-bs-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="twitter:card" content="summary_large_image">
@@ -35,7 +48,7 @@
             --shape-fill: rgba(13, 110, 253, 0.28);
             --shape-stroke: #0d6efd;
         }
-        body[data-theme="dark"] {
+        html[data-theme="dark"] {
             --focus-shadow-color: rgba(255, 255, 255, 0.5);
             --accent: #6ea8fe;
             --bg: #1a1a1a;
@@ -62,26 +75,26 @@
         }
         .navbar-toggler:focus { outline: none; box-shadow: 0 0 0 0.2rem var(--focus-shadow-color); }
         .jumbotron { background-color: #f8f9fa; padding: 4rem 2rem; }
-        body[data-theme="dark"] .jumbotron { background-color: #292929; }
+        html[data-theme="dark"] .jumbotron { background-color: #292929; }
         .navbar { transition: background-color 0.3s ease; }
-        body[data-theme="dark"] .navbar { background-color: #121212 !important; }
-        body[data-theme="dark"] .bg-dark { background-color: #121212 !important; }
-        body[data-theme="dark"] .btn-primary { background-color: #424242 !important; border-color: #424242 !important; }
+        html[data-theme="dark"] .navbar { background-color: #121212 !important; }
+        html[data-theme="dark"] .bg-dark { background-color: #121212 !important; }
+        html[data-theme="dark"] .btn-primary { background-color: #424242 !important; border-color: #424242 !important; }
         .btn-primary:hover { background-color: #3a3a3a !important; border-color: #3a3a3a !important; }
-        body[data-theme="dark"] .navbar-light .navbar-nav .nav-link,
-        body[data-theme="dark"] .navbar-light .navbar-brand,
-        body[data-theme="dark"] #darkModeToggle { color: white; }
-        body[data-theme="dark"] .jumbotron, body[data-theme="dark"] .jumbotron h1,
-        body[data-theme="dark"] .jumbotron p { color: white; }
-        body[data-theme="dark"] .dropdown-menu { background: #1f1f1f; }
-        body[data-theme="dark"] .dropdown-item { color: #eee; }
-        body[data-theme="dark"] .dropdown-item:hover { background: #333; }
+        html[data-theme="dark"] .navbar-light .navbar-nav .nav-link,
+        html[data-theme="dark"] .navbar-light .navbar-brand,
+        html[data-theme="dark"] #darkModeToggle { color: white; }
+        html[data-theme="dark"] .jumbotron, html[data-theme="dark"] .jumbotron h1,
+        html[data-theme="dark"] .jumbotron p { color: white; }
+        html[data-theme="dark"] .dropdown-menu { background: #1f1f1f; }
+        html[data-theme="dark"] .dropdown-item { color: #eee; }
+        html[data-theme="dark"] .dropdown-item:hover { background: #333; }
         .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
-        body[data-theme="dark"] .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
+        html[data-theme="dark"] .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
         .navbar-brand { display: flex; align-items: center; }
         .navbar-brand span { margin-left: 10px; font-weight: bold; }
         .navbar-toggler-icon.open { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23000' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e"); }
-        body[data-theme="dark"] .navbar-toggler-icon.open { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23fff' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e"); }
+        html[data-theme="dark"] .navbar-toggler-icon.open { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23fff' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e"); }
 
         /* --- Hızlı başlangıç kartları --- */
         .quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-top: -2.25rem; position: relative; z-index: 2; }
@@ -116,7 +129,7 @@
         .step-list { counter-reset: s; list-style: none; padding: 0; }
         .step-list li { counter-increment: s; position: relative; padding: .5rem 0 .5rem 3rem; line-height: 1.6; }
         .step-list li::before { content: counter(s); position: absolute; left: 0; top: .35rem; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
-        body[data-theme="dark"] .step-list li::before { color: #111; }
+        html[data-theme="dark"] .step-list li::before { color: #111; }
 
         code { background: var(--code-bg); color: var(--fg); padding: .12em .4em; border-radius: .3rem; font-size: .9em; border: 1px solid var(--border); }
         pre code { border: 0; padding: 0; background: transparent; }
@@ -145,7 +158,7 @@
         .accordion { --bs-accordion-bg: var(--bg); --bs-accordion-color: var(--fg); --bs-accordion-border-color: var(--border); --bs-accordion-btn-bg: var(--bg); --bs-accordion-active-bg: var(--surface); --bs-accordion-active-color: var(--fg); }
         .accordion-header { margin: 0 !important; font-size: 1rem !important; }
         .accordion-button { color: var(--fg); font-weight: 600; }
-        body[data-theme="dark"] .accordion-button::after { filter: invert(1); }
+        html[data-theme="dark"] .accordion-button::after { filter: invert(1); }
 
         .feature { height: 100%; border: 1px solid var(--border); border-radius: .75rem; padding: 1.1rem; background: var(--surface); }
         .feature i { color: var(--accent); font-size: 1.4rem; margin-bottom: .5rem; }
@@ -217,7 +230,7 @@
         }
     </style>
 </head>
-<body data-theme="light">
+<body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container">
         <a class="navbar-brand" href="#top">
@@ -474,29 +487,51 @@ yeni y = m21·(x − mx) + m22·(y − my) + ny</code></pre></div>
     function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
     /* ---- Dil ---- */
-    function changeLanguage(lang) {
+    function changeLanguage(lang, persist) {
+        if (lang !== 'tr' && lang !== 'en') lang = 'en';
         document.documentElement.lang = lang;
         document.title = lang === 'tr' ? 'ASSDraw3 Kılavuzu' : 'ASSDraw3 Guide';
-        store('lang', lang);
+        // Sadece kullanıcı menüden elle seçtiğinde kaydet (persist !== false)
+        if (persist !== false) store('lang', lang);
     }
-    const savedLang = load('lang');
-    changeLanguage(savedLang || ((navigator.language || '').toLowerCase().startsWith('tr') ? 'tr' : 'en'));
+    function detectBrowserLang() {
+        const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+        for (const l of langs) {
+            const code = (l || '').toLowerCase().split('-')[0];
+            if (code === 'tr' || code === 'en') return code;
+        }
+        return 'en';
+    }
+    changeLanguage(load('lang') || detectBrowserLang(), false);
+    // Elle seçim yoksa tarayıcı dili değişince takip et
+    window.addEventListener('languagechange', () => {
+        if (!load('lang')) changeLanguage(detectBrowserLang(), false);
+    });
 
     /* ---- Tema ---- */
-    const body = document.body;
+    const root = document.documentElement;
     const darkModeToggle = document.getElementById('darkModeToggle');
     const darkModeIcon = document.getElementById('darkModeIcon');
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
     function applyTheme(theme) {
-        body.setAttribute('data-theme', theme);
-        document.documentElement.setAttribute('data-bs-theme', theme);
+        root.setAttribute('data-theme', theme);
+        root.setAttribute('data-bs-theme', theme);
         darkModeIcon.classList.toggle('fa-sun', theme === 'dark');
         darkModeIcon.classList.toggle('fa-moon', theme !== 'dark');
     }
-    const savedTheme = load('theme');
-    applyTheme(savedTheme || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    function currentTheme() {
+        const saved = load('theme');
+        if (saved === 'dark' || saved === 'light') return saved;
+        return mq.matches ? 'dark' : 'light';
+    }
+    applyTheme(currentTheme());
     darkModeToggle.addEventListener('click', () => {
-        const next = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         applyTheme(next); store('theme', next);
+    });
+    // Elle seçim yoksa sistem teması değişince takip et
+    mq.addEventListener('change', e => {
+        if (!load('theme')) applyTheme(e.matches ? 'dark' : 'light');
     });
 
     /* ---- Menü ikonu ---- */

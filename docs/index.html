@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,7 @@
                     t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                 }
                 document.documentElement.setAttribute('data-theme', t);
+                document.documentElement.setAttribute('data-bs-theme', t);
             } catch (e) {}
         })();
     </script>
@@ -270,7 +271,7 @@
     }
 
     /* ---------- Dil ---------- */
-    function changeLanguage(lang) {
+    function changeLanguage(lang, persist) {
         if (!translations[lang]) lang = 'en';
 
         document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -287,7 +288,8 @@
         const yearEl = document.getElementById('copyrightYear');
         if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-        storageSet('lang', lang);
+        // Sadece kullanıcı menüden elle seçtiğinde kaydet (persist !== false)
+        if (persist !== false) storageSet('lang', lang);
         root.lang = lang;
     }
 
@@ -305,6 +307,7 @@
 
     function applyTheme(theme) {
         root.setAttribute('data-theme', theme);
+        root.setAttribute('data-bs-theme', theme);
         darkModeIcon.classList.toggle('fa-sun', theme === 'dark');
         darkModeIcon.classList.toggle('fa-moon', theme !== 'dark');
     }
@@ -335,7 +338,12 @@
 
     /* ---------- Başlangıç ---------- */
     // Kayıtlı dil varsa onu, yoksa tarayıcı dilini kullan
-    changeLanguage(storageGet('lang') || detectBrowserLang());
+    changeLanguage(storageGet('lang') || detectBrowserLang(), false);
+
+    // Elle seçim yoksa tarayıcı dili değişince takip et
+    window.addEventListener('languagechange', () => {
+        if (!storageGet('lang')) changeLanguage(detectBrowserLang(), false);
+    });
 </script>
 </body>
 </html>
