@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tema'yı sayfa çizilmeden önce uygula (beyaz parlamayı önler) -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (t !== 'dark' && t !== 'light') {
+                    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
+
     <meta property="og:image" content="https://kerimdemirkaynak.github.io/resimler/20241121_055155.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -20,13 +34,9 @@
     <link rel="manifest" href="https://kerimdemirkaynak.github.io/assdraw/site.webmanifest">
     <title>ASSDraw3</title>
 
-    <!-- English Metatags -->
-    <meta name="description" content="Download ASSDraw3: The latest version of the ASSDraw tool. Create and edit advanced subtitle scripts with ease.">
-    <meta name="keywords" content="ASSDraw3, download, subtitle editor, ASS editor, advanced subtitles, script editing, free download, latest version">
-
-    <!-- Turkish Metatags -->
-    <meta name="description" content="ASSDraw3 İndir: ASSDraw aracının en son sürümü. Gelişmiş altyazı komut dosyalarını kolayca oluşturun ve düzenleyin.">
-    <meta name="keywords" content="ASSDraw3, indir, altyazı düzenleyici, ASS düzenleyici, gelişmiş altyazılar, komut dosyası düzenleme, ücretsiz indir, en son sürüm">
+    <!-- Dile göre JS ile güncellenir (varsayılan: İngilizce) -->
+    <meta id="metaDescription" name="description" content="Download ASSDraw3: The latest version of the ASSDraw tool. Create and edit advanced subtitle scripts with ease.">
+    <meta id="metaKeywords" name="keywords" content="ASSDraw3, download, subtitle editor, ASS editor, advanced subtitles, script editing, free download, latest version">
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -37,8 +47,9 @@
           --focus-shadow-color: rgba(0, 123, 255, 0.5); /* Açık tema varsayılan */
        }
 
-        body[data-theme="dark"] {
+        html[data-theme="dark"] {
            --focus-shadow-color: rgba(255, 255, 255, 0.5); /* Koyu tema */
+           color-scheme: dark;
        }
 
         .navbar-toggler:focus {
@@ -55,23 +66,23 @@
             padding: 4rem 2rem;
         }
         /* Dark mode stilleri */
-        body[data-theme="dark"] {
+        html[data-theme="dark"] body {
             background-color: #1a1a1a;
             color: white;
         }
         .navbar{
             transition: background-color 0.3s ease;
         }
-        body[data-theme="dark"] .navbar {
+        html[data-theme="dark"] .navbar {
             background-color: #121212!important;
         }
-        body[data-theme="dark"] .jumbotron {
+        html[data-theme="dark"] .jumbotron {
             background-color: #292929;
         }
-        body[data-theme="dark"] .bg-dark {
+        html[data-theme="dark"] .bg-dark {
             background-color: #121212!important;
         }
-        body[data-theme="dark"] .btn-primary {
+        html[data-theme="dark"] .btn-primary {
             background-color: #424242!important;
             border-color:#424242!important;
         }
@@ -79,22 +90,22 @@
             background-color: #3a3a3a!important;
             border-color:#3a3a3a!important;
         }
-        body[data-theme="dark"] .text-white {
+        html[data-theme="dark"] .text-white {
             color: white!important;
         }
-        body[data-theme="dark"] .navbar-light .navbar-nav .nav-link {
+        html[data-theme="dark"] .navbar-light .navbar-nav .nav-link {
             color: white;
         }
-        body[data-theme="dark"] .navbar-light .navbar-brand {
+        html[data-theme="dark"] .navbar-light .navbar-brand {
             color: white;
         }
-        body[data-theme="dark"] .text-center{
+        html[data-theme="dark"] .text-center{
             color: white!important;
         }
         .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
-        body[data-theme="dark"] .navbar-toggler-icon {
+        html[data-theme="dark"] .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
@@ -114,7 +125,7 @@
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23000' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
         }
 
-        body[data-theme="dark"] .navbar-toggler-icon.open {
+        html[data-theme="dark"] .navbar-toggler-icon.open {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23fff' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
         }
     </style>
@@ -148,12 +159,12 @@
                         <span data-i18n="language">Dil</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('tr')">Türkçe</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('en'); return false;">English</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('tr'); return false;">Türkçe</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <button id="darkModeToggle" class="btn btn-link" style="text-decoration: none;">
+                    <button id="darkModeToggle" class="btn btn-link" style="text-decoration: none;" aria-label="Toggle theme">
                         <i id="darkModeIcon" class="fas fa-moon"></i>
                     </button>
                 </li>
@@ -164,7 +175,7 @@
 
 <header class="jumbotron text-center">
     <div class="container">
-        <img src="https://kerimdemirkaynak.github.io/resimler/assdraw.svg" alt="Logo" style="max-height: 100px;" data-i18n="logo" >
+        <img src="https://kerimdemirkaynak.github.io/resimler/assdraw.svg" alt="Logo" style="max-height: 100px;">
         <h1 data-i18n="welcomeTitle">ASSDraw3</h1>
         <p data-i18n="welcomeText">ASSA formatında vektör çizim üretme aracı.</p>
         <a href="https://github.com/KerimDemirkaynak/assdraw/releases/download/v3.0/ASSDraw3_Installer.exe"
@@ -195,9 +206,9 @@
 <footer class="bg-dark text-white text-center py-3 mt-5">
     <div class="container">
         <p data-i18n="footerText">© 2008-<span id="copyrightYear"></span> Tüm hakları saklıdır.</p>
-        <a href="https://github.com/KerimDemirkaynak/assdraw" style="text-decoration: none; color: white;" ><i class="fab fa-github fa-2x mx-2"></i></a>
-        <a href="https://www.reddit.com/r/aegisub/" style="text-decoration: none; color: white;" ><i class="fab fa-reddit fa-2x mx-2"></i></a>
-        <a href="https://discord.com/invite/AZaVyPr" style="text-decoration: none; color: white;" ><i class="fab fa-discord fa-2x mx-2"></i></a>
+        <a href="https://github.com/KerimDemirkaynak/assdraw" style="text-decoration: none; color: white;" aria-label="GitHub"><i class="fab fa-github fa-2x mx-2"></i></a>
+        <a href="https://www.reddit.com/r/aegisub/" style="text-decoration: none; color: white;" aria-label="Reddit"><i class="fab fa-reddit fa-2x mx-2"></i></a>
+        <a href="https://discord.com/invite/AZaVyPr" style="text-decoration: none; color: white;" aria-label="Discord"><i class="fab fa-discord fa-2x mx-2"></i></a>
     </div>
 </footer>
 <!-- Bootstrap JS (isteğe bağlı) -->
@@ -205,12 +216,11 @@
 <script>
     const translations = {
         en: {
-            logo: '<img src="https://kerimdemirkaynak.github.io/resimler/assdraw.svg" alt="Logo" style="max-height: 30px;" ><span>ASSDraw3</span>',
             home: "Home",
             about: "Guide",
             services: "Aegisub",
             contact: "Contact",
-            language:"Language",
+            language: "Language",
             welcomeTitle: "ASSDraw3",
             welcomeText: "Tool to produce ASSA-format vector drawings.",
             moreButton: "Download Now",
@@ -220,15 +230,16 @@
             designText: "Design and edit basic shapes such as rectangles, circles, and more.",
             marketingTitle: "ASS Export",
             marketingText: "Convert and export your designed shapes into ASS subtitle files.",
-            footerText: "© 2008-<span id=\"copyrightYear\"></span> All rights reserved."
+            footerText: "© 2008-<span id=\"copyrightYear\"></span> All rights reserved.",
+            metaDescription: "Download ASSDraw3: The latest version of the ASSDraw tool. Create and edit advanced subtitle scripts with ease.",
+            metaKeywords: "ASSDraw3, download, subtitle editor, ASS editor, advanced subtitles, script editing, free download, latest version"
         },
         tr: {
-            logo: '<img src="https://kerimdemirkaynak.github.io/resimler/assdraw.svg" alt="Logo" style="max-height: 30px;" ><span>ASSDraw3</span>',
             home: "Ana Sayfa",
             about: "Kılavuz",
             services: "Aegisub",
             contact: "İletişim",
-            language:"Dil",
+            language: "Dil",
             welcomeTitle: "ASSDraw3",
             welcomeText: "ASSA formatında vektör çizim üretme aracı.",
             moreButton: "Hemen İndir",
@@ -238,69 +249,93 @@
             designText: "Dikdörtgenler, daireler ve birçok benzer temel şekli tasarlayın ve düzenleyin.",
             marketingTitle: "ASS Dışa Aktarma",
             marketingText: "Tasarladığınız şekilleri ASS altyazı dosyalarına dönüştürün ve dışa aktarın.",
-            footerText: "© 2008-<span id=\"copyrightYear\"></span> Tüm hakları saklıdır."
+            footerText: "© 2008-<span id=\"copyrightYear\"></span> Tüm hakları saklıdır.",
+            metaDescription: "ASSDraw3 İndir: ASSDraw aracının en son sürümü. Gelişmiş altyazı komut dosyalarını kolayca oluşturun ve düzenleyin.",
+            metaKeywords: "ASSDraw3, indir, altyazı düzenleyici, ASS düzenleyici, gelişmiş altyazılar, komut dosyası düzenleme, ücretsiz indir, en son sürüm"
         }
     };
 
-    function changeLanguage(lang) {
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            if (translations[lang] && translations[lang][key]) {
-                element.innerHTML = translations[lang][key];
-            }
-        });
-        localStorage.setItem('lang', lang);
-        document.documentElement.lang=lang
-    }
+    const root = document.documentElement;
     const darkModeToggle = document.getElementById('darkModeToggle');
     const darkModeIcon = document.getElementById('darkModeIcon');
-    const body = document.body;
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarTogglerIcon = document.getElementById('navbarTogglerIcon');
 
-    // Sayfa yüklendiğinde localStorage'dan temayı kontrol et
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.setAttribute('data-theme', savedTheme);
-        if (savedTheme === 'dark') {
-            darkModeIcon.classList.remove('fa-moon');
-            darkModeIcon.classList.add('fa-sun');
-        } else {
-            darkModeIcon.classList.remove('fa-sun');
-            darkModeIcon.classList.add('fa-moon');
-        }
+    /* ---------- Güvenli localStorage ---------- */
+    function storageGet(key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
     }
-    darkModeToggle.addEventListener('click', () => {
-        if (body.getAttribute('data-theme') === 'light') {
-            body.setAttribute('data-theme', 'dark');
-            darkModeIcon.classList.remove('fa-moon');
-            darkModeIcon.classList.add('fa-sun');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            body.setAttribute('data-theme', 'light');
-            darkModeIcon.classList.remove('fa-sun');
-            darkModeIcon.classList.add('fa-moon');
-            localStorage.setItem('theme', 'light');
+    function storageSet(key, value) {
+        try { localStorage.setItem(key, value); } catch (e) {}
+    }
+
+    /* ---------- Dil ---------- */
+    function changeLanguage(lang) {
+        if (!translations[lang]) lang = 'en';
+
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                element.innerHTML = translations[lang][key];
+            }
+        });
+
+        document.getElementById('metaDescription').setAttribute('content', translations[lang].metaDescription);
+        document.getElementById('metaKeywords').setAttribute('content', translations[lang].metaKeywords);
+
+        // innerHTML footer'ı yeniden yazdığı için yılı tekrar ayarla
+        const yearEl = document.getElementById('copyrightYear');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+        storageSet('lang', lang);
+        root.lang = lang;
+    }
+
+    function detectBrowserLang() {
+        const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+        for (const l of langs) {
+            const code = (l || '').toLowerCase().split('-')[0];
+            if (translations[code]) return code;
         }
+        return 'en';
+    }
+
+    /* ---------- Tema ---------- */
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        darkModeIcon.classList.toggle('fa-sun', theme === 'dark');
+        darkModeIcon.classList.toggle('fa-moon', theme !== 'dark');
+    }
+
+    function currentTheme() {
+        const saved = storageGet('theme');
+        if (saved === 'dark' || saved === 'light') return saved;
+        return mq.matches ? 'dark' : 'light';
+    }
+
+    applyTheme(currentTheme());
+
+    darkModeToggle.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        storageSet('theme', next);
     });
 
-    // Menü açılıp kapanınca ikon değiştir
+    // Kullanıcı elle seçim yapmadıysa sistem teması değişince takip et
+    mq.addEventListener('change', e => {
+        if (!storageGet('theme')) applyTheme(e.matches ? 'dark' : 'light');
+    });
+
+    /* ---------- Menü ikonu ---------- */
     navbarToggler.addEventListener('click', () => {
         navbarTogglerIcon.classList.toggle('open');
     });
 
-    const savedLang= localStorage.getItem('lang')
-    const defaultLang = 'en'; // Varsayılan dil
-    if (savedLang) {
-        changeLanguage(savedLang);
-    } else {
-        changeLanguage(defaultLang);
-    }
-    console.log("JavaScript kodu çalıştı.");
-
-    // Telif hakkı yılını otomatik güncelle
-    document.getElementById('copyrightYear').textContent = new Date().getFullYear();
-    console.log("JavaScript kodu çalıştı.");
+    /* ---------- Başlangıç ---------- */
+    // Kayıtlı dil varsa onu, yoksa tarayıcı dilini kullan
+    changeLanguage(storageGet('lang') || detectBrowserLang());
 </script>
 </body>
 </html>
