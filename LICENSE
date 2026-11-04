@@ -3,7 +3,6 @@ BSD 3-Clause License
 Copyright (c) 2007, ai-chan (ASSDraw3 Team)
 Copyright (c) 2008-2012, Aegisub Project
 Copyright (c) 2025-present, Kerim Demirkaynak and ASSDraw Contributors
-All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -15,62 +14,17 @@ modification, are permitted provided that the following conditions are met:
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
 
-3. Neither the name of the ASSDraw3 Team, the Aegisub Project, the copyright
-   holders, nor the names of its contributors may be used to endorse or promote
-   products derived from this software without specific prior written permission.
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
 FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-================================================================================
-COMPONENT & THIRD-PARTY LICENSING DETAILS
-================================================================================
-
-Historical ASSDraw source files which carry ai-chan's or the Aegisub Project's
-original notice remain under those respective notices. This file serves as the
-primary license for the repository and binary distributions; it does not alter
-the license of any third-party component.
-
-1. Project Maintenance & Fork Contributions (BSD 3-Clause)
-   - Original ASSDraw3 implementation by ai-chan (2007) and subsequent
-     maintenance by the Aegisub Project (2008-2012).
-   - Application modernization, CMake/installer pipeline, DPI handling, bitmap
-     bundles, i18n automation, and active maintenance (2025-present) by
-     Kerim Demirkaynak.
-   - Selected patches and features integrated from sibling forks (including
-     MIRIMIRIM, amanosatosi, and biki-desu) remain under the BSD 3-Clause
-     License; see README.md and NOTICE.md for contributor credits.
-
-2. Anti-Grain Geometry (AGG) Spline Code
-   - Historical GPL-marked custom spline sources found in certain reference
-     forks are explicitly excluded from this repository.
-   - This project uses the pinned external AGG 2.6 spline code under its
-     permissive non-copyleft notice (see NOTICE.md).
-
-3. GUI Toolkit & Standard Translations (wxWindows Library Licence)
-   - Native builds link statically against wxWidgets 3.3.4, distributed under
-     the wxWindows Library Licence (installed under licenses/).
-   - Standard widget translations in vendor/wxlocale originate from wxWidgets
-     v3.3.1 and retain their original contributor notices, wxWindows license,
-     and LGPL texts, separate from the application catalogs in po/.
-   - This software is based in part on the work of the Independent JPEG Group.
-
-4. Documentation & Bundled Assets
-   - docs/help/original is an offline-adapted HTML export of ai-chan's original
-     docs/ASSDraw3.chm manual, retaining all original text, illustrations, and
-     author credits.
-   - Toolbar icons are adapted from Font Awesome Free 7.2.0 (Copyright 2026
-     Fonticons, Inc., https://fontawesome.com), licensed under CC BY 4.0
-     (https://creativecommons.org/licenses/by/4.0/). Original SVG files and
-     license text are retained in vendor/fontawesome.
-
-For exact commit hashes, file manifests, and dependency details, see NOTICE.md,
-README.md, and the licenses/ directory.
