@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 07:36+0300\n"
+"POT-Creation-Date: 2026-11-02 13:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -157,7 +157,7 @@ msgstr ""
 msgid "Add a new M"
 msgstr ""
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:80
 msgid "Add to custom colours"
 msgstr ""
 
@@ -167,6 +167,10 @@ msgstr ""
 
 #: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
+msgstr ""
+
+#: src/colour.cpp:23
+msgid "Aqua"
 msgstr ""
 
 #: src/settings.cpp:102 src/settings.cpp:275
@@ -181,7 +185,7 @@ msgstr ""
 msgid "Background image opacity"
 msgstr ""
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:74
 msgid "Basic colours"
 msgstr ""
 
@@ -205,6 +209,14 @@ msgstr ""
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr ""
 
+#: src/colour.cpp:18
+msgid "Black"
+msgstr ""
+
+#: src/colour.cpp:21 src/colour.cpp:83
+msgid "Blue"
+msgstr ""
+
 #: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr ""
@@ -221,7 +233,11 @@ msgstr ""
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr ""
 
-#: src/assdraw.cpp:957
+#: src/colour.cpp:20
+msgid "Brown"
+msgstr ""
+
+#: src/assdraw.cpp:957 src/colour.cpp:77
 msgid "Cancel"
 msgstr ""
 
@@ -275,6 +291,10 @@ msgstr ""
 
 #: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
+msgstr ""
+
+#: src/colour.cpp:66 src/colour.cpp:87
+msgid "Colour"
 msgstr ""
 
 #: src/library.cpp:261
@@ -341,7 +361,7 @@ msgstr ""
 msgid "Could not save the theme preference."
 msgstr ""
 
-#: src/localization.cpp:17
+#: src/localization.cpp:17 src/colour.cpp:107
 msgid "Custom"
 msgstr ""
 
@@ -349,7 +369,7 @@ msgstr ""
 msgid "Custom colour"
 msgstr ""
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:75
 msgid "Custom colours"
 msgstr ""
 
@@ -363,6 +383,10 @@ msgstr ""
 
 #: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
+msgstr ""
+
+#: src/colour.cpp:79
+msgid "Define custom colours"
 msgstr ""
 
 #: src/assdraw.cpp:295
@@ -509,8 +533,24 @@ msgstr ""
 msgid "Flip vertically at Y = 3"
 msgstr ""
 
+#: src/colour.cpp:21
+msgid "Fuchsia"
+msgstr ""
+
+#: src/colour.cpp:19
+msgid "Gray"
+msgstr ""
+
+#: src/colour.cpp:20 src/colour.cpp:82
+msgid "Green"
+msgstr ""
+
 #: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
+msgstr ""
+
+#: src/colour.cpp:78
+msgid "Help"
 msgstr ""
 
 #: src/include_once.hpp:44
@@ -519,6 +559,10 @@ msgstr ""
 
 #: src/assdraw.cpp:369
 msgid "Hide all"
+msgstr ""
+
+#: src/colour.cpp:84
+msgid "Hue:"
 msgstr ""
 
 #: src/localization.cpp:164
@@ -541,6 +585,10 @@ msgstr ""
 msgid "Light"
 msgstr ""
 
+#: src/colour.cpp:22
+msgid "Lime"
+msgstr ""
+
 #: src/assdraw.cpp:290
 msgid "Line"
 msgstr ""
@@ -558,8 +606,16 @@ msgstr ""
 msgid "Loading '%s' as canvas background ..."
 msgstr ""
 
+#: src/colour.cpp:86
+msgid "Lum:"
+msgstr ""
+
 #: src/assdraw.cpp:734
 msgid "Manual"
+msgstr ""
+
+#: src/colour.cpp:18
+msgid "Maroon"
 msgstr ""
 
 #: src/localization.cpp:166
@@ -622,6 +678,10 @@ msgstr ""
 msgid "Move origin"
 msgstr ""
 
+#: src/colour.cpp:18
+msgid "Navy"
+msgstr ""
+
 #: src/localization.cpp:16
 msgid "No"
 msgstr ""
@@ -630,14 +690,22 @@ msgstr ""
 msgid "No splash screen"
 msgstr ""
 
-#: src/dlgctrl.cpp:275
+#: src/dlgctrl.cpp:275 src/colour.cpp:76
 msgid "OK"
+msgstr ""
+
+#: src/colour.cpp:20
+msgid "Olive"
 msgstr ""
 
 #: src/dlgctrl.cpp:254
 msgid ""
 "One or more values entered are not real numbers.\n"
 "Please fix."
+msgstr ""
+
+#: src/colour.cpp:22
+msgid "Orange"
 msgstr ""
 
 #: src/settings.cpp:95 src/settings.cpp:270
@@ -696,6 +764,14 @@ msgstr ""
 msgid "Preview @"
 msgstr ""
 
+#: src/colour.cpp:19
+msgid "Purple"
+msgstr ""
+
+#: src/colour.cpp:21 src/colour.cpp:81
+msgid "Red"
+msgstr ""
+
 #: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr ""
@@ -751,6 +827,10 @@ msgstr ""
 
 #: src/include_once.hpp:73
 msgid "Rotate 90° counterclockwise at (-1, 2)"
+msgstr ""
+
+#: src/colour.cpp:85
+msgid "Sat:"
 msgstr ""
 
 #: src/library.cpp:113 src/library.cpp:366
@@ -833,12 +913,24 @@ msgstr ""
 msgid "Show all"
 msgstr ""
 
+#: src/colour.cpp:22
+msgid "Silver"
+msgstr ""
+
 #: src/canvas.cpp:1423
 msgid "Smooth connection"
 msgstr ""
 
+#: src/colour.cpp:88
+msgid "Solid"
+msgstr ""
+
 #: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
+msgstr ""
+
+#: src/colour.cpp:19
+msgid "Teal"
 msgstr ""
 
 #: src/dlgctrl.cpp:115
@@ -937,6 +1029,14 @@ msgstr ""
 #: src/dlgctrl.cpp:274
 #, c-format
 msgid "Version: %s"
+msgstr ""
+
+#: src/colour.cpp:23
+msgid "White"
+msgstr ""
+
+#: src/colour.cpp:23
+msgid "Yellow"
 msgstr ""
 
 #: src/localization.cpp:16

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 07:36+0300\n"
+"POT-Creation-Date: 2026-11-02 13:47+0300\n"
 "PO-Revision-Date: 2026-11-02 00:00+0300\n"
 "Last-Translator: ASSDraw contributors\n"
 "Language-Team: tr\n"
@@ -153,7 +153,7 @@ msgstr "Yeni bir L ekle"
 msgid "Add a new M"
 msgstr "Yeni bir M ekle"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:80
 msgid "Add to custom colours"
 msgstr "Özel renklere ekle"
 
@@ -164,6 +164,10 @@ msgstr "Görünüm"
 #: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
 msgstr "Uygula"
+
+#: src/colour.cpp:23
+msgid "Aqua"
+msgstr "Deniz mavisi"
 
 #: src/settings.cpp:102 src/settings.cpp:275
 msgid "Ask for image opacity"
@@ -177,7 +181,7 @@ msgstr "Arka plan"
 msgid "Background image opacity"
 msgstr "Arka plan görselinin opaklığı"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:74
 msgid "Basic colours"
 msgstr "Temel renkler"
 
@@ -201,6 +205,14 @@ msgstr "Bilineer dönüşüm"
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "Bilineer dönüşüm kipi: Şekli bozmak için köşeleri sürükleyin; bir kenarı sürüklemek iki komşu köşeyi birlikte taşır"
 
+#: src/colour.cpp:18
+msgid "Black"
+msgstr "Siyah"
+
+#: src/colour.cpp:21 src/colour.cpp:83
+msgid "Blue"
+msgstr "Mavi"
+
 #: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr "Sol alt\tCtrl+1"
@@ -217,7 +229,11 @@ msgstr "Sağ alt\tCtrl+3"
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "Sağ alt\tCtrl+Shift+3"
 
-#: src/assdraw.cpp:957
+#: src/colour.cpp:20
+msgid "Brown"
+msgstr "Kahverengi"
+
+#: src/assdraw.cpp:957 src/colour.cpp:77
 msgid "Cancel"
 msgstr "İptal"
 
@@ -272,6 +288,10 @@ msgstr "Kapat"
 #: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
 msgstr "Renklendirme"
+
+#: src/colour.cpp:66 src/colour.cpp:87
+msgid "Colour"
+msgstr "Renk"
 
 #: src/library.cpp:261
 msgid "Confirm delete?"
@@ -337,7 +357,7 @@ msgstr "Dil tercihi kaydedilemedi."
 msgid "Could not save the theme preference."
 msgstr "Tema tercihi kaydedilemedi."
 
-#: src/localization.cpp:17
+#: src/localization.cpp:17 src/colour.cpp:107
 msgid "Custom"
 msgstr "Özel"
 
@@ -345,7 +365,7 @@ msgstr "Özel"
 msgid "Custom colour"
 msgstr "Özel renk"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:75
 msgid "Custom colours"
 msgstr "Özel renkler"
 
@@ -360,6 +380,10 @@ msgstr "Koyu"
 #: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
 msgstr "Varsayılan görsel opaklığı (0-255)"
+
+#: src/colour.cpp:79
+msgid "Define custom colours"
+msgstr "Özel renk tanımla"
 
 #: src/assdraw.cpp:295
 msgid "Delete"
@@ -505,9 +529,25 @@ msgstr "X = 4 etrafında yatay çevir"
 msgid "Flip vertically at Y = 3"
 msgstr "Y = 3 etrafında dikey çevir"
 
+#: src/colour.cpp:21
+msgid "Fuchsia"
+msgstr "Fuşya"
+
+#: src/colour.cpp:19
+msgid "Gray"
+msgstr "Gri"
+
+#: src/colour.cpp:20 src/colour.cpp:82
+msgid "Green"
+msgstr "Yeşil"
+
 #: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
 msgstr "Yatay cetvel"
+
+#: src/colour.cpp:78
+msgid "Help"
+msgstr "Yardım"
 
 #: src/include_once.hpp:44
 msgid "Help! Help!"
@@ -516,6 +556,10 @@ msgstr "Yardım! Yardım!"
 #: src/assdraw.cpp:369
 msgid "Hide all"
 msgstr "Tümünü gizle"
+
+#: src/colour.cpp:84
+msgid "Hue:"
+msgstr "Ton:"
 
 #: src/localization.cpp:164
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
@@ -537,6 +581,10 @@ msgstr "Kitaplık şekilleri"
 msgid "Light"
 msgstr "Açık"
 
+#: src/colour.cpp:22
+msgid "Lime"
+msgstr "Limon"
+
 #: src/assdraw.cpp:290
 msgid "Line"
 msgstr "Doğru"
@@ -554,9 +602,17 @@ msgstr "Tuvale yükle"
 msgid "Loading '%s' as canvas background ..."
 msgstr "'%s' tuval arka planı olarak yükleniyor..."
 
+#: src/colour.cpp:86
+msgid "Lum:"
+msgstr "Par.:"
+
 #: src/assdraw.cpp:734
 msgid "Manual"
 msgstr "Kılavuz"
+
+#: src/colour.cpp:18
+msgid "Maroon"
+msgstr "Kestane"
 
 #: src/localization.cpp:166
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
@@ -618,6 +674,10 @@ msgstr "[0,0] noktasını buraya taşı"
 msgid "Move origin"
 msgstr "Başlangıç noktasını taşı"
 
+#: src/colour.cpp:18
+msgid "Navy"
+msgstr "Lacivert"
+
 #: src/localization.cpp:16
 msgid "No"
 msgstr "Hayır"
@@ -626,9 +686,13 @@ msgstr "Hayır"
 msgid "No splash screen"
 msgstr "Açılış ekranını gösterme"
 
-#: src/dlgctrl.cpp:275
+#: src/dlgctrl.cpp:275 src/colour.cpp:76
 msgid "OK"
 msgstr "Tamam"
+
+#: src/colour.cpp:20
+msgid "Olive"
+msgstr "Zeytin"
 
 #: src/dlgctrl.cpp:254
 msgid ""
@@ -637,6 +701,10 @@ msgid ""
 msgstr ""
 "Girilen değerlerden en az biri gerçek sayı değil.\n"
 "Lütfen düzeltin."
+
+#: src/colour.cpp:22
+msgid "Orange"
+msgstr "Turuncu"
 
 #: src/settings.cpp:95 src/settings.cpp:270
 msgid "Origin"
@@ -694,6 +762,14 @@ msgstr "Önizleme"
 msgid "Preview @"
 msgstr "Önizleme opaklığı"
 
+#: src/colour.cpp:19
+msgid "Purple"
+msgstr "Mor"
+
+#: src/colour.cpp:21 src/colour.cpp:81
+msgid "Red"
+msgstr "Kırmızı"
+
 #: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr "Yinele\tCtrl+Y"
@@ -750,6 +826,10 @@ msgstr "(1, 2) etrafında saat yönünde 90° döndür"
 #: src/include_once.hpp:73
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "(-1, 2) etrafında saat yönünün tersine 90° döndür"
+
+#: src/colour.cpp:85
+msgid "Sat:"
+msgstr "Doy.:"
 
 #: src/library.cpp:113 src/library.cpp:366
 msgid "Save canvas"
@@ -831,13 +911,25 @@ msgstr "Şekil kitaplığı"
 msgid "Show all"
 msgstr "Tümünü göster"
 
+#: src/colour.cpp:22
+msgid "Silver"
+msgstr "Gümüş"
+
 #: src/canvas.cpp:1423
 msgid "Smooth connection"
 msgstr "Pürüzsüz bağlantı"
 
+#: src/colour.cpp:88
+msgid "Solid"
+msgstr "Düz"
+
 #: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
 msgstr "Sistem Varsayılanı"
+
+#: src/colour.cpp:19
+msgid "Teal"
+msgstr "Yeşilimsi mavi"
 
 #: src/dlgctrl.cpp:115
 msgid "Templates"
@@ -936,6 +1028,14 @@ msgstr "Değer hatası"
 #, c-format
 msgid "Version: %s"
 msgstr "Sürüm: %s"
+
+#: src/colour.cpp:23
+msgid "White"
+msgstr "Beyaz"
+
+#: src/colour.cpp:23
+msgid "Yellow"
+msgstr "Sarı"
 
 #: src/localization.cpp:16
 msgid "Yes"

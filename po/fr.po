@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ASSDraw3 3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/KerimDemirkaynak/assdraw/issues\n"
-"POT-Creation-Date: 2026-11-02 07:36+0300\n"
+"POT-Creation-Date: 2026-11-02 13:47+0300\n"
 "PO-Revision-Date: 2026-11-02 00:00+0300\n"
 "Last-Translator: ASSDraw contributors\n"
 "Language-Team: fr\n"
@@ -153,7 +153,7 @@ msgstr "Ajouter une commande L"
 msgid "Add a new M"
 msgstr "Ajouter une commande M"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:80
 msgid "Add to custom colours"
 msgstr "Ajouter aux couleurs personnalisées"
 
@@ -164,6 +164,10 @@ msgstr "Apparence"
 #: src/settings.cpp:114 src/settings.cpp:280
 msgid "Apply"
 msgstr "Appliquer"
+
+#: src/colour.cpp:23
+msgid "Aqua"
+msgstr "Aqua"
 
 #: src/settings.cpp:102 src/settings.cpp:275
 msgid "Ask for image opacity"
@@ -177,7 +181,7 @@ msgstr "Arrière-plan"
 msgid "Background image opacity"
 msgstr "Opacité de l'image d'arrière-plan"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:74
 msgid "Basic colours"
 msgstr "Couleurs de base"
 
@@ -201,6 +205,14 @@ msgstr "Transformation bilinéaire"
 msgid "Bilinear transformation mode: Drag the vertices to distort the shape; Dragging an edge moves two adjacent vertices together"
 msgstr "Mode bilinéaire : faites glisser les sommets pour déformer la forme ; déplacer un bord déplace ses deux sommets"
 
+#: src/colour.cpp:18
+msgid "Black"
+msgstr "Noir"
+
+#: src/colour.cpp:21 src/colour.cpp:83
+msgid "Blue"
+msgstr "Bleu"
+
 #: src/assdraw.cpp:360
 msgid "Bottom left\tCtrl+1"
 msgstr "En bas à gauche\tCtrl+1"
@@ -217,7 +229,11 @@ msgstr "En bas à droite\tCtrl+3"
 msgid "Bottom right\tCtrl+Shift+3"
 msgstr "En bas à droite\tCtrl+Shift+3"
 
-#: src/assdraw.cpp:957
+#: src/colour.cpp:20
+msgid "Brown"
+msgstr "Brun"
+
+#: src/assdraw.cpp:957 src/colour.cpp:77
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -272,6 +288,10 @@ msgstr "Fermer"
 #: src/assdraw.cpp:269 src/assdraw.cpp:299
 msgid "Coloring"
 msgstr "Colorisation"
+
+#: src/colour.cpp:66 src/colour.cpp:87
+msgid "Colour"
+msgstr "Couleur"
 
 #: src/library.cpp:261
 msgid "Confirm delete?"
@@ -337,7 +357,7 @@ msgstr "Impossible d'enregistrer la langue choisie."
 msgid "Could not save the theme preference."
 msgstr "Impossible d’enregistrer la préférence de thème."
 
-#: src/localization.cpp:17
+#: src/localization.cpp:17 src/colour.cpp:107
 msgid "Custom"
 msgstr "Personnalisé"
 
@@ -345,7 +365,7 @@ msgstr "Personnalisé"
 msgid "Custom colour"
 msgstr "Couleur personnalisée"
 
-#: src/localization.cpp:18
+#: src/localization.cpp:18 src/colour.cpp:75
 msgid "Custom colours"
 msgstr "Couleurs personnalisées"
 
@@ -360,6 +380,10 @@ msgstr "Sombre"
 #: src/settings.cpp:103 src/settings.cpp:276
 msgid "Default image opacity (0-255)"
 msgstr "Opacité d'image par défaut (0-255)"
+
+#: src/colour.cpp:79
+msgid "Define custom colours"
+msgstr "Définir les couleurs personnalisées"
 
 #: src/assdraw.cpp:295
 msgid "Delete"
@@ -505,9 +529,25 @@ msgstr "Retourner horizontalement autour de X = 4"
 msgid "Flip vertically at Y = 3"
 msgstr "Retourner verticalement autour de Y = 3"
 
+#: src/colour.cpp:21
+msgid "Fuchsia"
+msgstr "Fuchia"
+
+#: src/colour.cpp:19
+msgid "Gray"
+msgstr "Gris"
+
+#: src/colour.cpp:20 src/colour.cpp:82
+msgid "Green"
+msgstr "Vert"
+
 #: src/settings.cpp:97 src/settings.cpp:272
 msgid "H ruler"
 msgstr "Règle horizontale"
+
+#: src/colour.cpp:78
+msgid "Help"
+msgstr "Aide"
 
 #: src/include_once.hpp:44
 msgid "Help! Help!"
@@ -516,6 +556,10 @@ msgstr "À l'aide !"
 #: src/assdraw.cpp:369
 msgid "Hide all"
 msgstr "Tout masquer"
+
+#: src/colour.cpp:84
+msgid "Hue:"
+msgstr "Teinte :"
 
 #: src/localization.cpp:164
 msgid "In Coloring mode, select a filled sub-shape and double-click it to choose its color. Copy ASS copies the styled drawing."
@@ -537,6 +581,10 @@ msgstr "Formes de la bibliothèque"
 msgid "Light"
 msgstr "Clair"
 
+#: src/colour.cpp:22
+msgid "Lime"
+msgstr "Citron"
+
 #: src/assdraw.cpp:290
 msgid "Line"
 msgstr "Ligne"
@@ -554,9 +602,17 @@ msgstr "Charger dans le canevas"
 msgid "Loading '%s' as canvas background ..."
 msgstr "Chargement de « %s » comme arrière-plan..."
 
+#: src/colour.cpp:86
+msgid "Lum:"
+msgstr "Lum. :"
+
 #: src/assdraw.cpp:734
 msgid "Manual"
 msgstr "Manuel"
+
+#: src/colour.cpp:18
+msgid "Maroon"
+msgstr "Marron"
 
 #: src/localization.cpp:166
 msgid "Maxim Shemanarev: Anti-Grain Geometry. The wxWidgets team: GUI toolkit. Adrian Secord: wxAGG."
@@ -618,6 +674,10 @@ msgstr "Déplacer [0,0] ici"
 msgid "Move origin"
 msgstr "Déplacer l'origine"
 
+#: src/colour.cpp:18
+msgid "Navy"
+msgstr "Bleu marine"
+
 #: src/localization.cpp:16
 msgid "No"
 msgstr "Non"
@@ -626,9 +686,13 @@ msgstr "Non"
 msgid "No splash screen"
 msgstr "Masquer l'écran d'accueil"
 
-#: src/dlgctrl.cpp:275
+#: src/dlgctrl.cpp:275 src/colour.cpp:76
 msgid "OK"
 msgstr "OK"
+
+#: src/colour.cpp:20
+msgid "Olive"
+msgstr "Olive"
 
 #: src/dlgctrl.cpp:254
 msgid ""
@@ -637,6 +701,10 @@ msgid ""
 msgstr ""
 "Au moins une valeur saisie n'est pas un nombre réel.\n"
 "Veuillez corriger."
+
+#: src/colour.cpp:22
+msgid "Orange"
+msgstr "Orange"
 
 #: src/settings.cpp:95 src/settings.cpp:270
 msgid "Origin"
@@ -694,6 +762,14 @@ msgstr "Aperçu"
 msgid "Preview @"
 msgstr "Opacité de l'aperçu"
 
+#: src/colour.cpp:19
+msgid "Purple"
+msgstr "Pourpre"
+
+#: src/colour.cpp:21 src/colour.cpp:81
+msgid "Red"
+msgstr "Rouge"
+
 #: src/assdraw.cpp:900
 msgid "Redo\tCtrl+Y"
 msgstr "Rétablir\tCtrl+Y"
@@ -750,6 +826,10 @@ msgstr "Pivoter de 90° dans le sens horaire autour de (1, 2)"
 #: src/include_once.hpp:73
 msgid "Rotate 90° counterclockwise at (-1, 2)"
 msgstr "Pivoter de 90° dans le sens antihoraire autour de (-1, 2)"
+
+#: src/colour.cpp:85
+msgid "Sat:"
+msgstr "Sat. :"
 
 #: src/library.cpp:113 src/library.cpp:366
 msgid "Save canvas"
@@ -831,13 +911,25 @@ msgstr "Bibliothèque de formes"
 msgid "Show all"
 msgstr "Tout afficher"
 
+#: src/colour.cpp:22
+msgid "Silver"
+msgstr "Argent"
+
 #: src/canvas.cpp:1423
 msgid "Smooth connection"
 msgstr "Raccord lisse"
 
+#: src/colour.cpp:88
+msgid "Solid"
+msgstr "Uni"
+
 #: src/assdraw.cpp:379 src/assdraw.cpp:401
 msgid "System Default"
 msgstr "Valeur système"
+
+#: src/colour.cpp:19
+msgid "Teal"
+msgstr "Bleu sarcelle"
 
 #: src/dlgctrl.cpp:115
 msgid "Templates"
@@ -936,6 +1028,14 @@ msgstr "Valeur incorrecte"
 #, c-format
 msgid "Version: %s"
 msgstr "Version : %s"
+
+#: src/colour.cpp:23
+msgid "White"
+msgstr "Blanc"
+
+#: src/colour.cpp:23
+msgid "Yellow"
+msgstr "Jaune"
 
 #: src/localization.cpp:16
 msgid "Yes"
