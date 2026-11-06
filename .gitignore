@@ -1,2 +1,6 @@
-__pycache__/
-*.py[cod]
+/target
+**/*.rs.bk
+.idea/
+.vscode/
+*.swp
+.DS_Store
