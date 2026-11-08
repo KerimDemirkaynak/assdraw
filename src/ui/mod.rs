@@ -1,5 +1,6 @@
 pub mod canvas;
 pub mod dialogs;
+pub mod icons;
 pub mod panels;
 
 pub use canvas::*;

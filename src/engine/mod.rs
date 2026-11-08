@@ -1,18 +1,22 @@
 //! Drawing engine — port of original `engine.hpp` / `engine.cpp`.
 //! PointSystem, Point, DrawCmd list, parse/generate ASS, transforms.
 
+pub mod bspline;
 pub mod cmd;
 pub mod convert;
 pub mod history;
 pub mod parse;
 pub mod point;
+pub mod style;
 pub mod transform;
 
+pub use bspline::flatten_bspline;
 pub use cmd::*;
 pub use convert::*;
 pub use history::*;
 pub use parse::*;
 pub use point::*;
+pub use style::ShapeStyle;
 pub use transform::*;
 
 use serde::{Deserialize, Serialize};
@@ -95,6 +99,9 @@ pub struct Drawing {
     pub point_system: PointSystem,
     /// Contour index → fill color (per-shape coloring)
     pub shape_colors: HashMap<usize, Color>,
+    /// Contour index → full style (set when importing styled ASS); overrides `shape_colors`.
+    #[serde(default)]
+    pub shape_styles: HashMap<usize, ShapeStyle>,
     #[serde(skip)]
     pub history: History,
 }
@@ -113,15 +120,52 @@ impl Drawing {
             next_id: 1,
             point_system: PointSystem::default(),
             shape_colors: HashMap::new(),
+            shape_styles: HashMap::new(),
             history: History::new(),
         }
     }
 
-    pub fn clear(&mut self) {
+    /// Replace the shape with a copy of `other`, keeping this drawing's undo history.
+    pub fn load_shape_from(&mut self, other: &Drawing) {
+        self.push_history_desc("Load shape");
+        let snap = other.snapshot("");
+        self.apply(snap);
+    }
+
+    /// Clone points/commands/styles without history (for safe parse trials).
+    pub fn clone_geometry(&self) -> Drawing {
+        Drawing {
+            points: self.points.clone(),
+            commands: self.commands.clone(),
+            next_id: self.next_id,
+            shape_colors: self.shape_colors.clone(),
+            shape_styles: self.shape_styles.clone(),
+            point_system: self.point_system.clone(),
+            history: History::new(),
+        }
+    }
+
+    /// Copy geometry fields from `other` (history untouched).
+    pub fn copy_geometry_from(&mut self, other: &Drawing) {
+        self.points = other.points.clone();
+        self.commands = other.commands.clone();
+        self.next_id = other.next_id;
+        self.shape_colors = other.shape_colors.clone();
+        self.shape_styles = other.shape_styles.clone();
+    }
+
+    /// Remove all points/commands but keep the undo history.
+    pub fn clear_shape(&mut self) {
         self.points.clear();
         self.commands.clear();
         self.shape_colors.clear();
+        self.shape_styles.clear();
         self.next_id = 1;
+    }
+
+    /// Remove everything, including the undo history.
+    pub fn clear(&mut self) {
+        self.clear_shape();
         self.history.clear();
     }
 
@@ -168,28 +212,172 @@ impl Drawing {
         (c1, c2, end)
     }
 
-    pub fn cmd_b_auto(&mut self, x: f64, y: f64, smoothness: f64) -> Option<(Id, Id, Id)> {
-        let prev = self.last_main_point()?;
-        let (px, py) = (prev.x, prev.y);
-        let dx = x - px;
-        let dy = y - py;
-        let len = (dx * dx + dy * dy).sqrt().max(1.0);
-        let nx = -dy / len * smoothness * 25.0;
-        let ny = dx / len * smoothness * 25.0;
-        Some(self.cmd_b(
-            px + dx * 0.33 + nx,
-            py + dy * 0.33 + ny,
-            px + dx * 0.66 - nx,
-            py + dy * 0.66 - ny,
-            x,
-            y,
-        ))
+    /// Control points of a Bezier that starts at `p0` and ends at `p1`, laid out at 1/3 and 2/3 of
+    /// the straight segment (ASSDraw3's `DrawCmd_B::Init`). Coordinates are integers.
+    pub fn thirds_controls(p0: (f64, f64), p1: (f64, f64)) -> ((f64, f64), (f64, f64)) {
+        let dx = ((p1.0 - p0.0) / 3.0).trunc();
+        let dy = ((p1.1 - p0.1) / 3.0).trunc();
+        (
+            ((p0.0 + dx).round(), (p0.1 + dy).round()),
+            ((p1.0 - dx).round(), (p1.1 - dy).round()),
+        )
+    }
+
+    /// Index of the command that owns point `id`.
+    pub fn cmd_index_of_point(&self, id: Id) -> Option<usize> {
+        self.commands.iter().position(|c| c.all_points().contains(&id))
+    }
+
+    /// Main point position of the command at `idx`.
+    pub fn main_pos_of_cmd(&self, idx: usize) -> Option<(f64, f64)> {
+        let id = self.commands.get(idx)?.main_point()?;
+        self.points.get(&id).map(|p| (p.x, p.y))
+    }
+
+    /// Create a command of `kind` (`'m'`, `'n'`, `'l'`, `'b'`) at (x, y) and insert it after command
+    /// `after` (or append when `None`). Mirrors the canvas: a drawing that does not start with a
+    /// move gets an `m` first. Returns (index of the new command, id of its main point).
+    pub fn place_cmd(&mut self, kind: char, x: f64, y: f64, after: Option<usize>) -> (usize, Id) {
+        if self.commands.is_empty() && kind != 'm' && kind != 'n' {
+            self.cmd_m(x, y);
+        }
+        let pos = match after {
+            Some(i) if i < self.commands.len() => i + 1,
+            _ => self.commands.len(),
+        };
+        let prev = if pos > 0 { self.main_pos_of_cmd(pos - 1) } else { None };
+        let (cmd, main) = match kind {
+            'm' => {
+                let id = self.add_point(x, y, PointKind::Main);
+                (DrawCmd::M { point: id }, id)
+            }
+            'n' => {
+                let id = self.add_point(x, y, PointKind::Main);
+                (DrawCmd::N { point: id }, id)
+            }
+            'l' => {
+                let id = self.add_point(x, y, PointKind::Main);
+                (DrawCmd::L { point: id }, id)
+            }
+            _ => {
+                let (c1, c2) = Self::thirds_controls(prev.unwrap_or((x, y)), (x, y));
+                let i1 = self.add_point(c1.0, c1.1, PointKind::Control);
+                let i2 = self.add_point(c2.0, c2.1, PointKind::Control);
+                let id = self.add_point(x, y, PointKind::Main);
+                (
+                    DrawCmd::B { control1: i1, control2: i2, end: id, c1_cont: false },
+                    id,
+                )
+            }
+        };
+        self.commands.insert(pos, cmd);
+        (pos, main)
+    }
+
+    /// Re-generate the controls of the Bezier at `idx` at 1/3 and 2/3 (used while its end point is
+    /// being dragged, like the original's not-yet-initialised B).
+    pub fn reinit_bezier_controls(&mut self, idx: usize) {
+        let DrawCmd::B { control1, control2, end, .. } = self.commands[idx] else { return };
+        let Some(p0) = idx.checked_sub(1).and_then(|i| self.main_pos_of_cmd(i)) else { return };
+        let Some(e) = self.points.get(&end).map(|p| (p.x, p.y)) else { return };
+        let (c1, c2) = Self::thirds_controls(p0, e);
+        if let Some(p) = self.points.get_mut(&control1) {
+            p.x = c1.0;
+            p.y = c1.1;
+        }
+        if let Some(p) = self.points.get_mut(&control2) {
+            p.x = c2.0;
+            p.y = c2.1;
+        }
+    }
+
+    /// Append a point to the last spline (`p` command). Returns false if the drawing does not end in
+    /// a spline.
+    pub fn extend_last_spline(&mut self, x: f64, y: f64) -> bool {
+        let mut idx = self.commands.len();
+        if idx > 0 && matches!(self.commands[idx - 1], DrawCmd::C) {
+            idx -= 1;
+        }
+        if idx == 0 || !matches!(self.commands[idx - 1], DrawCmd::S { .. }) {
+            return false;
+        }
+        let id = self.add_point(x, y, PointKind::Main);
+        if let DrawCmd::S { points } = &mut self.commands[idx - 1] {
+            if let Some(&old_last) = points.last() {
+                if let Some(p) = self.points.get_mut(&old_last) {
+                    p.kind = PointKind::Control;
+                }
+            }
+            points.push(id);
+        }
+        true
+    }
+
+    /// Close the last spline (`c`). Returns false if the drawing does not end in an open spline.
+    pub fn close_last_spline(&mut self) -> bool {
+        if matches!(self.commands.last(), Some(DrawCmd::S { .. })) {
+            self.commands.push(DrawCmd::C);
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Delete the command that owns point `id`. Like the original, the first command can only be
+    /// deleted when it is the only one left. Returns false when refused.
+    pub fn delete_command_of_point(&mut self, id: Id) -> bool {
+        let Some(idx) = self.cmd_index_of_point(id) else { return false };
+        if idx == 0 && self.commands.len() > 1 {
+            return false;
+        }
+        self.commands.remove(idx);
+        // A `c` that belonged to a removed spline would be orphaned.
+        if idx > 0 && idx < self.commands.len() && matches!(self.commands[idx], DrawCmd::C)
+            && !matches!(self.commands[idx - 1], DrawCmd::S { .. })
+        {
+            self.commands.remove(idx);
+        }
+        self.sweep_points();
+        true
+    }
+
+    fn sweep_points(&mut self) {
+        let live: std::collections::HashSet<Id> =
+            self.commands.iter().flat_map(|c| c.all_points()).collect();
+        self.points.retain(|pid, _| live.contains(pid));
+    }
+
+    /// Whether the Bezier ending at `point_id` has smooth-connection (C1) enabled.
+    pub fn is_c1(&self, point_id: Id) -> bool {
+        self.commands
+            .iter()
+            .any(|c| matches!(c, DrawCmd::B { end, c1_cont: true, .. } if *end == point_id))
+    }
+
+    /// ASS text of one command (`m 1 2`, `b 1 2 3 4 5 6`, ...).
+    pub fn cmd_text(&self, idx: usize) -> String {
+        match self.commands.get(idx) {
+            Some(c) => generate_ass(std::iter::once(c), &self.points, false),
+            None => String::new(),
+        }
+    }
+
+    /// Round every coordinate to an integer (ASS drawings are integer based).
+    pub fn round_points(&mut self) {
+        for p in self.points.values_mut() {
+            p.x = p.x.round();
+            p.y = p.y.round();
+        }
     }
 
     pub fn cmd_s(&mut self, coords: &[(f64, f64)]) -> Vec<Id> {
+        let last = coords.len().saturating_sub(1);
         let ids: Vec<Id> = coords
             .iter()
-            .map(|&(x, y)| self.add_point(x, y, PointKind::Main))
+            .enumerate()
+            .map(|(i, &(x, y))| {
+                self.add_point(x, y, if i == last { PointKind::Main } else { PointKind::Control })
+            })
             .collect();
         self.commands.push(DrawCmd::S { points: ids.clone() });
         ids
@@ -222,47 +410,250 @@ impl Drawing {
         generate_ass(&self.commands, &self.points, capitalize)
     }
 
-    pub fn to_full_ass_line(&self, fill: &Color, border: &Color, border_width: f64, capitalize: bool) -> String {
-        format!(
-            "{{\\an7\\pos(0,0)\\p1\\bord{}\\1c&H{}&\\3c&H{}&}}{}{{\\p0}}",
-            border_width,
-            fill.to_ass_bgr(),
-            border.to_ass_bgr(),
-            self.to_ass_string_custom(capitalize)
-        )
+    /// ASS line with style override tags, like the original `GenerateASS`.
+    ///
+    /// Neighbouring contours with the same effective style are merged into one run. Consecutive
+    /// `\\p1` runs of one event are laid out side by side by the renderer, so every later run is
+    /// shifted left by the width of the runs before it.
+    /// `per_contour_colors == false` ignores the per-contour fill colours.
+    pub fn to_styled_ass(&self, style: &ShapeStyle, capitalize: bool, per_contour_colors: bool) -> String {
+        let mut contours: Vec<Vec<&DrawCmd>> = Vec::new();
+        for cmd in &self.commands {
+            if cmd.is_contour_start() || contours.is_empty() {
+                contours.push(Vec::new());
+            }
+            if let Some(last) = contours.last_mut() {
+                last.push(cmd);
+            }
+        }
+
+        // Holes travel with their parent contour and use the parent's style.
+        let subshapes = self.group_subshapes(&contours);
+
+        let mut runs: Vec<(String, Vec<&DrawCmd>)> = Vec::new();
+        for (idx, cmds) in subshapes {
+            let contour_style = if !per_contour_colors {
+                *style
+            } else if let Some(own) = self.shape_styles.get(&idx) {
+                *own
+            } else {
+                let mut s = *style;
+                if let Some(color) = self.shape_colors.get(&idx) {
+                    s.fill = *color;
+                }
+                s
+            };
+            let tags = contour_style.to_tags();
+            let same = runs.last().is_some_and(|(prev, _)| *prev == tags);
+            if same {
+                if let Some((_, existing)) = runs.last_mut() {
+                    existing.extend(cmds);
+                }
+            } else {
+                runs.push((tags, cmds));
+            }
+        }
+
+        let mut out = String::new();
+        let mut advance_total = 0i64;
+        for (i, (tags, cmds)) in runs.iter().enumerate() {
+            if i > 0 {
+                out.push(' ');
+            }
+            out.push_str(tags);
+            out.push_str(&generate_ass_offset(
+                cmds.iter().copied(),
+                &self.points,
+                capitalize,
+                -advance_total,
+            ));
+            if let Some((lo, hi)) = x_range(cmds, &self.points) {
+                advance_total += hi - lo;
+            }
+        }
+        out
     }
 
-    pub fn to_multicolor_ass(&self, default_fill: &Color, border: &Color, border_width: f64, capitalize: bool) -> String {
-        if self.shape_colors.is_empty() || self.contour_count() <= 1 {
-            return self.to_full_ass_line(default_fill, border, border_width, capitalize);
-        }
-        let mut out = String::new();
-        let mut batch: Vec<&DrawCmd> = Vec::new();
-        let mut cidx = 0usize;
-        let flush = |batch: &[&DrawCmd], cidx: usize, out: &mut String, this: &Drawing| {
-            if batch.is_empty() {
-                return;
+    /// Polygon approximation (Bezier sampled 16x) of one contour, in logical coordinates.
+    fn contour_polygon(&self, cmds: &[&DrawCmd]) -> Vec<(f64, f64)> {
+        let pt = |id: &Id| self.points.get(id).map(|p| (p.x, p.y));
+        let mut poly: Vec<(f64, f64)> = Vec::new();
+        let mut i = 0usize;
+        while i < cmds.len() {
+            match cmds[i] {
+                DrawCmd::M { point } | DrawCmd::N { point } | DrawCmd::L { point } => {
+                    if let Some(p) = pt(point) {
+                        poly.push(p);
+                    }
+                    i += 1;
+                }
+                DrawCmd::B { control1, control2, end, .. } => {
+                    if let (Some(p1), Some(p2), Some(p3)) = (pt(control1), pt(control2), pt(end)) {
+                        if let Some(&p0) = poly.last() {
+                            for step in 1..=16 {
+                                let t = f64::from(step) / 16.0;
+                                let u = 1.0 - t;
+                                poly.push((
+                                    u * u * u * p0.0 + 3.0 * u * u * t * p1.0 + 3.0 * u * t * t * p2.0 + t * t * t * p3.0,
+                                    u * u * u * p0.1 + 3.0 * u * u * t * p1.1 + 3.0 * u * t * t * p2.1 + t * t * t * p3.1,
+                                ));
+                            }
+                        } else {
+                            poly.push(p3);
+                        }
+                    }
+                    i += 1;
+                }
+                DrawCmd::S { points: ids } => {
+                    let mut logical = Vec::new();
+                    for id in ids {
+                        if let Some(p) = pt(id) {
+                            logical.push(p);
+                        }
+                    }
+                    i += 1;
+                    while i < cmds.len() {
+                        if let DrawCmd::P { point } = cmds[i] {
+                            if let Some(p) = pt(point) {
+                                logical.push(p);
+                            }
+                            i += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                    if logical.len() >= 2 {
+                        let flat = flatten_bspline(&logical, 0.1);
+                        if let Some(&last) = poly.last() {
+                            for &p in &flat {
+                                if (p.0 - last.0).abs() > 1e-9 || (p.1 - last.1).abs() > 1e-9 {
+                                    poly.push(p);
+                                }
+                            }
+                        } else {
+                            poly.extend(flat);
+                        }
+                    }
+                }
+                DrawCmd::P { point } => {
+                    if let Some(p) = pt(point) {
+                        poly.push(p);
+                    }
+                    i += 1;
+                }
+                DrawCmd::C => {
+                    i += 1;
+                }
             }
-            let color = this.shape_colors.get(&cidx).copied().unwrap_or(*default_fill);
-            let draw = generate_ass(batch.iter().copied(), &this.points, capitalize);
-            out.push_str(&format!(
-                "{{\\an7\\pos(0,0)\\p1\\bord{}\\1c&H{}&\\3c&H{}&}}{}{{\\p0}}",
-                border_width,
-                color.to_ass_bgr(),
-                border.to_ass_bgr(),
-                draw
-            ));
-        };
+        }
+        poly
+    }
+
+    /// Contours as command slices (a new contour starts at every `m` / `n`).
+    fn contour_cmds(&self) -> Vec<Vec<&DrawCmd>> {
+        let mut contours: Vec<Vec<&DrawCmd>> = Vec::new();
         for cmd in &self.commands {
-            if cmd.is_contour_start() && !batch.is_empty() {
-                flush(&batch, cidx, &mut out, self);
-                batch.clear();
-                cidx += 1;
+            if cmd.is_contour_start() || contours.is_empty() {
+                contours.push(Vec::new());
             }
-            batch.push(cmd);
+            if let Some(last) = contours.last_mut() {
+                last.push(cmd);
+            }
         }
-        flush(&batch, cidx, &mut out, self);
+        contours
+    }
+
+    /// Group contours into sub-shapes like ASSDraw3's `BuildStyledSubshapes`: a hole (a contour
+    /// nested in another one with opposite winding) belongs to its parent. Returns
+    /// `(index of the outer contour, member contour indices)`; the outer contour comes first.
+    pub fn subshape_groups(&self) -> Vec<(usize, Vec<usize>)> {
+        let contours = self.contour_cmds();
+        self.group_indices(&contours)
+    }
+
+    #[allow(clippy::needless_range_loop)]
+    fn group_indices(&self, contours: &[Vec<&DrawCmd>]) -> Vec<(usize, Vec<usize>)> {
+        let n = contours.len();
+        let polys: Vec<Vec<(f64, f64)>> = contours.iter().map(|c| self.contour_polygon(c)).collect();
+        let areas: Vec<f64> = polys.iter().map(|p| signed_area(p)).collect();
+        let mut parent: Vec<Option<usize>> = vec![None; n];
+        let mut is_hole = vec![false; n];
+        for i in 0..n {
+            if polys[i].len() < 3 {
+                continue;
+            }
+            for cand in 0..n {
+                if cand == i || polys[cand].len() < 3 || winding(&polys[cand], polys[i][0]) == 0 {
+                    continue;
+                }
+                let better = match parent[i] {
+                    None => true,
+                    Some(p) => areas[cand].abs() < areas[p].abs(),
+                };
+                if better {
+                    parent[i] = Some(cand);
+                }
+            }
+            if let Some(p) = parent[i] {
+                is_hole[i] = areas[i] * areas[p] < 0.0;
+            }
+        }
+        let mut out = Vec::new();
+        for i in 0..n {
+            if is_hole[i] {
+                continue;
+            }
+            let mut members = vec![i];
+            for child in 0..n {
+                if is_hole[child] && parent[child] == Some(i) {
+                    members.push(child);
+                }
+            }
+            out.push((i, members));
+        }
         out
+    }
+
+    fn group_subshapes<'a>(&self, contours: &[Vec<&'a DrawCmd>]) -> Vec<(usize, Vec<&'a DrawCmd>)> {
+        self.group_indices(contours)
+            .into_iter()
+            .map(|(idx, members)| {
+                let mut cmds: Vec<&'a DrawCmd> = Vec::new();
+                for m in members {
+                    cmds.extend(contours[m].iter().copied());
+                }
+                (idx, cmds)
+            })
+            .collect()
+    }
+
+    /// Sub-shape (index of its outer contour) whose filled area (non-zero winding, holes excluded)
+    /// contains the logical point. The last matching sub-shape wins, like the original.
+    pub fn subshape_at(&self, lx: f64, ly: f64) -> Option<usize> {
+        let contours = self.contour_cmds();
+        let polys: Vec<Vec<(f64, f64)>> = contours.iter().map(|c| self.contour_polygon(c)).collect();
+        let mut hit = None;
+        for (outer, members) in self.group_indices(&contours) {
+            let w: i32 = members.iter().map(|&m| winding(&polys[m], (lx, ly))).sum();
+            if w != 0 {
+                hit = Some(outer);
+            }
+        }
+        hit
+    }
+
+    /// Bounding box of the rendered shape (flattened curves, no control points).
+    pub fn shape_bounds(&self) -> Option<(f64, f64, f64, f64)> {
+        let mut b: Option<(f64, f64, f64, f64)> = None;
+        for c in self.contour_cmds() {
+            for (x, y) in self.contour_polygon(&c) {
+                b = Some(match b {
+                    Some((a, bb, cc, d)) => (a.min(x), bb.min(y), cc.max(x), d.max(y)),
+                    None => (x, y, x, y),
+                });
+            }
+        }
+        b
     }
 
     pub fn push_history(&mut self) {
@@ -275,6 +666,7 @@ impl Drawing {
             commands: self.commands.clone(),
             next_id: self.next_id,
             shape_colors: self.shape_colors.clone(),
+            shape_styles: self.shape_styles.clone(),
             desc: desc.to_string(),
         });
     }
@@ -299,6 +691,7 @@ impl Drawing {
             commands: self.commands.clone(),
             next_id: self.next_id,
             shape_colors: self.shape_colors.clone(),
+            shape_styles: self.shape_styles.clone(),
             desc: desc.to_string(),
         }
     }
@@ -308,6 +701,12 @@ impl Drawing {
         self.commands = s.commands;
         self.next_id = s.next_id;
         self.shape_colors = s.shape_colors;
+        self.shape_styles = s.shape_styles;
+    }
+
+    /// Remove the snapshot taken by the last `push_history*` call.
+    pub fn undo_discard(&mut self) {
+        self.history.discard_last();
     }
 
     pub fn can_undo(&self) -> bool {
@@ -337,8 +736,7 @@ impl Drawing {
     }
 
     pub fn delete_point(&mut self, id: Id) {
-        self.points.remove(&id);
-        self.commands.retain(|c| !c.all_points().contains(&id));
+        self.delete_command_of_point(id);
     }
 
     pub fn contour_count(&self) -> usize {
@@ -347,6 +745,10 @@ impl Drawing {
 
     pub fn set_contour_color(&mut self, idx: usize, c: Color) {
         self.shape_colors.insert(idx, c);
+        if let Some(style) = self.shape_styles.get_mut(&idx) {
+            style.fill = c;
+            style.fill_enabled = true;
+        }
     }
 
     pub fn get_contour_color(&self, idx: usize) -> Option<&Color> {
@@ -357,7 +759,7 @@ impl Drawing {
         let mut best = None;
         for (id, p) in &self.points {
             let d = p.dist_to_xy(lx, ly);
-            if d <= max_dist && best.map_or(true, |(_, bd)| d < bd) {
+            if d <= max_dist && best.is_none_or(|(_, bd)| d < bd) {
                 best = Some((*id, d));
             }
         }
@@ -386,6 +788,10 @@ impl Drawing {
                 p.x += dx;
                 p.y += dy;
             }
+        }
+        // C1 must be enforced after multi-point moves too (mirrors single move_point).
+        for &id in ids {
+            self.enforce_c1_continuity(id);
         }
     }
 
@@ -417,6 +823,16 @@ fn generate_ass<'a>(
     points: &HashMap<Id, Point>,
     capitalize: bool,
 ) -> String {
+    generate_ass_offset(cmds, points, capitalize, 0)
+}
+
+/// Like [`generate_ass`], but adds `dx` to every (rounded) x coordinate.
+fn generate_ass_offset<'a>(
+    cmds: impl IntoIterator<Item = &'a DrawCmd>,
+    points: &HashMap<Id, Point>,
+    capitalize: bool,
+    dx: i64,
+) -> String {
     let mut out = String::new();
     let tag = |letter: char| -> char {
         if capitalize {
@@ -433,17 +849,17 @@ fn generate_ass<'a>(
         match cmd {
             DrawCmd::M { point } => {
                 if let Some(p) = points.get(point) {
-                    out.push_str(&format!("{} {} {}", tag('m'), r(p.x), r(p.y)));
+                    out.push_str(&format!("{} {} {}", tag('m'), r(p.x) + dx, r(p.y)));
                 }
             }
             DrawCmd::N { point } => {
                 if let Some(p) = points.get(point) {
-                    out.push_str(&format!("{} {} {}", tag('n'), r(p.x), r(p.y)));
+                    out.push_str(&format!("{} {} {}", tag('n'), r(p.x) + dx, r(p.y)));
                 }
             }
             DrawCmd::L { point } => {
                 if let Some(p) = points.get(point) {
-                    out.push_str(&format!("{} {} {}", tag('l'), r(p.x), r(p.y)));
+                    out.push_str(&format!("{} {} {}", tag('l'), r(p.x) + dx, r(p.y)));
                 }
             }
             DrawCmd::B { control1, control2, end, .. } => {
@@ -453,11 +869,11 @@ fn generate_ass<'a>(
                     out.push_str(&format!(
                         "{} {} {} {} {} {} {}",
                         tag('b'),
-                        r(c1.x),
+                        r(c1.x) + dx,
                         r(c1.y),
-                        r(c2.x),
+                        r(c2.x) + dx,
                         r(c2.y),
-                        r(e.x),
+                        r(e.x) + dx,
                         r(e.y)
                     ));
                 }
@@ -466,19 +882,81 @@ fn generate_ass<'a>(
                 out.push(tag('s'));
                 for pid in pts {
                     if let Some(p) = points.get(pid) {
-                        out.push_str(&format!(" {} {}", r(p.x), r(p.y)));
+                        out.push_str(&format!(" {} {}", r(p.x) + dx, r(p.y)));
                     }
                 }
             }
             DrawCmd::P { point } => {
                 if let Some(p) = points.get(point) {
-                    out.push_str(&format!("{} {} {}", tag('p'), r(p.x), r(p.y)));
+                    out.push_str(&format!("{} {} {}", tag('p'), r(p.x) + dx, r(p.y)));
                 }
             }
             DrawCmd::C => out.push(tag('c')),
         }
     }
     out
+}
+
+fn signed_area(poly: &[(f64, f64)]) -> f64 {
+    let mut sum = 0.0;
+    for (i, &(x1, y1)) in poly.iter().enumerate() {
+        let (x2, y2) = poly[(i + 1) % poly.len()];
+        sum += x1 * y2 - x2 * y1;
+    }
+    sum / 2.0
+}
+
+/// Non-zero winding number of `poly` around the point.
+fn winding(poly: &[(f64, f64)], (px, py): (f64, f64)) -> i32 {
+    if poly.len() < 3 {
+        return 0;
+    }
+    let mut w = 0;
+    for (i, &(x1, y1)) in poly.iter().enumerate() {
+        let (x2, y2) = poly[(i + 1) % poly.len()];
+        let side = (x2 - x1) * (py - y1) - (y2 - y1) * (px - x1);
+        if y1 <= py {
+            if y2 > py && side > 0.0 {
+                w += 1;
+            }
+        } else if y2 <= py && side < 0.0 {
+            w -= 1;
+        }
+    }
+    w
+}
+
+/// Smallest and largest rounded x coordinate used by `cmds` (controls included).
+fn x_range(cmds: &[&DrawCmd], points: &HashMap<Id, Point>) -> Option<(i64, i64)> {
+    let mut range: Option<(i64, i64)> = None;
+    let mut add = |id: &Id| {
+        if let Some(p) = points.get(id) {
+            let x = r(p.x);
+            range = Some(match range {
+                Some((lo, hi)) => (lo.min(x), hi.max(x)),
+                None => (x, x),
+            });
+        }
+    };
+    for cmd in cmds {
+        match cmd {
+            DrawCmd::M { point } | DrawCmd::N { point } | DrawCmd::L { point } | DrawCmd::P { point } => {
+                add(point);
+            }
+            DrawCmd::B { control1, control2, end, .. } => {
+                add(control1);
+                add(control2);
+                add(end);
+            }
+            DrawCmd::S { points: ids } => {
+                for id in ids {
+                    add(id);
+                }
+            }
+            DrawCmd::C => {}
+        }
+    }
+    range
 }
 
 fn r(v: f64) -> i64 {

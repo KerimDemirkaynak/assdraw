@@ -1,4 +1,4 @@
-use super::{Color, DrawCmd, Id, Point};
+use super::{Color, DrawCmd, Id, Point, ShapeStyle};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
@@ -7,6 +7,7 @@ pub struct DrawingSnapshot {
     pub commands: Vec<DrawCmd>,
     pub next_id: Id,
     pub shape_colors: HashMap<usize, Color>,
+    pub shape_styles: HashMap<usize, ShapeStyle>,
     pub desc: String,
 }
 
@@ -43,6 +44,11 @@ impl History {
             self.undo_stack.remove(0);
         }
         self.redo_stack.clear();
+    }
+
+    /// Drop the newest undo snapshot (used when a gesture turned out to change nothing).
+    pub fn discard_last(&mut self) {
+        self.undo_stack.pop();
     }
 
     pub fn can_undo(&self) -> bool {

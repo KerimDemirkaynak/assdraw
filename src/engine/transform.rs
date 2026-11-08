@@ -1,7 +1,8 @@
 //! Matrix transformation, scaling, rotation, bilinear deformation,
 //! and shape repositioning (mirrors original ASSDrawEngine::Transform and dlgctrl.cpp templates).
 
-use super::Drawing;
+use super::{Drawing, Id, Point};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ReposAnchor {
@@ -83,15 +84,15 @@ impl Drawing {
         for p in self.points.values_mut() {
             if !selected_only || selected.contains(&p.id) {
                 let (nx, ny) = t.transform_point(p.x, p.y);
-                p.x = nx;
-                p.y = ny;
+                p.x = nx.round();
+                p.y = ny.round();
             }
         }
     }
 
     /// Scale and rotate points around the bounding box center.
     pub fn apply_scale_rotate(&mut self, scale: f64, angle_deg: f64) {
-        let Some((min_x, min_y, max_x, max_y)) = self.bounds() else { return; };
+        let Some((min_x, min_y, max_x, max_y)) = self.shape_bounds() else { return; };
         let cx = (min_x + max_x) / 2.0;
         let cy = (min_y + max_y) / 2.0;
         let rad = angle_deg.to_radians();
@@ -101,8 +102,8 @@ impl Drawing {
             let dy = p.y - cy;
             let rx = dx * cos - dy * sin;
             let ry = dx * sin + dy * cos;
-            p.x = cx + rx * scale;
-            p.y = cy + ry * scale;
+            p.x = (cx + rx * scale).round();
+            p.y = (cy + ry * scale).round();
         }
     }
 
@@ -144,4 +145,87 @@ impl Drawing {
             p.y = top_y + (bot_y - top_y) * v;
         }
     }
+    /// Bilinear map of `original` points from source `rect` corners `[tl, tr, br, bl]` to
+    /// destination `quad`. Works for axis-aligned **and** rotated/skewed source quads
+    /// (inverse bilinear → forward bilinear). Always maps from the untouched originals so
+    /// repeated calls while dragging do not accumulate distortion.
+    pub fn apply_bilinear_from(
+        &mut self,
+        original: &HashMap<Id, Point>,
+        rect: [(f64, f64); 4],
+        quad: [(f64, f64); 4],
+    ) {
+        for (id, src) in original {
+            if let Some(p) = self.points.get_mut(id) {
+                let (u, v) = inverse_bilinear(rect, (src.x, src.y));
+                let (nx, ny) = forward_bilinear(quad, u, v);
+                p.x = nx.round();
+                p.y = ny.round();
+            }
+        }
+    }
+}
+
+/// Bilinear interpolation on a quad `[tl, tr, br, bl]`.
+fn forward_bilinear(q: [(f64, f64); 4], u: f64, v: f64) -> (f64, f64) {
+    let [tl, tr, br, bl] = q;
+    let top_x = tl.0 + (tr.0 - tl.0) * u;
+    let top_y = tl.1 + (tr.1 - tl.1) * u;
+    let bot_x = bl.0 + (br.0 - bl.0) * u;
+    let bot_y = bl.1 + (br.1 - bl.1) * u;
+    (
+        top_x + (bot_x - top_x) * v,
+        top_y + (bot_y - top_y) * v,
+    )
+}
+
+/// Inverse bilinear: find `(u, v)` in `[0,1]²` such that `forward_bilinear(q, u, v) ≈ p`.
+/// Uses a few Newton iterations; falls back to axis-aligned UV if the solve fails.
+fn inverse_bilinear(q: [(f64, f64); 4], p: (f64, f64)) -> (f64, f64) {
+    let [tl, tr, br, bl] = q;
+    // Fast path: axis-aligned rectangle (common case at transform start).
+    let axis_aligned = (tl.1 - tr.1).abs() < 1e-9
+        && (bl.1 - br.1).abs() < 1e-9
+        && (tl.0 - bl.0).abs() < 1e-9
+        && (tr.0 - br.0).abs() < 1e-9;
+    if axis_aligned {
+        let u = if (tr.0 - tl.0).abs() > 1e-12 {
+            (p.0 - tl.0) / (tr.0 - tl.0)
+        } else {
+            0.0
+        };
+        let v = if (bl.1 - tl.1).abs() > 1e-12 {
+            (p.1 - tl.1) / (bl.1 - tl.1)
+        } else {
+            0.0
+        };
+        return (u, v);
+    }
+
+    // Newton on F(u,v) = bilinear(q,u,v) - p
+    let mut u = 0.5;
+    let mut v = 0.5;
+    for _ in 0..8 {
+        let (x, y) = forward_bilinear(q, u, v);
+        let fx = x - p.0;
+        let fy = y - p.1;
+        if fx * fx + fy * fy < 1e-14 {
+            break;
+        }
+        // Jacobian via finite differences
+        let eps = 1e-6;
+        let (x_u, y_u) = forward_bilinear(q, u + eps, v);
+        let (x_v, y_v) = forward_bilinear(q, u, v + eps);
+        let j11 = (x_u - x) / eps;
+        let j21 = (y_u - y) / eps;
+        let j12 = (x_v - x) / eps;
+        let j22 = (y_v - y) / eps;
+        let det = j11 * j22 - j12 * j21;
+        if det.abs() < 1e-14 {
+            break;
+        }
+        u -= (j22 * fx - j12 * fy) / det;
+        v -= (-j21 * fx + j11 * fy) / det;
+    }
+    (u, v)
 }

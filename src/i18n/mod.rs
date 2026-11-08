@@ -3,8 +3,11 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+mod ui_strings;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub enum Language {
+    #[default]
     En,
     Tr,
     Fr,
@@ -12,12 +15,6 @@ pub enum Language {
     Es,
     ZhTw,
     Vi,
-}
-
-impl Default for Language {
-    fn default() -> Self {
-        Language::Tr
-    }
 }
 
 impl Language {
@@ -55,6 +52,24 @@ impl Language {
         }
     }
 
+    /// Language of the operating system (from the usual locale variables), English otherwise.
+    pub fn detect() -> Self {
+        for var in ["LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE"] {
+            if let Ok(v) = std::env::var(var) {
+                let v = v.to_lowercase();
+                if v.is_empty() || v == "c" || v == "posix" {
+                    continue;
+                }
+                if v.starts_with("zh") {
+                    return Language::ZhTw;
+                }
+                let code: String = v.chars().take_while(|c| c.is_ascii_alphabetic()).collect();
+                return Self::from_code(&code);
+            }
+        }
+        Language::En
+    }
+
     pub fn from_code(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "tr" => Language::Tr,
@@ -69,6 +84,9 @@ impl Language {
 }
 
 pub fn t(lang: Language, key: &'static str) -> &'static str {
+    if let Some(s) = ui_strings::lookup(lang, key) {
+        return s;
+    }
     match lang {
         Language::Tr => tr_tr(key),
         Language::En => tr_en(key),

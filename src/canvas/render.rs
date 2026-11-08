@@ -2,6 +2,7 @@
 
 use crate::canvas::mouse::CanvasMouseState;
 use crate::engine::{Color, DrawCmd, Drawing, PointKind};
+use crate::ui::Tool;
 use crate::settings::AppSettings;
 use egui::{Color32, FontId, Pos2, Rect, Stroke};
 
@@ -123,223 +124,171 @@ pub fn draw_rulers(
     }
 }
 
-pub fn draw_origin(
-    painter: &egui::Painter,
-    origin: Pos2,
-    cross_size: f32,
-    origin_color: Color32,
-    is_hover: bool,
-) {
-    let s = (cross_size * 5.0).max(10.0) * if is_hover { 1.3 } else { 1.0 };
-    let stroke = Stroke::new(if is_hover { 2.2_f32 } else { 1.4_f32 }, origin_color);
-
-    // Cross lines
+/// Origin crosshair: the arms are `arm` pixels long (the original scales them with the zoom).
+pub fn draw_origin(painter: &egui::Painter, origin: Pos2, arm: f32, origin_color: Color32) {
+    let s = arm.max(6.0);
+    let stroke = Stroke::new(1.4_f32, origin_color);
     painter.line_segment([Pos2::new(origin.x - s, origin.y), Pos2::new(origin.x + s, origin.y)], stroke);
     painter.line_segment([Pos2::new(origin.x, origin.y - s), Pos2::new(origin.x, origin.y + s)], stroke);
-
-    // Circle at origin
-    painter.circle_stroke(origin, s * 0.45, stroke);
-    if is_hover {
-        painter.circle_filled(origin, s * 0.25, origin_color);
-    }
-
-    painter.text(
-        Pos2::new(origin.x + 4.0, origin.y + 4.0),
-        egui::Align2::LEFT_TOP,
-        "(0,0)",
-        FontId::monospace(9.0),
-        origin_color,
-    );
 }
 
-pub fn draw_paths(
+fn with_alpha(c: Color, alpha: u8) -> Color32 {
+    Color32::from_rgba_unmultiplied(c.r, c.g, c.b, alpha)
+}
+
+/// Thin editor outline of the shape (the original's `rgba_outline` stroke). Open polylines.
+pub fn draw_editor_outline(
     painter: &egui::Painter,
-    drawing: &Drawing,
-    to_screen: &dyn Fn(f64, f64) -> Pos2,
-    default_color: Color,
-    border_color: Color,
-    border_width: f32,
+    polylines: &[Vec<Pos2>],
+    settings: &AppSettings,
 ) {
-    let mut path: Vec<Pos2> = Vec::new();
-    let mut contour = 0usize;
-    let stroke_width = if border_width > 0.1 { border_width } else { 2.0 };
-
-    let flush = |path: &mut Vec<Pos2>, c: usize, painter: &egui::Painter| {
-        if path.len() >= 2 {
-            let col = drawing
-                .get_contour_color(c)
-                .map(|c| c.to_egui())
-                .unwrap_or(default_color.to_egui());
-            painter.add(egui::Shape::line(
-                std::mem::take(path),
-                Stroke::new(stroke_width, if border_width > 0.1 { border_color.to_egui() } else { col }),
-            ));
-        } else {
-            path.clear();
+    let col = with_alpha(settings.editor_outline, settings.editor_outline_opacity);
+    for pl in polylines {
+        if pl.len() >= 2 {
+            painter.add(egui::Shape::line(pl.clone(), Stroke::new(1.0_f32, col)));
         }
-    };
-
-    for (idx, cmd) in drawing.commands.iter().enumerate() {
-        if cmd.is_contour_start() && idx > 0 {
-            flush(&mut path, contour, painter);
-            contour += 1;
-        }
-        match cmd {
-            DrawCmd::M { point } | DrawCmd::N { point } | DrawCmd::L { point } => {
-                if let Some(p) = drawing.points.get(point) {
-                    path.push(to_screen(p.x, p.y));
-                }
-            }
-            DrawCmd::B { control1, control2, end, .. } => {
-                if let (Some(c1), Some(c2), Some(e)) = (
-                    drawing.points.get(control1),
-                    drawing.points.get(control2),
-                    drawing.points.get(end),
-                ) {
-                    let start = path.last().copied().unwrap_or(to_screen(c1.x, c1.y));
-                    for i in 1..=24 {
-                        let t = i as f32 / 24.0;
-                        path.push(cubic(
-                            start,
-                            to_screen(c1.x, c1.y),
-                            to_screen(c2.x, c2.y),
-                            to_screen(e.x, e.y),
-                            t,
-                        ));
-                    }
-                }
-            }
-            DrawCmd::S { points } => {
-                for pid in points {
-                    if let Some(p) = drawing.points.get(pid) {
-                        path.push(to_screen(p.x, p.y));
-                    }
-                }
-            }
-            DrawCmd::P { point } => {
-                if let Some(p) = drawing.points.get(point) {
-                    path.push(to_screen(p.x, p.y));
-                }
-            }
-            DrawCmd::C => {
-                if let Some(f) = path.first().copied() {
-                    path.push(f);
-                }
-            }
-        }
-    }
-    flush(&mut path, contour, painter);
-}
-
-fn cubic(p0: Pos2, p1: Pos2, p2: Pos2, p3: Pos2, t: f32) -> Pos2 {
-    let u = 1.0 - t;
-    let tt = t * t;
-    let uu = u * u;
-    Pos2 {
-        x: uu * u * p0.x + 3.0 * uu * t * p1.x + 3.0 * u * tt * p2.x + tt * t * p3.x,
-        y: uu * u * p0.y + 3.0 * uu * t * p1.y + 3.0 * u * tt * p2.y + tt * t * p3.y,
     }
 }
 
+/// ASS border preview: stroke of `width * scale` pixels around a (closed) contour.
+pub fn draw_style_outline(
+    painter: &egui::Painter,
+    polyline: &[Pos2],
+    width_px: f32,
+    color: Color32,
+) {
+    if polyline.len() >= 2 && width_px > 0.0 {
+        painter.add(egui::Shape::closed_line(polyline.to_vec(), Stroke::new(width_px, color)));
+    }
+}
+
+/// Screen points of a command including its start (used for guides and highlighting).
+fn cmd_guide_points(
+    drawing: &Drawing,
+    idx: usize,
+    to_screen: &dyn Fn(f64, f64) -> Pos2,
+) -> Vec<Pos2> {
+    let mut pts = Vec::new();
+    if idx > 0 {
+        if let Some((x, y)) = drawing.main_pos_of_cmd(idx - 1) {
+            pts.push(to_screen(x, y));
+        }
+    }
+    for id in drawing.commands[idx].all_points() {
+        if let Some(p) = drawing.points.get(&id) {
+            pts.push(to_screen(p.x, p.y));
+        }
+    }
+    pts
+}
+
+#[allow(clippy::too_many_arguments)]
 pub fn draw_points(
     painter: &egui::Painter,
     drawing: &Drawing,
     mouse: &CanvasMouseState,
-    to_screen: &dyn Fn(f64, f64) -> Pos2,
+    origin: Pos2,
+    scale: f32,
     settings: &AppSettings,
+    rect: Rect,
 ) {
-    // Control handle lines for Bezier
-    for cmd in &drawing.commands {
-        if let DrawCmd::B { control1, control2, end, c1_cont } = cmd {
-            if let (Some(c1), Some(c2), Some(e)) = (
-                drawing.points.get(control1),
-                drawing.points.get(control2),
-                drawing.points.get(end),
-            ) {
-                let pe = to_screen(e.x, e.y);
-                let line_col = if *c1_cont {
-                    Color32::from_rgb(0, 220, 150)
-                } else {
-                    settings.guideline_color.to_egui()
-                };
-                painter.line_segment(
-                    [to_screen(c1.x, c1.y), pe],
-                    Stroke::new(1.0_f32, line_col),
-                );
-                painter.line_segment(
-                    [to_screen(c2.x, c2.y), pe],
-                    Stroke::new(1.0_f32, line_col),
-                );
+    let to_screen = |x: f64, y: f64| Pos2::new(origin.x + x as f32 * scale, origin.y + y as f32 * scale);
+
+    // Guide lines: the control polygon of every Bezier / spline, drawn from the previous point.
+    let guide = with_alpha(settings.guideline_color, settings.guideline_opacity);
+    for (i, cmd) in drawing.commands.iter().enumerate() {
+        if let DrawCmd::B { c1_cont, .. } = cmd {
+            let col = if *c1_cont { Color32::from_rgb(0, 220, 150) } else { guide };
+            let pts = cmd_guide_points(drawing, i, &to_screen);
+            if pts.len() >= 2 {
+                painter.add(egui::Shape::line(pts, Stroke::new(1.0_f32, col)));
+            }
+        } else if matches!(cmd, DrawCmd::S { .. }) {
+            let pts = cmd_guide_points(drawing, i, &to_screen);
+            if pts.len() >= 2 {
+                painter.add(egui::Shape::line(pts, Stroke::new(1.0_f32, guide)));
             }
         }
     }
 
-    // Points (Square anchors for ASSDraw3, circles for Bezier control handles)
+    // Highlighted command (the one under the cursor), except plain moves.
+    if let Some(id) = mouse.pointed_id {
+        if let Some(i) = drawing.cmd_index_of_point(id) {
+            if !matches!(drawing.commands[i], DrawCmd::M { .. } | DrawCmd::N { .. }) {
+                let pts = cmd_guide_points(drawing, i, &to_screen);
+                if pts.len() >= 2 {
+                    let col = with_alpha(settings.editor_outline, 160);
+                    painter.add(egui::Shape::line(pts, Stroke::new(3.0_f32, col)));
+                }
+            }
+        }
+    }
+
+    let diameter = scale.clamp(8.0, 14.0);
+    let radius = diameter / 2.0;
+    let main_col = with_alpha(settings.point_main, settings.point_opacity);
+    let ctrl_col = with_alpha(settings.point_control, settings.control_point_opacity);
+    let sel_col = with_alpha(settings.point_selected, settings.selected_point_opacity);
+
     for p in drawing.points.values() {
         let pos = to_screen(p.x, p.y);
-        let is_hover = mouse.pointed_id == Some(p.id);
-        let is_sel = mouse.selected.contains(&p.id);
-
         match p.kind {
             PointKind::Main => {
-                let half_size = if is_hover { 5.5 } else { 4.0 };
-                let p_rect = Rect::from_center_size(pos, egui::vec2(half_size * 2.0, half_size * 2.0));
-                let col = Color32::from_rgba_unmultiplied(
-                    settings.point_main.r,
-                    settings.point_main.g,
-                    settings.point_main.b,
-                    settings.point_opacity,
-                );
-                painter.rect_filled(p_rect, 0.0, col);
-                painter.rect_stroke(p_rect, 0.0, Stroke::new(1.0_f32, Color32::from_gray(30)));
+                painter.rect_filled(Rect::from_center_size(pos, egui::vec2(diameter, diameter)), 0.0, main_col);
             }
             PointKind::Control => {
-                let r = if is_hover { 5.5 } else { 3.5 };
-                let col = Color32::from_rgba_unmultiplied(
-                    settings.point_control.r,
-                    settings.point_control.g,
-                    settings.point_control.b,
-                    settings.control_point_opacity,
-                );
-                painter.circle_filled(pos, r, col);
-                painter.circle_stroke(pos, r, Stroke::new(1.0_f32, Color32::BLACK));
+                painter.circle_filled(pos, radius, ctrl_col);
             }
         }
-
-        if is_sel {
-            let sel_col = Color32::from_rgba_unmultiplied(
-                settings.point_selected.r,
-                settings.point_selected.g,
-                settings.point_selected.b,
-                settings.selected_point_opacity,
-            );
-            painter.circle_stroke(
-                pos,
-                9.5,
-                Stroke::new(2.0_f32, sel_col),
-            );
+    }
+    for id in &mouse.selected {
+        if let Some(p) = drawing.points.get(id) {
+            painter.circle_stroke(to_screen(p.x, p.y), radius + 3.0, Stroke::new(1.5_f32, sel_col));
         }
     }
 
-    // Marquee Selection Box
-    if let Some((a, b)) = mouse.marquee {
-        let rect = Rect::from_two_pos(a, b);
-        painter.rect_stroke(rect, 0.0, Stroke::new(1.0_f32, Color32::from_rgb(100, 190, 255)));
-        painter.rect_filled(rect, 0.0, Color32::from_rgba_unmultiplied(80, 150, 240, 45));
+    // Hover: ring, coordinates label and cross guides through the point.
+    if let Some(p) = mouse.pointed_id.and_then(|id| drawing.points.get(&id)) {
+        let pos = to_screen(p.x, p.y);
+        painter.circle_stroke(pos, radius + 3.0, Stroke::new(2.0_f32, sel_col));
+        let cross = with_alpha(settings.guideline_color, 128);
+        painter.line_segment([Pos2::new(pos.x, rect.min.y), Pos2::new(pos.x, rect.max.y)], Stroke::new(1.0_f32, cross));
+        painter.line_segment([Pos2::new(rect.min.x, pos.y), Pos2::new(rect.max.x, pos.y)], Stroke::new(1.0_f32, cross));
+        painter.text(
+            Pos2::new(pos.x + 6.0, pos.y - 6.0),
+            egui::Align2::LEFT_BOTTOM,
+            format!("{},{}", p.x.round() as i64, p.y.round() as i64),
+            FontId::monospace(11.0),
+            with_alpha(settings.editor_outline, 255),
+        );
     }
 
-    // Transform Bounding Quad
+    // Selection rubber band.
+    if let Some((a, b)) = mouse.marquee {
+        let r = Rect::from_two_pos(a, b);
+        painter.rect_stroke(r, 0.0, Stroke::new(1.0_f32, with_alpha(settings.editor_outline, 160)));
+    }
+
+    // Transform handles.
     if let Some(q) = mouse.transform_quad {
+        let red = Color32::from_rgb(255, 70, 70);
         for i in 0..4 {
             let a = to_screen(q[i].0, q[i].1);
             let b = to_screen(q[(i + 1) % 4].0, q[(i + 1) % 4].1);
-            painter.line_segment([a, b], Stroke::new(1.5_f32, Color32::from_rgb(255, 90, 90)));
-            painter.circle_filled(a, 6.0, Color32::from_rgb(255, 70, 70));
-            painter.circle_stroke(a, 6.0, Stroke::new(1.5_f32, Color32::WHITE));
+            painter.line_segment([a, b], Stroke::new(1.5_f32, red));
+            painter.circle_stroke(a, 6.0, Stroke::new(1.5_f32, red));
+        }
+        if mouse.tool == Tool::ScaleRotate {
+            let cx = (q[0].0 + q[2].0) * 0.5;
+            let cy = (q[0].1 + q[2].1) * 0.5;
+            let c = to_screen(cx, cy);
+            painter.line_segment([c - egui::vec2(10.0, 10.0), c + egui::vec2(10.0, 10.0)], Stroke::new(1.0_f32, red));
+            painter.line_segment([c + egui::vec2(10.0, -10.0), c + egui::vec2(-10.0, 10.0)], Stroke::new(1.0_f32, red));
+            painter.circle_stroke(c, 10.0, Stroke::new(1.0_f32, red));
         }
     }
 
-    // Temp points for placement tools (Bezier, Spline)
+    // Spline tool: points collected so far.
     for &(x, y) in &mouse.temp_points {
         let p = to_screen(x, y);
         painter.circle_filled(p, 5.0, Color32::YELLOW);

@@ -42,6 +42,14 @@ impl ShapeLibrary {
         });
     }
 
+    /// Add a shape at the top of the list (newest first, like the original).
+    pub fn add_front(&mut self, name: impl Into<String>, drawing: Drawing) {
+        self.add(name, drawing);
+        if let Some(last) = self.entries.pop() {
+            self.entries.insert(0, last);
+        }
+    }
+
     pub fn get(&self, idx: usize) -> Option<&LibraryEntry> {
         self.entries.get(idx)
     }
@@ -74,6 +82,35 @@ impl ShapeLibrary {
 
     pub fn from_json(s: &str) -> Result<Self, serde_json::Error> {
         serde_json::from_str(s)
+    }
+
+    fn library_path() -> Option<std::path::PathBuf> {
+        dirs::config_dir().map(|p| p.join("assdraw-rs").join("library.json"))
+    }
+
+    /// Load library from disk (config dir). Falls back to defaults on error/missing file.
+    pub fn load() -> Self {
+        if let Some(path) = Self::library_path() {
+            if let Ok(text) = std::fs::read_to_string(&path) {
+                // An existing file wins even when it is empty (the user may have deleted everything).
+                if let Ok(lib) = Self::from_json(&text) {
+                    return lib;
+                }
+            }
+        }
+        Self::default()
+    }
+
+    /// Persist library to config dir (creates directory if needed).
+    pub fn save(&self) {
+        if let Some(path) = Self::library_path() {
+            if let Some(parent) = path.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            if let Ok(text) = self.to_json() {
+                let _ = std::fs::write(path, text);
+            }
+        }
     }
 
     fn add_defaults(&mut self) {

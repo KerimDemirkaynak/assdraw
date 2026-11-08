@@ -1,107 +1,128 @@
-//! Mouse state machine (mirrors ASSDrawCanvas::OnMouse*).
-//! Supports independent/unified Drawing and Background drag modes,
-//! origin dragging, marquee selection, transform handles, and hover hit-testing.
+//! Mouse state shared by the canvas (mirrors the fields of ASSDrawCanvas that drive
+//! `OnMouse*`): selection, hover, drag gestures, view pan/zoom, transform handles.
 
-use crate::engine::{DrawCmd, Drawing, Id, PointKind};
+use crate::engine::{Drawing, Id, Point, PointKind};
 use crate::ui::Tool;
 use egui::{Pos2, Vec2};
+use std::collections::HashMap;
 
-/// Drag targets (mirrors DRAGMODE: DRAG_DWG, DRAG_BGIMG, DRAG_BOTH).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Drag targets (mirrors DRAGMODE: DRAG_DWG, DRAG_BGIMG, both).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum DragTarget {
+    #[default]
     Drawing,
     Background,
     Both,
 }
 
-impl Default for DragTarget {
-    fn default() -> Self {
-        DragTarget::Drawing
+impl DragTarget {
+    pub fn drawing(self) -> bool {
+        matches!(self, DragTarget::Drawing | DragTarget::Both)
+    }
+    pub fn background(self) -> bool {
+        matches!(self, DragTarget::Background | DragTarget::Both)
     }
 }
 
-/// Selection modifier (mirrors original SELECTMODE: NEW, ADD, DEL/TOGGLE).
+/// Selection modifier (original SELECTMODE): Ctrl adds, Alt removes, otherwise a new selection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SelectMode {
     New,
     Add,
-    Toggle,
+    Remove,
 }
 
 /// What the left button is currently doing.
 #[derive(Debug, Clone)]
 pub enum LeftDragKind {
     None,
-    /// Moving one or more selected points
-    MovePoints { last_logical: (f64, f64) },
-    /// Dragging the origin crosshair [0,0]
-    MoveOrigin { last_logical: (f64, f64) },
-    /// Rubber-band selection rectangle (screen space)
+    /// Dragging selected points (or the clicked point).
+    MovePoints,
+    /// Dragging the origin crosshair [0,0].
+    MoveOrigin,
+    /// Rubber-band selection rectangle (screen space).
     Marquee { start: Pos2, current: Pos2 },
-    /// Placing a new draw command (mode M/L/B/S…)
-    PlaceCommand,
-    /// Scale/rotate or bilinear handle
-    TransformHandle { corner: usize },
+    /// A command was just created by this press and its end point follows the mouse.
+    PlaceCommand { cmd_idx: usize, point: Id },
+    /// Scale/rotate or bilinear handle. `edge_partner` is Some(j) when an edge (corner..j) is dragged.
+    TransformHandle {
+        corner: usize,
+        edge_partner: Option<usize>,
+        /// Mouse position (logical) when the drag started.
+        start_logical: (f64, f64),
+        /// Mouse position (logical) at the previous frame (incremental edge moves in bilinear mode).
+        last_logical: (f64, f64),
+    },
 }
+
+/// Points of the shape and its bounding rectangle at the moment the transform tool was entered.
+pub type TransformEntry = (HashMap<Id, Point>, [(f64, f64); 4]);
 
 /// Central mouse/session state for the canvas (survives across frames).
 #[derive(Debug, Clone)]
 pub struct CanvasMouseState {
+    /// Logical position of the last right-click (where the context menu was opened).
+    pub ctx_logical: (f64, f64),
+    /// Point that was under the cursor when the context menu was opened.
+    pub ctx_point: Option<Id>,
     pub tool: Tool,
     pub drag_target: DragTarget,
 
     /// Point under cursor (hover)
     pub pointed_id: Option<Id>,
-    /// True if hovering over origin crosshair (0,0)
-    pub hover_origin: bool,
-    /// Point where left button went down
+    /// Point where the left button went down
     pub mouse_down_id: Option<Id>,
     pub selected: Vec<Id>,
     pub left_drag: LeftDragKind,
     pub left_down: bool,
-    pub right_down: bool,
 
-    /// Anchor for right-drag pan
-    pub pan_anchor: Option<Pos2>,
-    /// Drawing layer pan
+    /// Drawing layer pan (the origin [0,0] sits at canvas centre + pan)
     pub pan: Vec2,
-    /// Drawing layer zoom factor
+    /// Drawing zoom = screen pixels per drawing unit (1..=50, original range)
     pub view_zoom: f32,
 
-    /// Background image layer pan
+    /// Background image layer pan / zoom
     pub bg_pan: Vec2,
-    /// Background image layer zoom factor
     pub bg_zoom: f32,
 
     /// Screen-space rubber band for UI draw
     pub marquee: Option<(Pos2, Pos2)>,
     /// Status secondary text (command under cursor)
     pub status_cmd: String,
-    /// Preview mode: render pure shape, hide all handles & rulers
+    /// Preview mode: render the pure shape, hide all handles & rulers
     pub preview_mode: bool,
-    /// Undo description for the in-progress gesture
+    /// Undo description for the in-progress gesture (empty = nothing recorded yet)
     pub undo_desc: String,
-    /// Temp points for multi-click tools (manual bezier, spline)
+    /// Temp points for the multi-click spline tool
     pub temp_points: Vec<(f64, f64)>,
     /// Transform bounding quad corners in logical space (TL, TR, BR, BL)
     pub transform_quad: Option<[(f64, f64); 4]>,
+    /// Shape + rectangle when the transform tool was entered (every drag maps from these).
+    pub transform_entry: Option<TransformEntry>,
+    /// Quad at the start of the current drag (the original's `backup`).
+    pub transform_start_quad: [(f64, f64); 4],
+    /// Right-drag rotate: logical mouse position at press.
+    pub rotate_start_logical: Option<(f64, f64)>,
+    /// Right-drag rotate: centre and radius at press.
+    pub rotate_center_radius: Option<((f64, f64), f64)>,
+    /// Coloring tool: sub-shape (index of its outer contour) selected by the last click.
+    pub coloring_target: Option<usize>,
 }
 
 impl Default for CanvasMouseState {
     fn default() -> Self {
         Self {
+            ctx_logical: (0.0, 0.0),
+            ctx_point: None,
             tool: Tool::Select,
             drag_target: DragTarget::Drawing,
             pointed_id: None,
-            hover_origin: false,
             mouse_down_id: None,
             selected: Vec::new(),
             left_drag: LeftDragKind::None,
             left_down: false,
-            right_down: false,
-            pan_anchor: None,
             pan: Vec2::ZERO,
-            view_zoom: 1.0,
+            view_zoom: DEFAULT_SCALE,
             bg_pan: Vec2::ZERO,
             bg_zoom: 1.0,
             marquee: None,
@@ -110,15 +131,23 @@ impl Default for CanvasMouseState {
             undo_desc: String::new(),
             temp_points: Vec::new(),
             transform_quad: None,
+            transform_entry: None,
+            transform_start_quad: [(0.0, 0.0); 4],
+            rotate_start_logical: None,
+            rotate_center_radius: None,
+            coloring_target: None,
         }
     }
 }
 
-/// Hit-test radius in logical units given scale and DPI-ish factor.
-pub fn hit_radius_logical(scale: f32, view_zoom: f32) -> f64 {
-    let screen_r = 9.0_f32.max(7.0 * view_zoom);
-    (screen_r / (scale * view_zoom).max(0.001)) as f64
-}
+/// Original DEFAULT_SCALE.
+pub const DEFAULT_SCALE: f32 = 10.0;
+pub const MIN_SCALE: f32 = 1.0;
+pub const MAX_SCALE: f32 = 50.0;
+/// Hit radius of points in screen pixels (kEditorPointHitRadius).
+pub const POINT_HIT_RADIUS: f32 = 9.0;
+/// Hit radius of transform handles in screen pixels (kTransformHandleRadius).
+pub const HANDLE_HIT_RADIUS: f32 = 8.0;
 
 impl CanvasMouseState {
     pub fn clear_selection(&mut self) {
@@ -129,54 +158,103 @@ impl CanvasMouseState {
         self.selected = drawing.points.keys().copied().collect();
     }
 
-    pub fn select_mode(shift: bool, ctrl: bool) -> SelectMode {
-        if ctrl {
-            SelectMode::Toggle
-        } else if shift {
+    /// Screen position of the drawing origin [0,0] inside `rect`.
+    pub fn origin(&self, rect: egui::Rect) -> Pos2 {
+        rect.center() + self.pan
+    }
+
+    /// Pan by `d` screen pixels, honouring the "pan drawing / pan background" toggles.
+    pub fn pan_by(&mut self, d: Vec2) {
+        if self.drag_target.drawing() {
+            self.pan += d;
+            if !self.drag_target.background() {
+                // The background stays where it is on screen.
+                self.bg_pan -= d;
+            }
+        } else if self.drag_target.background() {
+            self.bg_pan += d;
+        }
+    }
+
+    /// Change the zoom by `amount` (original semantics: added to the scale, 1..=50; the background
+    /// zooms by amount/10). The point under `anchor` stays fixed on screen.
+    pub fn zoom_by(&mut self, rect: egui::Rect, amount: f32, anchor: Option<Pos2>) {
+        if self.drag_target.drawing() {
+            let old = self.view_zoom;
+            let new = (old + amount).clamp(MIN_SCALE, MAX_SCALE);
+            let origin = self.origin(rect);
+            let before = self.pan;
+            if let Some(pos) = anchor {
+                let lx = (pos.x - origin.x) / old;
+                let ly = (pos.y - origin.y) / old;
+                self.pan.x += lx * (old - new);
+                self.pan.y += ly * (old - new);
+            }
+            self.view_zoom = new;
+            if self.drag_target.background() {
+                let ratio = new / old;
+                self.bg_zoom = (self.bg_zoom * ratio).max(0.01);
+                self.bg_pan *= ratio;
+            } else {
+                self.bg_pan -= self.pan - before;
+            }
+        } else if self.drag_target.background() {
+            let old = self.bg_zoom;
+            let new = (old + amount / 10.0).max(0.01);
+            let ratio = new / old;
+            let origin = self.origin(rect);
+            let centre = origin + self.bg_pan;
+            let a = anchor.unwrap_or(centre);
+            let new_centre = a + (centre - a) * ratio;
+            self.bg_pan = new_centre - origin;
+            self.bg_zoom = new;
+        }
+    }
+
+    /// Forget the transform handles (they are rebuilt from the shape the next time they are needed).
+    pub fn reset_transform(&mut self) {
+        self.transform_quad = None;
+        self.transform_entry = None;
+        self.rotate_start_logical = None;
+        self.rotate_center_radius = None;
+    }
+
+    /// Ctrl = add to the selection, Alt = remove from it, otherwise start a new selection.
+    pub fn select_mode(ctrl: bool, alt: bool) -> SelectMode {
+        if ctrl && !alt {
             SelectMode::Add
+        } else if alt && !ctrl {
+            SelectMode::Remove
         } else {
             SelectMode::New
         }
     }
 
-    /// Find point at logical position. Controls checked first; main point wins if both hit.
-    pub fn find_point_at(
-        drawing: &Drawing,
-        lx: f64,
-        ly: f64,
-        max_dist: f64,
-    ) -> Option<Id> {
-        let mut best_ctrl: Option<(Id, f64)> = None;
-        let mut best_main: Option<(Id, f64)> = None;
-        for (id, p) in &drawing.points {
-            let d = p.dist_to_xy(lx, ly);
-            if d > max_dist {
-                continue;
-            }
-            match p.kind {
-                PointKind::Control => {
-                    if best_ctrl.map_or(true, |(_, bd)| d < bd) {
-                        best_ctrl = Some((*id, d));
-                    }
-                }
-                PointKind::Main => {
-                    if best_main.map_or(true, |(_, bd)| d < bd) {
-                        best_main = Some((*id, d));
-                    }
-                }
-            }
-        }
-        best_main.map(|(id, _)| id).or(best_ctrl.map(|(id, _)| id))
+    /// Screen position of a point.
+    pub fn point_screen(p: &Point, origin: Pos2, scale: f32) -> Pos2 {
+        Pos2::new(origin.x + p.x as f32 * scale, origin.y + p.y as f32 * scale)
     }
 
-    /// Command string for status bar (original shows pointed command ToString).
-    pub fn command_string_for_point(drawing: &Drawing, id: Id) -> String {
-        for cmd in &drawing.commands {
-            if cmd.all_points().contains(&id) {
-                return cmd_to_short(drawing, cmd);
+    /// Find the point under a screen position. Control points are checked first, then main points,
+    /// which win where they overlap a handle (as in the original).
+    pub fn find_point_at(drawing: &Drawing, pos: Pos2, origin: Pos2, scale: f32) -> Option<Id> {
+        let mut best_ctrl: Option<(Id, f32)> = None;
+        let mut best_main: Option<(Id, f32)> = None;
+        for (id, p) in &drawing.points {
+            let d = Self::point_screen(p, origin, scale).distance(pos);
+            if d > POINT_HIT_RADIUS {
+                continue;
+            }
+            let slot = match p.kind {
+                PointKind::Control => &mut best_ctrl,
+                PointKind::Main => &mut best_main,
+            };
+            // Ties are broken by id so hovering is stable between frames.
+            if slot.is_none_or(|(bid, bd)| d < bd || (d == bd && *id < bid)) {
+                *slot = Some((*id, d));
             }
         }
-        String::new()
+        best_main.or(best_ctrl).map(|(id, _)| id)
     }
 
     /// Apply selection mode for a single point click.
@@ -191,17 +269,11 @@ impl CanvasMouseState {
                     self.selected.push(id);
                 }
             }
-            SelectMode::Toggle => {
-                if self.selected.contains(&id) {
-                    self.selected.retain(|&x| x != id);
-                } else {
-                    self.selected.push(id);
-                }
-            }
+            SelectMode::Remove => self.selected.retain(|&x| x != id),
         }
     }
 
-    /// Select all points inside a screen-space rectangle.
+    /// Select all points inside a screen-space rectangle (SelectPointsWithin).
     pub fn select_points_in_rect(
         &mut self,
         drawing: &Drawing,
@@ -211,81 +283,63 @@ impl CanvasMouseState {
         b: Pos2,
         mode: SelectMode,
     ) {
-        let min_x = a.x.min(b.x);
-        let max_x = a.x.max(b.x);
-        let min_y = a.y.min(b.y);
-        let max_y = a.y.max(b.y);
-        let mut hits = Vec::new();
+        let rect = egui::Rect::from_two_pos(a, b);
+        let mut inside: Vec<Id> = Vec::new();
         for (id, p) in &drawing.points {
-            let sx = origin.x + p.x as f32 * scale;
-            let sy = origin.y + p.y as f32 * scale;
-            if sx >= min_x && sx <= max_x && sy >= min_y && sy <= max_y {
-                hits.push(*id);
+            if rect.contains(Self::point_screen(p, origin, scale)) {
+                inside.push(*id);
             }
         }
         match mode {
-            SelectMode::New => self.selected = hits,
+            SelectMode::New => self.selected = inside,
             SelectMode::Add => {
-                for id in hits {
+                for id in inside {
                     if !self.selected.contains(&id) {
                         self.selected.push(id);
                     }
                 }
             }
-            SelectMode::Toggle => {
-                for id in hits {
-                    if self.selected.contains(&id) {
-                        self.selected.retain(|&x| x != id);
-                    } else {
-                        self.selected.push(id);
-                    }
-                }
-            }
+            SelectMode::Remove => self.selected.retain(|id| !inside.contains(id)),
         }
     }
 
-    /// Initialize transform quad from drawing bounds.
-    pub fn init_transform_quad(&mut self, drawing: &Drawing) {
-        if let Some((min_x, min_y, max_x, max_y)) = drawing.bounds() {
-            self.transform_quad = Some([
-                (min_x, min_y),
-                (max_x, min_y),
-                (max_x, max_y),
-                (min_x, max_y),
-            ]);
+    /// Rebuild the transform handles from the current shape. Returns false when the shape cannot be
+    /// transformed (fewer than two commands or smaller than 5 px, as in the original).
+    pub fn init_transform(&mut self, drawing: &Drawing, scale: f32) -> bool {
+        self.reset_transform();
+        if drawing.commands.len() < 2 {
+            return false;
         }
+        let Some((x1, y1, x2, y2)) = drawing.shape_bounds() else { return false };
+        if (x2 - x1) * f64::from(scale) < 5.0 || (y2 - y1) * f64::from(scale) < 5.0 {
+            return false;
+        }
+        let quad = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)];
+        self.transform_quad = Some(quad);
+        self.transform_entry = Some((drawing.points.clone(), quad));
+        true
     }
-}
 
-fn cmd_to_short(drawing: &Drawing, cmd: &DrawCmd) -> String {
-    match cmd {
-        DrawCmd::M { point } => point_fmt(drawing, "M", *point),
-        DrawCmd::N { point } => point_fmt(drawing, "N", *point),
-        DrawCmd::L { point } => point_fmt(drawing, "L", *point),
-        DrawCmd::B { end, .. } => point_fmt(drawing, "B", *end),
-        DrawCmd::S { .. } => "S".into(),
-        DrawCmd::P { point } => point_fmt(drawing, "P", *point),
-        DrawCmd::C => "C".into(),
-    }
-}
-
-fn point_fmt(drawing: &Drawing, name: &str, id: Id) -> String {
-    if let Some(p) = drawing.points.get(&id) {
-        format!("{name} {:.0},{:.0}", p.x, p.y)
-    } else {
-        name.to_string()
+    /// Points in the order the Tab key cycles through them (controls, then the main point).
+    pub fn tab_order(drawing: &Drawing) -> Vec<Id> {
+        let mut order = Vec::new();
+        for cmd in &drawing.commands {
+            order.extend(cmd.all_points());
+        }
+        order
     }
 }
 
 /// Result of processing input for one frame.
 #[derive(Debug, Default)]
 pub struct MouseFrameResult {
-    pub need_undo_push: bool,
-    pub undo_label: String,
-    pub status_coords: (f64, f64),
+    pub status_coords: (i32, i32),
     pub status_cmd: String,
-    pub request_color_dialog: bool,
-    pub contour_for_color: usize,
+    /// Sub-shape whose colour dialog should open (double-click in Coloring mode).
+    pub request_color_dialog: Option<usize>,
     pub cmd_changed: bool,
-    pub request_delete_sel: bool,
+    /// Tool picked from the canvas context menu.
+    pub set_tool: Option<crate::ui::Tool>,
+    /// Translation key of a message for the status bar.
+    pub message: Option<&'static str>,
 }

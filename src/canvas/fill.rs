@@ -3,12 +3,12 @@
 //! Pipeline:
 //! 1. Walk DrawCmd list → closed contours (logical coords)
 //! 2. Flatten cubic Béziers to line segments
-//! 3. Build a `lyon` path with **even-odd** fill rule (ASS / SVG style for holes)
+//! 3. Build a `lyon` path with the **non-zero winding** rule (AGG / libass behaviour)
 //! 4. Tessellate to triangle list
 //! 5. Emit `egui::Mesh` in screen space
 //!
-//! Holes: subsequent contours that lie inside a previous one are handled by
-//! even-odd automatically when all contours are added to one path.
+//! Holes: a contour nested in another one with the opposite winding is a hole of that sub-shape;
+//! sub-shapes are tessellated one by one so every sub-shape keeps its own colour.
 
 use crate::engine::{DrawCmd, Drawing};
 use egui::{Color32, Mesh, Pos2, TextureId};
@@ -28,43 +28,39 @@ const FLATTEN_TOL: f64 = 0.35;
 /// Max subdivisions for a cubic.
 const MAX_SUBDIV: u32 = 8;
 
-/// Build filled meshes for the drawing.
+/// Build filled meshes for the drawing: one mesh per sub-shape (an outer contour together with its
+/// holes), filled with the **non-zero winding** rule like AGG and libass.
 ///
-/// `to_screen`: logical → screen.
-/// Contours without explicit colors use `default_fill`.
+/// `to_screen`: logical → screen. Sub-shapes without an own colour use `default_fill`; `opacity`
+/// is the global fill opacity (0..=255).
 pub fn build_filled_meshes(
     drawing: &Drawing,
     to_screen: &dyn Fn(f64, f64) -> Pos2,
     default_fill: Color32,
     opacity: u8,
 ) -> Vec<FilledShape> {
-    let contours = extract_contours(drawing);
+    // Flatten tolerance of 0.25 screen pixels, whatever the zoom level.
+    let p0 = to_screen(0.0, 0.0);
+    let p1 = to_screen(1.0, 0.0);
+    let px_per_unit = f64::from((p1.x - p0.x).abs()).max(0.01);
+    let contours = extract_contours(drawing, (0.25 / px_per_unit).min(FLATTEN_TOL));
     if contours.is_empty() {
         return Vec::new();
     }
-
-    // Group consecutive contours that share the same color into one even-odd path
-    // so holes (inner contours) subtract correctly.
     let mut out = Vec::new();
-    let mut i = 0;
-    while i < contours.len() {
-        let color_idx = contours[i].color_index;
-        let mut batch = vec![&contours[i]];
-        i += 1;
-        while i < contours.len() && contours[i].color_index == color_idx {
-            batch.push(&contours[i]);
-            i += 1;
-        }
-        let fill = drawing
-            .get_contour_color(color_idx)
-            .map(|c| {
-                Color32::from_rgba_unmultiplied(c.r, c.g, c.b, opacity.min(c.a))
-            })
-            .unwrap_or_else(|| {
-                let a = default_fill.to_array();
-                Color32::from_rgba_unmultiplied(a[0], a[1], a[2], opacity)
-            });
-
+    for (outer, members) in drawing.subshape_groups() {
+        let fill = if let Some(st) = drawing.shape_styles.get(&outer) {
+            if !st.fill_enabled {
+                continue;
+            }
+            Color32::from_rgba_unmultiplied(st.fill.r, st.fill.g, st.fill.b, st.fill_opacity)
+        } else if let Some(c) = drawing.get_contour_color(outer) {
+            Color32::from_rgba_unmultiplied(c.r, c.g, c.b, opacity)
+        } else {
+            let a = default_fill.to_array();
+            Color32::from_rgba_unmultiplied(a[0], a[1], a[2], opacity)
+        };
+        let batch: Vec<&Contour> = members.iter().filter_map(|&m| contours.get(m)).collect();
         if let Some(mesh) = tessellate_contours(&batch, to_screen, fill) {
             out.push(FilledShape { mesh });
         }
@@ -72,60 +68,30 @@ pub fn build_filled_meshes(
     out
 }
 
-struct Contour {
-    /// Logical polyline (already flattened), assumed closed if first≈last or closed flag
-    points: Vec<(f64, f64)>,
-    closed: bool,
-    color_index: usize,
+pub struct Contour {
+    /// Flattened logical polyline (closed implicitly when filled).
+    pub points: Vec<(f64, f64)>,
 }
 
-fn extract_contours(drawing: &Drawing) -> Vec<Contour> {
-    let mut contours = Vec::new();
-    let mut current: Vec<(f64, f64)> = Vec::new();
-    let mut closed = false;
-    let mut color_index = 0usize;
-    let mut contour_count = 0usize;
-
-    let flush = |current: &mut Vec<(f64, f64)>, closed: bool, color_index: usize, contours: &mut Vec<Contour>| {
-        if current.len() >= 3 {
-            // Ensure closed ring for fill
-            if let (Some(&first), Some(&last)) = (current.first(), current.last()) {
-                if (first.0 - last.0).abs() > 1e-6 || (first.1 - last.1).abs() > 1e-6 {
-                    current.push(first);
-                }
-            }
-            contours.push(Contour {
-                points: std::mem::take(current),
-                closed: true,
-                color_index,
-            });
-        } else {
-            current.clear();
-        }
-        let _ = closed;
-    };
-
+/// One flattened polyline per contour; the index matches `Drawing::subshape_groups`.
+pub fn extract_contours(drawing: &Drawing, tol: f64) -> Vec<Contour> {
+    let mut contours: Vec<Contour> = Vec::new();
     let mut last_point = (0.0, 0.0);
-
-    for (idx, cmd) in drawing.commands.iter().enumerate() {
-        if cmd.is_contour_start() && idx > 0 {
-            flush(&mut current, closed, color_index, &mut contours);
-            contour_count += 1;
-            color_index = contour_count;
-            closed = false;
+    let cmds = &drawing.commands;
+    let mut idx = 0usize;
+    while idx < cmds.len() {
+        let cmd = &cmds[idx];
+        if cmd.is_contour_start() || contours.is_empty() {
+            contours.push(Contour { points: Vec::new() });
         }
+        let current = &mut contours.last_mut().expect("contour exists").points;
         match cmd {
-            DrawCmd::M { point } | DrawCmd::N { point } => {
+            DrawCmd::M { point } | DrawCmd::N { point } | DrawCmd::L { point } | DrawCmd::P { point } => {
                 if let Some(p) = drawing.points.get(point) {
                     current.push((p.x, p.y));
                     last_point = (p.x, p.y);
                 }
-            }
-            DrawCmd::L { point } => {
-                if let Some(p) = drawing.points.get(point) {
-                    current.push((p.x, p.y));
-                    last_point = (p.x, p.y);
-                }
+                idx += 1;
             }
             DrawCmd::B { control1, control2, end, .. } => {
                 if let (Some(c1), Some(c2), Some(e)) = (
@@ -138,15 +104,15 @@ fn extract_contours(drawing: &Drawing) -> Vec<Contour> {
                         (c1.x, c1.y),
                         (c2.x, c2.y),
                         (e.x, e.y),
-                        FLATTEN_TOL,
-                        MAX_SUBDIV,
+                        tol,
+                        MAX_SUBDIV + 4,
                     );
-                    // skip first (duplicate of last_point)
                     for &pt in pts.iter().skip(1) {
                         current.push(pt);
                     }
                     last_point = (e.x, e.y);
                 }
+                idx += 1;
             }
             DrawCmd::S { points } => {
                 let mut logical = Vec::new();
@@ -155,9 +121,20 @@ fn extract_contours(drawing: &Drawing) -> Vec<Contour> {
                         logical.push((p.x, p.y));
                     }
                 }
+                idx += 1;
+                while idx < cmds.len() {
+                    if let DrawCmd::P { point } = &cmds[idx] {
+                        if let Some(p) = drawing.points.get(point) {
+                            logical.push((p.x, p.y));
+                        }
+                        idx += 1;
+                    } else {
+                        break;
+                    }
+                }
                 if logical.len() >= 2 {
-                    let flat = flatten_catmull(&logical, 12);
-                    for &pt in flat.iter().skip(1) {
+                    let flat = flatten_bspline(&logical, 0.05);
+                    for &pt in &flat {
                         current.push(pt);
                     }
                     if let Some(&lp) = logical.last() {
@@ -165,22 +142,11 @@ fn extract_contours(drawing: &Drawing) -> Vec<Contour> {
                     }
                 }
             }
-            DrawCmd::P { point } => {
-                if let Some(p) = drawing.points.get(point) {
-                    current.push((p.x, p.y));
-                    last_point = (p.x, p.y);
-                }
-            }
             DrawCmd::C => {
-                closed = true;
-                if let Some(&first) = current.first() {
-                    current.push(first);
-                    last_point = first;
-                }
+                idx += 1;
             }
         }
     }
-    flush(&mut current, closed, color_index, &mut contours);
     contours
 }
 
@@ -212,9 +178,9 @@ fn tessellate_contours(
     }
     let path = builder.build();
 
-    let mut buffers: VertexBuffers<lyon::math::Point, u16> = VertexBuffers::new();
+    let mut buffers: VertexBuffers<lyon::math::Point, u32> = VertexBuffers::new();
     let mut tess = FillTessellator::new();
-    let opts = FillOptions::tolerance(0.2).with_fill_rule(FillRule::EvenOdd);
+    let opts = FillOptions::tolerance(0.2).with_fill_rule(FillRule::NonZero);
     if tess
         .tessellate_path(
             &path,
@@ -241,9 +207,8 @@ fn tessellate_contours(
             color,
         });
     }
-    // egui Mesh indices are u32
     for idx in &buffers.indices {
-        mesh.indices.push(*idx as u32);
+        mesh.indices.push(*idx);
     }
     Some(mesh)
 }
@@ -303,51 +268,8 @@ fn point_line_dist(p: (f64, f64), a: (f64, f64), b: (f64, f64)) -> f64 {
     ((p.0 - a.0) * dy - (p.1 - a.1) * dx).abs() / len
 }
 
-fn flatten_catmull(points: &[(f64, f64)], samples: usize) -> Vec<(f64, f64)> {
-    if points.len() < 2 {
-        return points.to_vec();
-    }
-    // Reuse simple sampling
-    let mut out = Vec::new();
-    out.push(points[0]);
-    for i in 0..points.len() - 1 {
-        let p0 = if i == 0 { points[0] } else { points[i - 1] };
-        let p1 = points[i];
-        let p2 = points[i + 1];
-        let p3 = if i + 2 < points.len() {
-            points[i + 2]
-        } else {
-            points[i + 1]
-        };
-        for s in 1..=samples {
-            let t = s as f64 / samples as f64;
-            out.push(catmull(p0, p1, p2, p3, t));
-        }
-    }
-    out
-}
-
-fn catmull(
-    p0: (f64, f64),
-    p1: (f64, f64),
-    p2: (f64, f64),
-    p3: (f64, f64),
-    t: f64,
-) -> (f64, f64) {
-    let t2 = t * t;
-    let t3 = t2 * t;
-    let x = 0.5
-        * ((2.0 * p1.0)
-            + (-p0.0 + p2.0) * t
-            + (2.0 * p0.0 - 5.0 * p1.0 + 4.0 * p2.0 - p3.0) * t2
-            + (-p0.0 + 3.0 * p1.0 - 3.0 * p2.0 + p3.0) * t3);
-    let y = 0.5
-        * ((2.0 * p1.1)
-            + (-p0.1 + p2.1) * t
-            + (2.0 * p0.1 - 5.0 * p1.1 + 4.0 * p2.1 - p3.1) * t2
-            + (-p0.1 + 3.0 * p1.1 - 3.0 * p2.1 + p3.1) * t3);
-    (x, y)
-}
+// Shared with engine hole/winding tests (AGG conv_bspline port).
+pub use crate::engine::flatten_bspline;
 
 #[cfg(test)]
 mod tests {

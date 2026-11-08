@@ -1,75 +1,36 @@
-# Orijinal ASSDraw3 → ASSDraw-rs
+# ASSDraw3 → ASSDraw-rs özellik haritası
 
-## Satır sayısı hakkında
+Durum: ✅ orijinalle aynı davranış · ➕ orijinalde olmayan ek · ⚠️ bilinen fark
 
-| | Orijinal (C++/wx) | ASSDraw-rs (Rust/egui) |
-|--|-------------------|------------------------|
-| Çekirdek kaynak | ~8800 satır | ~2300 satır (ve büyüyor) |
-| UI framework | wxWidgets + AGG (binlerce satır bağlayıcı) | egui (crate) |
-| Build | CMake + vcpkg | Cargo |
-
-Rust + egui aynı işi daha az satırda yazar; wx event tabloları, AGG rasterizer sarmalayıcıları ve XPM ikon gömmeleri yok.
-Ama **eksik özellik = eksik satır** da doğru: i18n, dolgu, context menu, library preview hâlâ ince.
-
-## Motor (engine.cpp ~784 satır)
-
-| Davranış | Durum |
-|----------|--------|
-| ParseASS greedy L/B | ✅ `engine/parse.rs` + test |
-| GenerateASS | ✅ |
-| S/P/C spline | ✅ |
-| PointSystem scale/origin | ✅ |
-| Undo/Redo snapshot | ✅ |
-| Scale/Rotate | ✅ |
-| Bilinear | ✅ API |
-| Line→Bezier / Bezier→Line | ✅ `engine/convert.rs` |
-| Delete command/point | ✅ |
-
-## styled_ass (~248)
-
-| | |
-|--|--|
-| Contour runs + renk | ✅ `export/` |
-| Multiline import offsets | ⚠ kısmi |
-
-## library / settings / canvas
-
-| | |
-|--|--|
-| Library add/load/json | ✅ temel |
-| Settings disk | ✅ |
-| BG image + alpha | ✅ |
-| Pan/zoom/grid/hit-test | ✅ |
-| AGG scanline fill | ✅ lyon even-odd tessellation + egui Mesh |
-| i18n 7 dil | ❌ |
-| Context menu | ❌ |
-| CHM/HTML help | ❌ |
-
-## Test / CI
-
-- Birim: greedy parse, roundtrip, bounds, scale_rotate, styled runs
-- GitHub Actions: check + test + release (Linux/Win/macOS)
-
-
-## Canvas fare modeli (bu sprint)
-
-Orijinal `OnMouseLeftDown/Up/Move`, `OnMouseRight*`, `ProcessOnMouseLeftUp` davranışları:
-
-| Davranış | Rust |
-|----------|------|
-| Hover: control önce, main öncelikli | `find_point_at` |
-| Sol sürükle: nokta taşı / marquee | `LeftDragKind` |
-| Sağ sürükle + orta tuş: pan | ✅ |
-| Delete: down==up aynı nokta | ✅ |
-| Shift/Ctrl seçim modları | New/Add/Toggle |
-| Transform köşe tutamaçları | `TransformHandle` + bilinear canlı |
-| Context menu: L↔B, move00 | ✅ |
-| Status: komut altında imleç | `status_cmd` |
-| Double-click renk | ✅ |
-
-
-## Dolgu (AGG kalitesi hedefi)
-
-- `src/canvas/fill.rs`: cubic flatten, Catmull, even-odd `lyon` tessellate → `egui::Mesh`
-- Holes: aynı renk grubundaki konturlar tek path’te even-odd
-- UI: Dolgu aç/kapa + opaklık
+| Orijinal ASSDraw3 özelliği | ASSDraw-rs | Not |
+|---|---|---|
+| Araçlar: Drag, M, L, B, Delete, Scale/Rotate, Bilinear, Coloring | ✅ | F1–F8 |
+| M/L/B: basılı tutup sürükleyerek yerleştirme; mevcut noktaya tıklayınca o komuttan sonra ekleme | ✅ | B kontrol noktaları 1/3–2/3'e konur |
+| Kontrol noktasına tıklayıp sürükleme (M/L/B kipinde) | ✅ | |
+| Seçim: tıkla, Ctrl = ekle, Alt = çıkar, çerçeve seçimi, çoklu sürükleme | ✅ | |
+| Shift basılıyken geçici sürükleme kipi | ✅ | |
+| Delete aracı: bas-bırak ile komutu sil; ilk komut en son silinir | ✅ | uyarı mesajı gösterilir |
+| Scale/Rotate: köşe + kenar tutamaçları, Shift ile oran, sağ tuşla döndürme | ✅ | şekil her zaman araca girişteki hâlinden eşlenir (birikim hatası yok) |
+| Bilinear: köşe ve **kenar** tutamaçları | ✅ | |
+| Coloring: tek tık alt şekli seçer, çift tık renk penceresi; delikler üst şekle bağlı | ✅ | |
+| Dolgu kuralı: non-zero winding (AGG / libass) | ✅ | |
+| Sürükleyerek [0,0] orijinini taşıma, sağ menüde "Move [0,0] here" | ✅ | |
+| Sağ tuşla kaydırma, tekerlekle zoom (1–50, ±1), PageUp/PageDown, ok tuşları (1 / Ctrl 10) | ✅ | zoom imleç altında kalır |
+| Reposition [0,0]: tuval köşeleri/merkez (Ctrl+1/3/5/7/9) ve arka plan köşeleri (Ctrl+Shift+…) | ✅ | görünümü kaydırır, çizime dokunmaz |
+| Tab: noktadan noktaya imleç atlatma | ✅ | |
+| Bezier ↔ Line dönüşümü, C1 "smooth connection" | ✅ | yalnızca uygun noktalarda menüde çıkar |
+| Komut kutusu (Enter ile uygula), ASS kopyala, çok satırlı yapıştırma | ✅ | |
+| ParseASS: toleranslı ayrıştırma, `{}` blokları, greedy l/b, eksik komutlar yok sayılır | ✅ | ondalıklar yuvarlanır (orijinal yok sayardı) |
+| "Parse S/P/C" ayarı | ✅ | varsayılan açık (orijinal: kapalı) |
+| Çok renkli ASS (`\1c \1a \3c \3a \bord`), x-kaydırma telafisi | ✅ | |
+| Matris dönüşümü penceresi + şablonlar | ✅ | |
+| Arka plan resmi: dosya, panodan yapıştırma, sürükle-bırak, opaklık, Shift+Del | ✅ | |
+| Çizim / arka plan / ikisi birden kaydırma kipi (Shift+F1/F2/F3) | ✅ | |
+| Önizleme kipi (Ctrl+P) | ✅ | |
+| Undo/redo (açıklamalı) | ✅ | |
+| Şekil kitaplığı: kaydet, çift tıkla yükle, kopyala, üzerine yaz, sil | ✅ | yeni şekil en üste eklenir |
+| Ayarlar: tüm renkler/opaklıklar, Parse S/P/C, resim opaklığı, splash | ✅ | Revert son uygulanan değerlere döner |
+| 7 dil, açık/koyu/sistem teması | ✅ | dil varsayılanı işletim sisteminden |
+| Kılavuz | ⚠️ | HTML kılavuz (CHM değil) |
+| N / S / P / C araçları | ➕ | N açık kontur; S/P/C yalnızca spline sonrası geçerli |
+| AGG interpolasyonlu spline çizimi | ⚠️ | uniform kübik B-spline (libass'in gerçek çıktısına daha yakın) |

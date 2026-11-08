@@ -7,7 +7,7 @@ wxWidgets yok. Hedef: orijinal özellik seti + GitHub’da temiz CI.
 ## Build
 
 ```bash
-# Rust 1.80+
+# Rust 1.82+
 cargo run --release
 ```
 
@@ -29,3 +29,25 @@ Ayrıntılı eşleme: [FEATURE_MAP.md](FEATURE_MAP.md)
 ## License
 
 BSD 3-Clause (orijinal ile uyumlu)
+
+## Kısayollar (özet)
+
+| Tuş | İşlev |
+|-----|-------|
+| Ctrl+C / Ctrl+V | ASS kopyala / panodan yapıştır (metin) |
+| Ctrl+I | Panodaki **resmi** arka plan olarak yapıştır |
+| Ctrl+Z / Ctrl+Y | Geri al / yinele |
+| Ok tuşları / PageUp-PageDown | Tuvali kaydır / yakınlaştır (Ctrl = 10x) |
+| Tab | İmleci en yakın noktaya götürür |
+| Shift (basılı) | M/L/B aracını geçici olarak sürükleme aracına çevirir |
+| F1–F8 (F5 = Sil), M N L B S P C R H | Araç seçimi |
+| Shift+F1/F2/F3 | Çizim / arka plan / ikisi birden kaydır |
+
+> Not: Ctrl+V, pano yalnızca resim içeriyorsa egui tarafından olay olarak iletilmez; bu yüzden
+> resim yapıştırmak için Ctrl+I veya menü (Arka plan → Panodan Resim Yapıştır) kullanılır.
+
+## CI / Artifact
+
+Her push'ta `clippy` ve (Linux / Windows / macOS) `check + test + release build` çalışır.
+Derlenen programlar **Actions → ilgili çalıştırma → Artifacts** altında indirilebilir.
+`v*` etiketi (ör. `git tag v0.3.1 && git push --tags`) atılırsa üç sürüm ayrıca bir GitHub Release'e eklenir.

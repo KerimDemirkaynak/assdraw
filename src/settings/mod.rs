@@ -1,7 +1,7 @@
 //! Persistent settings for ASSDraw-rs (mirrors settings.hpp/cpp).
 //! Full appearance, colors, alphas, behaviors, and language support.
 
-use crate::engine::Color;
+use crate::engine::{Color, ShapeStyle};
 use crate::i18n::Language;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -11,6 +11,12 @@ pub struct AppSettings {
     // Language & Theme
     pub language: Language,
     pub theme_dark: bool,
+    /// Follow the operating system's light/dark setting (overrides `theme_dark`).
+    #[serde(default)]
+    pub theme_system: bool,
+    /// Do not show the welcome screen at startup.
+    #[serde(default)]
+    pub no_splash: bool,
 
     // Appearance - Colors
     pub canvas_bg: Color,
@@ -27,6 +33,11 @@ pub struct AppSettings {
     pub ruler_v_color: Color,
     pub library_bg: Color,
     pub library_shape_color: Color,
+    /// Thin editor outline drawn along the shape (the original's "Outline" setting).
+    #[serde(default = "default_black")]
+    pub editor_outline: Color,
+    #[serde(default = "default_255")]
+    pub editor_outline_opacity: u8,
 
     // Appearance - Visibility & Dimensions
     pub show_grid: bool,
@@ -64,8 +75,10 @@ pub struct AppSettings {
 impl Default for AppSettings {
     fn default() -> Self {
         Self {
-            language: Language::Tr,
+            language: Language::detect(),
             theme_dark: true,
+            theme_system: false,
+            no_splash: false,
 
             canvas_bg: Color::from_rgb(25, 25, 25),
             shape_fill: Color::from_rgb(0, 0, 255),
@@ -81,12 +94,14 @@ impl Default for AppSettings {
             ruler_v_color: Color::from_rgb(240, 178, 190),
             library_bg: Color::from_rgb(51, 51, 51),
             library_shape_color: Color::from_rgb(100, 181, 246),
+            editor_outline: Color::from_rgb(200, 200, 200),
+            editor_outline_opacity: 255,
 
-            show_grid: true,
+            show_grid: false,
             show_points: true,
             show_fill: true,
             show_rulers: true,
-            fill_opacity: 128,
+            fill_opacity: 255,
             border_width: 0.0,
 
             preview_opacity: 255,
@@ -100,12 +115,16 @@ impl Default for AppSettings {
             bezier_smoothness: 0.35,
             capitalize_cmds: false,
             auto_ask_img_opacity: true,
-            bg_alpha_default: 140,
+            bg_alpha_default: 128,
             parse_spc: true,
             confirm_quit: false,
             use_multicolor: true,
         }
     }
+}
+
+const fn default_black() -> Color {
+    Color::BLACK
 }
 
 const fn default_255() -> u8 {
@@ -117,6 +136,28 @@ const fn default_128() -> u8 {
 }
 
 impl AppSettings {
+    /// The fill/outline style that is written into (and read from) ASS override tags.
+    pub fn shape_style(&self) -> ShapeStyle {
+        ShapeStyle {
+            fill_enabled: self.show_fill,
+            fill: self.shape_fill,
+            fill_opacity: self.fill_opacity,
+            outline_enabled: self.border_width > 0.0 && self.outline_opacity > 0,
+            outline_width: self.border_width,
+            outline: self.shape_outline,
+            outline_opacity: self.outline_opacity,
+        }
+    }
+
+    pub fn apply_shape_style(&mut self, style: &ShapeStyle) {
+        self.show_fill = style.fill_enabled;
+        self.shape_fill = style.fill;
+        self.fill_opacity = style.fill_opacity;
+        self.shape_outline = style.outline;
+        self.outline_opacity = style.outline_opacity;
+        self.border_width = if style.outline_enabled { style.outline_width } else { 0.0 };
+    }
+
     pub fn config_path() -> Option<PathBuf> {
         dirs::config_dir().map(|p| p.join("assdraw-rs").join("settings.json"))
     }
