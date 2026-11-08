@@ -46,6 +46,32 @@ pub fn parse_ass_into(drawing: &mut Drawing, text: &str) -> Result<usize, ParseE
     parse_ass_into_opts(drawing, text, true)
 }
 
+/// Replace every `{...}` override block with a space, so glued text such as `10{p0}` still
+/// yields a clean number token. An unterminated `{` drops the rest of the text.
+fn strip_override_blocks(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut depth = 0usize;
+    for c in text.chars() {
+        match c {
+            '{' => {
+                depth += 1;
+                if depth == 1 {
+                    out.push(' ');
+                }
+            }
+            '}' if depth > 0 => {
+                depth -= 1;
+                if depth == 0 {
+                    out.push(' ');
+                }
+            }
+            _ if depth == 0 => out.push(c),
+            _ => {}
+        }
+    }
+    out
+}
+
 /// Port of `ASSDrawEngine::ParseASS`: a tolerant token state machine. Override blocks and unknown
 /// words are ignored, `l` and `b` are greedy, incomplete commands are dropped, and `s`/`p`/`c` are
 /// only recognised when `parse_spc` is set (the "Parse S/P/C" setting). Returns the number of
@@ -55,7 +81,7 @@ pub fn parse_ass_into_opts(
     text: &str,
     parse_spc: bool,
 ) -> Result<usize, ParseError> {
-    let mut norm = text.replace(['\t', '\r', '\n'], " ").replace('}', "} ");
+    let mut norm = strip_override_blocks(&text.replace(['\t', '\r', '\n'], " "));
     norm = norm.to_lowercase();
     norm.push_str(" _ _");
 
