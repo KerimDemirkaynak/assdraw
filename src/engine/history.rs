@@ -68,16 +68,14 @@ impl History {
     }
 
     pub fn undo(&mut self, current: DrawingSnapshot) -> Option<DrawingSnapshot> {
-        self.undo_stack.pop().map(|prev| {
-            self.redo_stack.push(current);
-            prev
-        })
+        let prev = self.undo_stack.pop()?;
+        self.redo_stack.push(current);
+        Some(prev)
     }
 
     pub fn redo(&mut self, current: DrawingSnapshot) -> Option<DrawingSnapshot> {
-        self.redo_stack.pop().map(|next| {
-            self.undo_stack.push(current);
-            next
-        })
+        let next = self.redo_stack.pop()?;
+        self.undo_stack.push(current);
+        Some(next)
     }
 }

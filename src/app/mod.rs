@@ -1,7 +1,7 @@
 //! Main application state and egui frame loop.
 
 use crate::canvas::mouse::{CanvasMouseState, DragTarget};
-use crate::engine::parse::{parse_ass_into, parse_styled_into_opts, parse_styled_replace};
+use crate::engine::parse::{parse_styled_into_opts, parse_styled_replace};
 use crate::engine::transform::{MatrixTransform, ReposAnchor};
 use crate::engine::{parse_ass_into, Drawing, ShapeStyle};
 use crate::i18n::t;
